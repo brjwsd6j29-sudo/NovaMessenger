@@ -1,202 +1,792 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Center WebApp</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        :root {
-            --bg-color: var(--tg-theme-bg-color, #1a1a1a);
-            --text-color: var(--tg-theme-text-color, #ffffff);
-            --card-bg: var(--tg-theme-secondary-bg-color, #2a2a2a);
-            --button-bg: var(--tg-theme-button-color, #3b82f6);
-            --button-text: var(--tg-theme-button-text-color, #ffffff);
-        }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
+<meta charset="UTF-8">
 
-        .card {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            padding: 15px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-        .profile-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+<title>Game Center</title>
 
-        .balance-badge {
-            background: #eab308;
-            color: #000;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-weight: bold;
-        }
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-        .games-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
+<style>
 
-        button {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            background-color: var(--button-bg);
-            color: var(--button-text);
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
+:root {
+    --bg: var(--tg-theme-bg-color, #101114);
+    --text: var(--tg-theme-text-color, #ffffff);
+    --card: var(--tg-theme-secondary-bg-color, #191b21);
+    --button: var(--tg-theme-button-color, #3b82f6);
+}
 
-        button:active {
-            opacity: 0.8;
-        }
+* {
+    box-sizing: border-box;
+}
 
-        .game-box {
-            display: none;
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-        }
+body {
 
-        input {
-            width: calc(100% - 20px);
-            padding: 10px;
-            margin: 8px 0;
-            border-radius: 6px;
-            border: 1px solid #444;
-            background: #111;
-            color: #fff;
-        }
-    </style>
+    margin: 0;
+
+    padding: 15px;
+
+    min-height: 100vh;
+
+    background: var(--bg);
+
+    color: var(--text);
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+}
+
+.card {
+
+    background: var(--card);
+
+    border-radius: 16px;
+
+    padding: 16px;
+
+    margin-bottom: 14px;
+}
+
+.profile {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+.avatar {
+
+    width: 48px;
+
+    height: 48px;
+
+    border-radius: 50%;
+
+    background: #3b82f6;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    font-size: 22px;
+
+    font-weight: bold;
+}
+
+.profile-left {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+.name {
+
+    font-size: 17px;
+
+    font-weight: bold;
+}
+
+.id {
+
+    opacity: .55;
+
+    font-size: 12px;
+
+    margin-top: 3px;
+}
+
+.balance {
+
+    background: #eab308;
+
+    color: #000;
+
+    padding: 8px 12px;
+
+    border-radius: 20px;
+
+    font-weight: bold;
+
+    white-space: nowrap;
+}
+
+button {
+
+    width: 100%;
+
+    border: 0;
+
+    border-radius: 12px;
+
+    padding: 13px;
+
+    background: var(--button);
+
+    color: white;
+
+    font-size: 16px;
+
+    font-weight: bold;
+
+    margin-top: 8px;
+}
+
+button:disabled {
+
+    opacity: .5;
+}
+
+.game {
+
+    display: none;
+
+    padding-top: 10px;
+}
+
+input {
+
+    width: 100%;
+
+    padding: 12px;
+
+    border-radius: 10px;
+
+    border: 1px solid #444;
+
+    background: #101114;
+
+    color: white;
+
+    font-size: 16px;
+}
+
+.result {
+
+    text-align: center;
+
+    font-size: 18px;
+
+    margin-top: 12px;
+}
+
+.history-item {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    padding: 10px 0;
+
+    border-bottom: 1px solid
+        rgba(255,255,255,.08);
+}
+
+.loading {
+
+    text-align: center;
+
+    padding: 30px;
+
+    opacity: .7;
+}
+
+</style>
+
 </head>
+
 <body>
 
-    <!-- СЕКЦИЯ ПРОФИЛЯ -->
-    <div class="card">
-        <div class="profile-header">
-            <div>
-                <h3 id="user-name" style="margin:0;">Игрок</h3>
-                <small id="user-id" style="opacity: 0.6;">ID: 0000000</small>
-            </div>
-            <div class="balance-badge">
-                💰 <span id="balance">100</span> DC
-            </div>
-        </div>
-    </div>
+<div id="loading" class="loading">
+    ⏳ Загрузка профиля...
+</div>
 
-    <!-- МЕНЮ ИГР -->
+<div id="app" style="display:none;">
+
+    <!-- ПРОФИЛЬ -->
+
     <div class="card">
-        <h3>Игровой зал</h3>
-        <div class="games-grid">
-            
-            <!-- Игра 1: Монетка -->
-            <button onclick="toggleGame('coin-game')">🪙 Орел или Решка</button>
-            <div id="coin-game" class="game-box">
-                <p>Ставка: 10 DC (Выигрыш: 20 DC)</p>
-                <div style="display:flex; gap:10px;">
-                    <button onclick="playCoin('heads')">Орёл</button>
-                    <button onclick="playCoin('tails')">Решка</button>
+
+        <div class="profile">
+
+            <div class="profile-left">
+
+                <div
+                    class="avatar"
+                    id="avatar"
+                >
+                    ?
                 </div>
+
+                <div>
+
+                    <div
+                        class="name"
+                        id="user-name"
+                    >
+                        Игрок
+                    </div>
+
+                    <div
+                        class="id"
+                        id="user-id"
+                    >
+                        ID
+                    </div>
+
+                </div>
+
             </div>
 
-            <!-- Игра 2: Угадай число -->
-            <button onclick="toggleGame('number-game')">🔢 Угадай число (1-5)</button>
-            <div id="number-game" class="game-box">
-                <p>Ставка: 20 DC (Выигрыш: 100 DC)</p>
-                <input type="number" id="guess-input" min="1" max="5" placeholder="Введи число от 1 до 5">
-                <button onclick="playGuessNumber()">Сделать ставку</button>
+            <div class="balance">
+
+                💰
+                <span id="balance">
+                    0
+                </span>
+                DC
+
             </div>
 
         </div>
+
     </div>
 
-    <!-- КНОПКА СОХРАНЕНИЯ -->
-    <button onclick="exitAndSave()" style="background-color: #22c55e;">Сохранить и выйти</button>
+    <!-- ИГРЫ -->
 
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
+    <div class="card">
 
-        let balance = 100;
+        <h3>
+            🎮 Игровой зал
+        </h3>
 
-        // Загрузка данных профиля из Telegram
-        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-            const user = tg.initDataUnsafe.user;
-            document.getElementById('user-name').innerText = user.first_name;
-            document.getElementById('user-id').innerText = `ID: ${user.id}`;
+        <button
+            onclick="toggleGame('coin-game')"
+        >
+            🪙 Орёл или Решка
+        </button>
+
+        <div
+            id="coin-game"
+            class="game"
+        >
+
+            <p>
+                Выбери сторону:
+            </p>
+
+            <button
+                onclick="playCoin('heads')"
+            >
+                🪙 Орёл
+            </button>
+
+            <button
+                onclick="playCoin('tails')"
+            >
+                🪙 Решка
+            </button>
+
+            <div
+                id="coin-result"
+                class="result"
+            ></div>
+
+        </div>
+
+
+        <button
+            onclick="toggleGame('number-game')"
+        >
+            🔢 Угадай число
+        </button>
+
+        <div
+            id="number-game"
+            class="game"
+        >
+
+            <p>
+                Сервер загадал число от 1 до 5.
+            </p>
+
+            <input
+                id="guess"
+                type="number"
+                min="1"
+                max="5"
+                placeholder="1 - 5"
+            >
+
+            <button
+                onclick="playNumber()"
+            >
+                🎯 Проверить
+            </button>
+
+            <div
+                id="number-result"
+                class="result"
+            ></div>
+
+        </div>
+
+    </div>
+
+    <!-- ИСТОРИЯ -->
+
+    <div class="card">
+
+        <h3>
+            📜 Последние игры
+        </h3>
+
+        <div id="history">
+            Пока нет игр
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const tg =
+    window.Telegram.WebApp;
+
+tg.ready();
+
+tg.expand();
+
+
+/*
+ * Telegram user
+ */
+
+const telegramUser =
+    tg.initDataUnsafe?.user;
+
+
+if (!telegramUser) {
+
+    document.getElementById("loading")
+        .innerHTML =
+        "❌ Открой сайт через Telegram.";
+
+    throw new Error(
+        "Telegram user not found"
+    );
+}
+
+
+const telegramId =
+    telegramUser.id;
+
+
+/*
+ * Здесь НЕ храним баланс.
+ *
+ * Он приходит только с сервера.
+ */
+
+let currentBalance = 0;
+
+
+/*
+ * Форматирование чисел
+ */
+
+function formatNumber(number) {
+
+    return Number(number)
+        .toLocaleString("ru-RU");
+}
+
+
+/*
+ * Загрузка профиля
+ */
+
+async function loadProfile() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/.netlify/functions/player",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        telegram_id:
+                            telegramId,
+
+                        username:
+                            telegramUser.username || null,
+
+                        first_name:
+                            telegramUser.first_name || "Игрок"
+                    })
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!data.success) {
+
+            throw new Error(
+                data.error || "Ошибка"
+            );
         }
 
-        function updateBalance(amount) {
-            balance += amount;
-            document.getElementById('balance').innerText = balance;
+
+        const user =
+            data.user;
+
+
+        currentBalance =
+            Number(user.balance);
+
+
+        document.getElementById(
+            "user-name"
+        ).textContent =
+            user.first_name;
+
+
+        document.getElementById(
+            "user-id"
+        ).textContent =
+            "ID: " + user.telegram_id;
+
+
+        document.getElementById(
+            "avatar"
+        ).textContent =
+            user.first_name
+                .charAt(0)
+                .toUpperCase();
+
+
+        updateBalance();
+
+
+        document.getElementById(
+            "loading"
+        ).style.display = "none";
+
+
+        document.getElementById(
+            "app"
+        ).style.display = "block";
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        document.getElementById(
+            "loading"
+        ).innerHTML =
+            "❌ Не удалось загрузить профиль.";
+    }
+}
+
+
+/*
+ * Баланс
+ */
+
+function updateBalance() {
+
+    document.getElementById(
+        "balance"
+    ).textContent =
+        formatNumber(currentBalance);
+}
+
+
+/*
+ * Открытие игры
+ */
+
+function toggleGame(id) {
+
+    const game =
+        document.getElementById(id);
+
+    game.style.display =
+        game.style.display === "block"
+            ? "none"
+            : "block";
+}
+
+
+/*
+ * Орёл / решка
+ */
+
+async function playCoin(choice) {
+
+    const resultElement =
+        document.getElementById(
+            "coin-result"
+        );
+
+    resultElement.textContent =
+        "⏳ Играем...";
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/.netlify/functions/game",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        telegram_id:
+                            telegramId,
+
+                        game_type:
+                            "coin"
+                    })
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!data.success) {
+
+            throw new Error(
+                data.error || "Ошибка"
+            );
         }
 
-        function toggleGame(id) {
-            const box = document.getElementById(id);
-            box.style.display = box.style.display === 'block' ? 'none' : 'block';
+
+        currentBalance =
+            Number(data.balance);
+
+        updateBalance();
+
+
+        const result =
+            data.result === "heads"
+                ? "Орёл"
+                : "Решка";
+
+
+        resultElement.innerHTML =
+            `Выпало: <b>${result}</b><br>
+             🎉 +${formatNumber(data.points)} DC`;
+
+
+        addHistory(
+            "🪙 Орёл/Решка",
+            `+${formatNumber(data.points)} DC`
+        );
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        resultElement.textContent =
+            "❌ Ошибка игры";
+    }
+}
+
+
+/*
+ * Угадай число
+ */
+
+async function playNumber() {
+
+    const input =
+        document.getElementById("guess");
+
+    const guess =
+        Number(input.value);
+
+
+    if (
+        !guess ||
+        guess < 1 ||
+        guess > 5
+    ) {
+
+        alert(
+            "Введите число от 1 до 5"
+        );
+
+        return;
+    }
+
+
+    const resultElement =
+        document.getElementById(
+            "number-result"
+        );
+
+    resultElement.textContent =
+        "⏳ Проверяем...";
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/.netlify/functions/game",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        telegram_id:
+                            telegramId,
+
+                        game_type:
+                            "number"
+                    })
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!data.success) {
+
+            throw new Error(
+                data.error || "Ошибка"
+            );
         }
 
-        // Логика Игры 1: Орел и Решка
-        function playCoin(choice) {
-            if (balance < 10) return alert("Недостаточно средств!");
-            updateBalance(-10);
 
-            const result = Math.random() < 0.5 ? 'heads' : 'tails';
-            const win = choice === result;
+        currentBalance =
+            Number(data.balance);
 
-            if (win) {
-                updateBalance(20);
-                alert(`Выпало: ${result === 'heads' ? 'Орёл' : 'Решка'}! Вы выиграли 20 DC! 🎉`);
-            } else {
-                alert(`Выпало: ${result === 'heads' ? 'Орёл' : 'Решка'}! Вы проиграли. 😢`);
-            }
-        }
+        updateBalance();
 
-        // Логика Игры 2: Угадай число
-        function playGuessNumber() {
-            const input = document.getElementById('guess-input');
-            const userGuess = parseInt(input.value);
 
-            if (!userGuess || userGuess < 1 || userGuess > 5) return alert("Введите число от 1 до 5!");
-            if (balance < 20) return alert("Недостаточно средств!");
+        resultElement.innerHTML =
+            `Сервер загадал: <b>${data.result}</b><br>
+             🎉 +${formatNumber(data.points)} DC`;
 
-            updateBalance(-20);
-            const secret = Math.floor(Math.random() * 5) + 1;
 
-            if (userGuess === secret) {
-                updateBalance(100);
-                alert(`Правильно! Число было ${secret}. Вы выиграли 100 DC! 🚀`);
-            } else {
-                alert(`Не угадали! Было загадано число ${secret}.`);
-            }
-            input.value = '';
-        }
+        addHistory(
+            "🔢 Угадай число",
+            `+${formatNumber(data.points)} DC`
+        );
 
-        // Отправка итоговых данных обратно боту
-        function exitAndSave() {
-            tg.sendData(JSON.stringify({
-                action: "update_balance",
-                final_balance: balance
-            }));
-        }
-    </script>
+
+        input.value = "";
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        resultElement.textContent =
+            "❌ Ошибка игры";
+    }
+}
+
+
+/*
+ * История в текущем открытии WebApp
+ */
+
+function addHistory(
+    game,
+    points
+) {
+
+    const history =
+        document.getElementById(
+            "history"
+        );
+
+
+    if (
+        history.textContent ===
+        "Пока нет игр"
+    ) {
+
+        history.innerHTML = "";
+    }
+
+
+    const item =
+        document.createElement("div");
+
+
+    item.className =
+        "history-item";
+
+
+    item.innerHTML = `
+        <span>${game}</span>
+        <b>${points}</b>
+    `;
+
+
+    history.prepend(item);
+}
+
+
+/*
+ * Запускаем
+ */
+
+loadProfile();
+
+</script>
+
 </body>
 </html>
