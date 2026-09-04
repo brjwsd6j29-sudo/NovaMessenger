@@ -1,631 +1,1215 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rocket Rise — Demo</title>
-
-<style>
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-body {
-    font-family: Arial, sans-serif;
-    background: radial-gradient(circle at 50% 20%, #182653 0%, #090b15 45%, #05060a 100%);
-    color: white;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.game {
-    width: 100%;
-    max-width: 450px;
-    min-height: 100vh;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-}
-
-.header {
-    text-align: center;
-    margin-bottom: 15px;
-}
-
-.logo {
-    font-size: 28px;
-    font-weight: 800;
-}
-
-.subtitle {
-    color: #777f99;
-    font-size: 13px;
-    margin-top: 5px;
-}
-
-.balance-box {
-    background: rgba(20, 24, 42, .8);
-    border: 1px solid #29304c;
-    border-radius: 18px;
-    padding: 15px;
-    text-align: center;
-    margin-bottom: 15px;
-}
-
-.balance-title {
-    color: #7d849d;
-    font-size: 12px;
-    text-transform: uppercase;
-}
-
-.balance {
-    font-size: 30px;
-    font-weight: 800;
-    margin-top: 5px;
-    color: #ffd700;
-}
-
-.arena {
-    position: relative;
-    height: 350px;
-    overflow: hidden;
-    border-radius: 24px;
-    border: 1px solid #28304e;
-    background: linear-gradient(180deg, rgba(21, 34, 75, .65), rgba(7, 10, 21, .9));
-}
-
-.star {
-    position: absolute;
-    width: 2px;
-    height: 2px;
-    background: white;
-    border-radius: 50%;
-    opacity: .6;
-}
-
-.moon {
-    position: absolute;
-    right: 35px;
-    top: 30px;
-    width: 55px;
-    height: 55px;
-    border-radius: 50%;
-    background: #e9efff;
-    box-shadow: 0 0 30px rgba(220,230,255,.35);
-}
-
-.multiplier {
-    position: absolute;
-    width: 100%;
-    text-align: center;
-    top: 35px;
-    font-size: 52px;
-    font-weight: 900;
-    z-index: 5;
-}
-
-.multiplier span {
-    color: #7d9cff;
-}
-
-.multiplier.crashed span {
-    color: #ff5c6c;
-}
-
-.earth {
-    position: absolute;
-    bottom: -170px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 500px;
-    height: 300px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 45% 25%, #3566d4, #101c50 55%, #080b1b 75%);
-    box-shadow: 0 -10px 50px rgba(70,120,255,.25);
-}
-
-.rocket-container {
-    position: absolute;
-    left: 50%;
-    bottom: 65px;
-    transform: translateX(-50%);
-    z-index: 10;
-    transition: bottom .1s linear;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.rocket {
-    font-size: 60px;
-    transform: rotate(-45deg);
-    filter: drop-shadow(0 0 15px rgba(255,120,40,.7));
-}
-
-.flame {
-    font-size: 35px;
-    margin-top: -20px;
-    animation: flame .15s infinite alternate;
-    display: none;
-}
-
-@keyframes flame {
-    from { transform: scale(.8); }
-    to { transform: scale(1.2); }
-}
-
-.status {
-    position: absolute;
-    bottom: 15px;
-    width: 100%;
-    text-align: center;
-    color: #858ca4;
-    font-size: 14px;
-    z-index: 20;
-}
-
-.controls {
-    margin-top: 15px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.bet-panel {
-    background: #111522;
-    border: 1px solid #252b42;
-    border-radius: 16px;
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.input-group {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.input-group label {
-    font-size: 12px;
-    color: #777f97;
-}
-
-.bet-input {
-    background: #181d2e;
-    border: 1px solid #2e3654;
-    border-radius: 8px;
-    color: white;
-    padding: 8px 12px;
-    font-weight: bold;
-    width: 120px;
-    text-align: right;
-    font-size: 16px;
-}
-
-.quick-buttons {
-    display: flex;
-    gap: 6px;
-}
-
-.btn-small {
-    flex: 1;
-    background: #1c2236;
-    border: 1px solid #2c3552;
-    color: #a2aabf;
-    padding: 6px;
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.btn-small:hover {
-    background: #28314d;
-    color: white;
-}
-
-button.action-btn {
-    width: 100%;
-    border: none;
-    border-radius: 16px;
-    padding: 16px;
-    font-size: 18px;
-    font-weight: 800;
-    cursor: pointer;
-    transition: background .2s, opacity .2s;
-}
-
-.btn-bet {
-    background: linear-gradient(135deg, #28a745, #208637);
-    color: white;
-}
-
-.btn-collect {
-    background: linear-gradient(135deg, #ff9800, #e65100);
-    color: white;
-    box-shadow: 0 5px 20px rgba(255,152,0,.3);
-}
-
-.action-btn:disabled {
-    background: #252a3a;
-    color: #58607a;
-    box-shadow: none;
-    cursor: not-allowed;
-}
-
-.auto-panel {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: #111522;
-    border: 1px solid #252b42;
-    border-radius: 12px;
-    padding: 8px 12px;
-    font-size: 13px;
-    color: #b7bdd1;
-}
-
-.switch {
-    position: relative;
-    display: inline-block;
-    width: 40px;
-    height: 20px;
-}
-
-.switch input { opacity: 0; width: 0; height: 0; }
-
-.slider {
-    position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-    background-color: #2b324d; transition: .3s; border-radius: 20px;
-}
-
-.slider:before {
-    position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px;
-    background-color: white; transition: .3s; border-radius: 50%;
-}
-
-input:checked + .slider { background-color: #526eff; }
-input:checked + .slider:before { transform: translateX(20px); }
-
-.info {
-    display: flex;
-    gap: 10px;
-    margin-top: 12px;
-}
-
-.info-box {
-    flex: 1;
-    background: #111522;
-    border: 1px solid #252b42;
-    border-radius: 14px;
-    padding: 10px;
-    text-align: center;
-}
-
-.info-title { color: #777f97; font-size: 11px; }
-.info-value { margin-top: 4px; font-weight: 800; }
-.countdown { color: #7885ff; }
-.crashed { color: #ff5c6c; }
-.success { color: #5ce39a; }
-</style>
-</head>
-
-<body>
-
-<div class="game">
-
-    <div class="header">
-        <div class="logo">🚀 Rocket Rise</div>
-        <div class="subtitle">Демо-игра на виртуальные монеты</div>
-    </div>
-
-    <div class="balance-box">
-        <div class="balance-title">Баланс монет</div>
-        <div class="balance" id="balance">100 000</div>
-    </div>
-
-    <div class="arena">
-        <div class="moon"></div>
-        <div class="star" style="left:10%;top:15%"></div>
-        <div class="star" style="left:20%;top:35%"></div>
-        <div class="star" style="left:35%;top:20%"></div>
-        <div class="star" style="left:55%;top:28%"></div>
-        <div class="star" style="left:70%;top:13%"></div>
-        <div class="star" style="left:82%;top:42%"></div>
-
-        <div class="multiplier" id="multiplierContainer">
-            <span id="multiplier">1.00x</span>
-        </div>
-
-        <div class="rocket-container" id="rocketContainer">
-            <div class="rocket">🚀</div>
-            <div class="flame" id="flame">🔥</div>
-        </div>
-
-        <div class="earth"></div>
-        <div class="status" id="status">Сделайте ставку для участия</div>
-    </div>
-
-    <div class="controls">
-        <div class="bet-panel">
-            <div class="input-group">
-                <label for="betAmount">СУММА СТАВКИ:</label>
-                <input type="number" id="betAmount" class="bet-input" value="1000" min="100" step="100">
-            </div>
-            <div class="quick-buttons">
-                <button class="btn-small" onclick="setBet('min')">МИН</button>
-                <button class="btn-small" onclick="setBet('half')">1/2</button>
-                <button class="btn-small" onclick="setBet('double')">X2</button>
-                <button class="btn-small" onclick="setBet('max')">МАКС</button>
-            </div>
-        </div>
-
-        <div class="auto-panel">
-            <span>Автовывод на:</span>
-            <input type="number" id="autoTarget" class="bet-input" value="2.00" step="0.1" min="1.1" style="width: 70px; padding: 4px 8px;">
-            <label class="switch">
-                <input type="checkbox" id="autoToggle">
-                <span class="slider"></span>
-            </label>
-        </div>
-
-        <button class="action-btn btn-bet" id="mainBtn" onclick="handleMainAction()">
-            ПОСТАВИТЬ СТАВКУ
-        </button>
-    </div>
-
-    <div class="info">
-        <div class="info-box">
-            <div class="info-title">РАУНД</div>
-            <div class="info-value" id="round">1</div>
-        </div>
-        <div class="info-box">
-            <div class="info-title">СТАТУС</div>
-            <div class="info-value countdown" id="gameStatus">ОЖИДАНИЕ</div>
-        </div>
-    </div>
-
-</div>
-
-<script>
-let balance = 100000;
-let currentBet = 0;
-let multiplier = 1.00;
-let crashPoint = 0;
-let round = 1;
-
-// Состояния: "WAITING", "COUNTDOWN", "FLYING", "FINISHED"
-let gameState = "WAITING"; 
-let isBetPlaced = false;
-let hasCashedOut = false;
-
-let startTime = 0;
-let animationFrame = null;
-let countdownTimer = null;
-
-const balanceEl = document.getElementById("balance");
-const multiplierEl = document.getElementById("multiplier");
-const multiplierContainer = document.getElementById("multiplierContainer");
-const rocketContainer = document.getElementById("rocketContainer");
-const flameEl = document.getElementById("flame");
-const statusEl = document.getElementById("status");
-const gameStatusEl = document.getElementById("gameStatus");
-const mainBtn = document.getElementById("mainBtn");
-const betInput = document.getElementById("betAmount");
-const autoTargetInput = document.getElementById("autoTarget");
-const autoToggle = document.getElementById("autoToggle");
-
-function formatNumber(num) {
-    return Math.floor(num).toLocaleString("ru-RU");
-}
-
-function updateBalanceUI() {
-    balanceEl.textContent = formatNumber(balance);
-}
-
-function setBet(type) {
-    if (gameState === "FLYING") return;
-    let val = parseInt(betInput.value) || 0;
-    
-    if (type === 'min') val = 100;
-    else if (type === 'half') val = Math.max(100, Math.floor(val / 2));
-    else if (type === 'double') val = Math.min(balance, val * 2);
-    else if (type === 'max') val = balance;
-
-    betInput.value = val;
-}
-
-// Генерация точки взрыва (Crash Point)
-function generateCrashPoint() {
-    const rand = Math.random();
-    // 5% шанс моментального краша на 1.00x
-    if (rand < 0.05) return 1.00; 
-    
-    // Алгоритм вероятности (чем выше X, тем ниже шанс)
-    const e = 101;
-    return Math.max(1.01, parseFloat((e / (101 - rand * 100)).toFixed(2)));
-}
-
-function handleMainAction() {
-    if (gameState === "WAITING" || gameState === "COUNTDOWN") {
-        placeBet();
-    } else if (gameState === "FLYING" && isBetPlaced && !hasCashedOut) {
-        cashOut();
-    }
-}
-
-function placeBet() {
-    const amount = parseInt(betInput.value);
-
-    if (isNaN(amount) || amount < 100) {
-        alert("Минимальная ставка: 100 монет");
-        return;
-    }
-    if (amount > balance) {
-        alert("Недостаточно монет на балансе!");
-        return;
-    }
-
-    currentBet = amount;
-    balance -= currentBet;
-    updateBalanceUI();
-    isBetPlaced = true;
-
-    betInput.disabled = true;
-    mainBtn.disabled = true;
-    mainBtn.textContent = "СТАВКА ПРИНЯТА";
-    statusEl.textContent = "Ожидание старта раунда...";
-
-    if (gameState === "WAITING") {
-        startCountdown();
-    }
-}
-
-function startCountdown() {
-    gameState = "COUNTDOWN";
-    gameStatusEl.textContent = "ОТСЧЁТ";
-    gameStatusEl.className = "info-value countdown";
-
-    let time = 5;
-    statusEl.innerHTML = `Взлёт через <b>${time}</b> сек.`;
-
-    countdownTimer = setInterval(() => {
-        time--;
-        if (time > 0) {
-            statusEl.innerHTML = `Взлёт через <b>${time}</b> сек.`;
-        } else {
-            clearInterval(countdownTimer);
-            startFlight();
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lira Game — Игровой Telegram бот</title>
+    <meta name="description" content="Lira Game — игровой Telegram бот с лирами, играми, профилем, бонусами и соревнованиями.">
+    <meta name="theme-color" content="#08090d">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-    }, 1000);
-}
-
-function startFlight() {
-    gameState = "FLYING";
-    hasCashedOut = false;
-    multiplier = 1.00;
-    crashPoint = generateCrashPoint();
-    startTime = Date.now();
-
-    multiplierContainer.classList.remove("crashed");
-    gameStatusEl.textContent = "ПОЛЁТ";
-    gameStatusEl.className = "info-value success";
-    flameEl.style.display = "block";
-
-    if (isBetPlaced) {
-        mainBtn.disabled = false;
-        mainBtn.className = "action-btn btn-collect";
-        mainBtn.textContent = "ЗАБРАТЬ";
-        statusEl.textContent = "🚀 Ракета летит! Нажмите «Забрать»";
-    } else {
-        mainBtn.disabled = true;
-        mainBtn.className = "action-btn btn-bet";
-        mainBtn.textContent = "РАУНД ИДЁТ";
-        statusEl.textContent = "Наблюдение за полётом...";
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background:
+                radial-gradient(circle at 20% 10%, rgba(122, 76, 255, .18), transparent 30%),
+                radial-gradient(circle at 80% 30%, rgba(0, 190, 255, .10), transparent 30%),
+                #08090d;
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+        button {
+            font-family: inherit;
+        }
+        /* =========================
+           BACKGROUND
+        ========================= */
+        .background {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: .35;
+            animation: float 9s ease-in-out infinite;
+        }
+        .orb.one {
+            width: 260px;
+            height: 260px;
+            background: #743cff;
+            left: -100px;
+            top: 180px;
+        }
+        .orb.two {
+            width: 220px;
+            height: 220px;
+            background: #087cff;
+            right: -90px;
+            top: 520px;
+            animation-delay: 2s;
+        }
+        .orb.three {
+            width: 180px;
+            height: 180px;
+            background: #b13cff;
+            left: 40%;
+            top: 1000px;
+            animation-delay: 4s;
+        }
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) scale(1);
+            }
+            50% {
+                transform: translateY(-35px) scale(1.08);
+            }
+        }
+        /* =========================
+           NAVBAR
+        ========================= */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+            background: rgba(8, 9, 13, .72);
+            border-bottom: 1px solid rgba(255,255,255,.06);
+        }
+        .nav-inner {
+            max-width: 1180px;
+            margin: auto;
+            height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 20px;
+            font-weight: 900;
+            letter-spacing: -.5px;
+        }
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #7c3cff, #4c6fff);
+            box-shadow: 0 10px 35px rgba(108, 63, 255, .35);
+        }
+        .nav-links {
+            display: flex;
+            gap: 28px;
+            color: #a6a8b3;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .nav-links a {
+            transition: .2s;
+        }
+        .nav-links a:hover {
+            color: white;
+        }
+        .nav-button {
+            padding: 11px 17px;
+            border-radius: 12px;
+            background: rgba(255,255,255,.08);
+            border: 1px solid rgba(255,255,255,.08);
+            font-size: 13px;
+            font-weight: 800;
+        }
+        /* =========================
+           HERO
+        ========================= */
+        .hero {
+            max-width: 1180px;
+            margin: auto;
+            min-height: 700px;
+            padding: 100px 20px 70px;
+            display: grid;
+            grid-template-columns: 1.1fr .9fr;
+            align-items: center;
+            gap: 50px;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 13px;
+            border-radius: 100px;
+            background: rgba(124, 60, 255, .12);
+            border: 1px solid rgba(124, 60, 255, .3);
+            color: #c4b0ff;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 25px;
+        }
+        .badge-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #8d62ff;
+            box-shadow: 0 0 15px #8d62ff;
+        }
+        .hero h1 {
+            font-size: clamp(48px, 7vw, 84px);
+            line-height: .95;
+            letter-spacing: -4px;
+            font-weight: 950;
+            margin-bottom: 25px;
+        }
+        .gradient-text {
+            background: linear-gradient(100deg, #fff, #a879ff, #6e8dff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .hero p {
+            max-width: 650px;
+            color: #989aa7;
+            line-height: 1.7;
+            font-size: 17px;
+            margin-bottom: 32px;
+        }
+        .hero-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .primary-button,
+        .secondary-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            min-height: 50px;
+            padding: 0 22px;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 850;
+            transition: .25s;
+        }
+        .primary-button {
+            background: linear-gradient(135deg, #7c3cff, #536fff);
+            box-shadow: 0 12px 40px rgba(101, 65, 255, .3);
+        }
+        .primary-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 17px 50px rgba(101, 65, 255, .45);
+        }
+        .secondary-button {
+            background: rgba(255,255,255,.055);
+            border: 1px solid rgba(255,255,255,.09);
+        }
+        .secondary-button:hover {
+            background: rgba(255,255,255,.1);
+            transform: translateY(-3px);
+        }
+        /* =========================
+           PHONE CARD
+        ========================= */
+        .hero-visual {
+            display: flex;
+            justify-content: center;
+        }
+        .phone {
+            width: 300px;
+            padding: 10px;
+            border-radius: 38px;
+            background: linear-gradient(145deg, #22242d, #0d0e13);
+            border: 1px solid rgba(255,255,255,.12);
+            box-shadow:
+                0 40px 100px rgba(0,0,0,.55),
+                0 0 80px rgba(110,70,255,.15);
+            transform: rotate(3deg);
+            animation: phoneFloat 5s ease-in-out infinite;
+        }
+        @keyframes phoneFloat {
+            0%, 100% {
+                transform: rotate(3deg) translateY(0);
+            }
+            50% {
+                transform: rotate(1deg) translateY(-12px);
+            }
+        }
+        .phone-screen {
+            min-height: 550px;
+            border-radius: 29px;
+            padding: 20px;
+            background:
+                radial-gradient(circle at top, rgba(117, 72, 255, .25), transparent 35%),
+                #101116;
+            overflow: hidden;
+        }
+        .phone-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            color: #aaa;
+            font-size: 12px;
+        }
+        .profile-mini {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #7c3cff, #4c7aff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 19px;
+        }
+        .mini-name {
+            font-weight: 800;
+            color: white;
+        }
+        .mini-status {
+            color: #777a87;
+            font-size: 10px;
+            margin-top: 2px;
+        }
+        .balance {
+            padding: 20px;
+            border-radius: 22px;
+            background: linear-gradient(145deg, rgba(124,60,255,.22), rgba(70,100,255,.08));
+            border: 1px solid rgba(145,120,255,.18);
+            margin-bottom: 14px;
+        }
+        .balance-label {
+            color: #999bab;
+            font-size: 11px;
+            margin-bottom: 8px;
+        }
+        .balance-value {
+            font-size: 30px;
+            font-weight: 950;
+        }
+        .lira {
+            color: #a879ff;
+        }
+        .game-mini {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 9px;
+        }
+        .game-box {
+            padding: 15px;
+            border-radius: 17px;
+            background: rgba(255,255,255,.045);
+            border: 1px solid rgba(255,255,255,.06);
+        }
+        .game-box-icon {
+            font-size: 25px;
+            margin-bottom: 8px;
+        }
+        .game-box-name {
+            font-size: 12px;
+            font-weight: 800;
+        }
+        .game-box-desc {
+            font-size: 9px;
+            color: #777a87;
+            margin-top: 3px;
+        }
+        /* =========================
+           SECTION
+        ========================= */
+        section {
+            max-width: 1180px;
+            margin: auto;
+            padding: 80px 20px;
+        }
+        .section-head {
+            margin-bottom: 35px;
+        }
+        .section-label {
+            color: #8c65ff;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 900;
+            margin-bottom: 10px;
+        }
+        .section-title {
+            font-size: clamp(30px, 5vw, 48px);
+            letter-spacing: -2px;
+            font-weight: 950;
+        }
+        .section-description {
+            color: #858792;
+            max-width: 650px;
+            line-height: 1.6;
+            margin-top: 12px;
+        }
+        /* =========================
+           STATS
+        ========================= */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+        .stat {
+            padding: 25px;
+            border-radius: 20px;
+            background: rgba(255,255,255,.035);
+            border: 1px solid rgba(255,255,255,.065);
+        }
+        .stat-number {
+            font-size: 30px;
+            font-weight: 950;
+            margin-bottom: 5px;
+        }
+        .stat-name {
+            color: #777a86;
+            font-size: 13px;
+        }
+        /* =========================
+           GAMES
+        ========================= */
+        .category {
+            margin-top: 45px;
+        }
+        .category-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            font-size: 19px;
+            font-weight: 900;
+        }
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+        .game-card {
+            position: relative;
+            overflow: hidden;
+            padding: 22px;
+            min-height: 155px;
+            border-radius: 20px;
+            background: rgba(255,255,255,.035);
+            border: 1px solid rgba(255,255,255,.065);
+            transition: .3s;
+        }
+        .game-card::before {
+            content: "";
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            right: -50px;
+            top: -50px;
+            background: #7546ff;
+            filter: blur(55px);
+            opacity: 0;
+            transition: .3s;
+        }
+        .game-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(138,100,255,.35);
+            background: rgba(255,255,255,.055);
+        }
+        .game-card:hover::before {
+            opacity: .35;
+        }
+        .game-icon {
+            position: relative;
+            font-size: 30px;
+            margin-bottom: 15px;
+        }
+        .game-name {
+            position: relative;
+            font-size: 15px;
+            font-weight: 900;
+        }
+        .game-command {
+            position: relative;
+            color: #777a87;
+            font-size: 11px;
+            margin-top: 7px;
+            font-family: monospace;
+        }
+        /* =========================
+           COMMANDS
+        ========================= */
+        .commands-box {
+            border-radius: 25px;
+            overflow: hidden;
+            background: rgba(255,255,255,.035);
+            border: 1px solid rgba(255,255,255,.07);
+        }
+        .command-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            padding: 19px 23px;
+            border-bottom: 1px solid rgba(255,255,255,.05);
+        }
+        .command-row:last-child {
+            border-bottom: 0;
+        }
+        .command-name {
+            font-weight: 850;
+        }
+        .command-desc {
+            color: #777a87;
+            font-size: 13px;
+            text-align: right;
+        }
+        code {
+            color: #ad91ff;
+            background: rgba(124,60,255,.09);
+            padding: 5px 8px;
+            border-radius: 7px;
+        }
+        /* =========================
+           CTA
+        ========================= */
+        .cta {
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+            padding: 70px 25px;
+            border-radius: 30px;
+            background:
+                radial-gradient(circle at 50% 0%, rgba(124,60,255,.3), transparent 55%),
+                rgba(255,255,255,.035);
+            border: 1px solid rgba(255,255,255,.08);
+        }
+        .cta h2 {
+            font-size: clamp(32px, 6vw, 55px);
+            letter-spacing: -2px;
+            font-weight: 950;
+            margin-bottom: 15px;
+        }
+        .cta p {
+            color: #858792;
+            margin-bottom: 28px;
+        }
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        /* =========================
+           FOOTER
+        ========================= */
+        footer {
+            max-width: 1180px;
+            margin: auto;
+            padding: 30px 20px 50px;
+            border-top: 1px solid rgba(255,255,255,.06);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #666975;
+            font-size: 12px;
+        }
+        .footer-links {
+            display: flex;
+            gap: 20px;
+        }
+        .footer-links a:hover {
+            color: white;
+        }
+        /* =========================
+           SCROLL ANIMATION
+        ========================= */
+        .reveal {
+            opacity: 0;
+            transform: translateY(25px);
+            transition: .7s ease;
+        }
+        .reveal.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* =========================
+           MOBILE
+        ========================= */
+        @media (max-width: 900px) {
+            .nav-links {
+                display: none;
+            }
+            .hero {
+                grid-template-columns: 1fr;
+                text-align: center;
+                padding-top: 70px;
+            }
+            .hero p {
+                margin-left: auto;
+                margin-right: auto;
+            }
+            .hero-buttons {
+                justify-content: center;
+            }
+            .hero-visual {
+                margin-top: 20px;
+            }
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .games-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 520px) {
+            .nav-inner {
+                height: 64px;
+            }
+            .nav-button {
+                padding: 9px 12px;
+            }
+            .hero {
+                min-height: auto;
+                padding-top: 65px;
+            }
+            .hero h1 {
+                font-size: 52px;
+                letter-spacing: -3px;
+            }
+            .hero p {
+                font-size: 15px;
+            }
+            .phone {
+                width: 270px;
+            }
+            .stats {
+                grid-template-columns: 1fr 1fr;
+            }
+            .stat {
+                padding: 19px;
+            }
+            .stat-number {
+                font-size: 24px;
+            }
+            .games-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .game-card {
+                padding: 17px;
+                min-height: 140px;
+            }
+            .command-row {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 7px;
+            }
+            .command-desc {
+                text-align: left;
+            }
+            footer {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="background">
+    <div class="orb one"></div>
+    <div class="orb two"></div>
+    <div class="orb three"></div>
+</div>
+<!-- =========================
+     NAVBAR
+========================= -->
+<header class="navbar">
+    <div class="nav-inner">
+        <a href="#" class="logo">
+            <span class="logo-icon">💎</span>
+            <span>Lira Game</span>
+        </a>
+        <nav class="nav-links">
+            <a href="#games">Игры</a>
+            <a href="#commands">Команды</a>
+            <a href="#about">О боте</a>
+        </nav>
+        <a
+            href="https://t.me/LiraGame_Bot"
+            target="_blank"
+            class="nav-button"
+        >
+            Запустить бота
+        </a>
+    </div>
+</header>
+<!-- =========================
+     HERO
+========================= -->
+<main>
+<section class="hero" id="about">
+    <div class="hero-content">
+        <div class="badge">
+            <span class="badge-dot"></span>
+            Lira Game работает в Telegram
+        </div>
+        <h1>
+            Играй.<br>
+            <span class="gradient-text">Выигрывай.</span><br>
+            Забирай лиры.
+        </h1>
+        <p>
+            Lira Game — игровой Telegram-бот с виртуальной валютой,
+            большим выбором игр, бонусами, профилем и соревнованиями
+            между игроками.
+        </p>
+        <div class="hero-buttons">
+            <a
+                href="https://t.me/LiraGame_Bot"
+                target="_blank"
+                class="primary-button"
+            >
+                🚀 Запустить Lira Game
+            </a>
+            <a
+                href="https://t.me/LiraUltimateChat"
+                target="_blank"
+                class="secondary-button"
+            >
+                👥 Игровой чат
+            </a>
+        </div>
+    </div>
+    <div class="hero-visual">
+        <div class="phone">
+            <div class="phone-screen">
+                <div class="phone-top">
+                    <div class="profile-mini">
+                        <div class="avatar">
+                            💎
+                        </div>
+                        <div>
+                            <div class="mini-name">
+                                Lira Game
+                            </div>
+                            <div class="mini-status">
+                                игровой бот
+                            </div>
+                        </div>
+                    </div>
+                    <span>● online</span>
+                </div>
+                <div class="balance">
+                    <div class="balance-label">
+                        💰 Ваш баланс
+                    </div>
+                    <div class="balance-value">
+                        125 000 <span class="lira">₺</span>
+                    </div>
+                </div>
+                <div class="game-mini">
+                    <div class="game-box">
+                        <div class="game-box-icon">🎡</div>
+                        <div class="game-box-name">Х50</div>
+                        <div class="game-box-desc">множители</div>
+                    </div>
+                    <div class="game-box">
+                        <div class="game-box-icon">💣</div>
+                        <div class="game-box-name">Мины</div>
+                        <div class="game-box-desc">риск</div>
+                    </div>
+                    <div class="game-box">
+                        <div class="game-box-icon">🪙</div>
+                        <div class="game-box-name">Флип</div>
+                        <div class="game-box-desc">орёл / решка</div>
+                    </div>
+                    <div class="game-box">
+                        <div class="game-box-icon">🃏</div>
+                        <div class="game-box-name">Блэкджек</div>
+                        <div class="game-box-desc">карточная игра</div>
+                    </div>
+                    <div class="game-box">
+                        <div class="game-box-icon">🎯</div>
+                        <div class="game-box-name">Дартс</div>
+                        <div class="game-box-desc">эмодзи игра</div>
+                    </div>
+                    <div class="game-box">
+                        <div class="game-box-icon">🚀</div>
+                        <div class="game-box-name">Оверго</div>
+                        <div class="game-box-desc">коэффициент</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- =========================
+     STATS
+========================= -->
+<section class="reveal">
+    <div class="section-head">
+        <div class="section-label">Lira Game</div>
+        <h2 class="section-title">Всё в одном боте</h2>
+        <p class="section-description">
+            Баланс, игры, бонусы, профиль и соревнования —
+            всё доступно прямо в Telegram.
+        </p>
+    </div>
+    <div class="stats">
+        <div class="stat">
+            <div class="stat-number">20+</div>
+            <div class="stat-name">игровых режимов</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number">₺</div>
+            <div class="stat-name">виртуальная валюта</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number">24/7</div>
+            <div class="stat-name">доступ к боту</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number">⚡</div>
+            <div class="stat-name">быстрые игры</div>
+        </div>
+    </div>
+</section>
+<!-- =========================
+     GAMES
+========================= -->
+<section id="games">
+    <div class="section-head reveal">
+        <div class="section-label">Игровой зал</div>
+        <h2 class="section-title">Выбирай свою игру</h2>
+        <p class="section-description">
+            От классических игр до рискованных режимов
+            с коэффициентами.
+        </p>
+    </div>
+    <!-- PREMIUM -->
+    <div class="category reveal">
+        <div class="category-title">
+            💎 Премиум игры
+        </div>
+        <div class="games-grid">
+            <div class="game-card">
+                <div class="game-icon">🎡</div>
+                <div class="game-name">Х50</div>
+                <div class="game-command">
+                    Х50 [ставка] [цвет]
+                </div>
+            </div>
+            <div class="game-card">
+                <div class="game-icon">🎡</div>
+                <div class="game-name">Мегавил</div>
+                <div class="game-command">
+                    Мегавил [ставка] [сектор]
+                </div>
+            </div>
+            <div class="game-card">
+                <div class="game-icon">🎟️</div>
+                <div class="game-name">Джекпот</div>
+                <div class="game-command">
+                    Джекпот [ставка]
+                </div>
+            </div>
+            <div class="game-card">
+                <div class="game-icon">🫟</div>
+                <div class="game-name">Колесо</div>
+                <div class="game-command">
+                    Колесо [ставка]
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- CARDS -->
+    <div class="category reveal">
+        <div class="category-title">
+            🃏 Карточные игры
+        </div>
+        <div class="games-grid">
+            <div class="game-card">
+                <div class="game-icon">🧮</div>
+                <div class="game-name">Хило</div>
+                <div class="game-command">
+                    Хило [ставка]
+                </div>
+            </div>
+            <div class="game-card">
+                <div class="game-icon">🎴</div>
+                <div class="game-name">Бж</div>
+                <div class="game-command">
+                    Бж [ставка]
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- MINES -->
+    <div class="category reveal">
+        <div class="category-title">
+            🔮 Игры с минами
+        </div>
+        <div class="games-grid">
+            <div class="game-card">
+                <div class="game-icon">🗼</div>
+                <div class="game-name">Башня</div>
+                <div class="game-command">
+                    Башня [ставка] [мины 1-4]
+                </div>
+            </div>
+            <div class="game-card">
+                <div class="game-icon">💣</div>
+                <div class="game-name">Мины</div>
+                <div class="game-command">
+                    Мины [ставка] [мины 2-24]
+                </div>
+            </div>
+            <div class="game-card">
+                <div class="game-icon">🌉</div>
+                <div class="game-name">Мосты</div>
+                <div class="game-command">
+                    Мосты [ставка]
+                </div>
+            </div>
+            <div class="game-card">
+                <div class="game-icon">🏴‍☠️</div>
+                <div class="game-name">Пират</div>
+                <div class="game-command">
+                    Пират [ставка] [мины 1-2]
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- EMOJI -->
+    <div class="category reveal">
+        <div class="category-title">
+            🧩 Эмодзи игры
+        </div>
+        <div class="games-grid">
+            <div class="game-card">
+                <div class="game-icon">🎯</div>
+                <div class="game-name">Дартс</div>
+                <div class="game-command">
+                    Дартс [ставка]
+                </div>
+            </div>
+            <div class="game-card">
+                <div class="game-icon">🎳</div>
+                <div class="game-name">Боулинг</div>
+                <div class="game-command">
+                    Боулинг [ставка]
+                </div>
+            </div>
+            <div class="game-card">
+                <div class="game-icon">🎰</div>
+                <div class="game-name">Спин</div>
+                <div class="game-command">
+                    Спин [ставка]
+                </div>
+            </div>
+            <div class="game-card">
+                <div class="game-icon">🎲</div>
+                <div class="game-name">Кубик</div>
+                <div class="game-command">
+                    Кубик [ставка]
+                </div>
+            </div>
+            <div class="game-card">
+                <div class="game-icon">🏀</div>
+                <div class="game-name">Баскетбол</div>
+                <div class="game-command">
+                    Баскетбол [ставка]
+                </div>
+            </div>
+            <div class="game-card">
+                <div class="game-icon">⚽️</div>
+                <div class="game-name">Футбол</div>
+                <div class="game-command">
+                    Футбол [ставка]
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- RISK -->
+    <div class="category reveal">
+        <div class="category-title">
+            💠 Риск игры
+        </div>
+        <div class="games-grid">
+            <div class="game-card">
+                <div class="game-icon">⚠️</div>
+                <div class="game-name">Вилин</div>
+                <div class="game-command">
+                    Риск / всё или ничего
+                </div>
+            </div>
+            <div class="game-card">
+                <div class="game-icon">🚀</div>
+                <div class="game-name">Оверго</div>
+                <div class="game-command">
+                    Оверго [ставка] [х от 1.01х]
+                </div>
+            </div>
+            <div class="game-card">
+                <div class="game-icon">🪙</div>
+                <div class="game-name">Флип</div>
+                <div class="game-command">
+                    Флип [ставка]
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- GROUP -->
+    <div class="category reveal">
+        <div class="category-title">
+            👥 Групповая игра
+        </div>
+        <div class="games-grid">
+            <div class="game-card">
+                <div class="game-icon">🔫</div>
+                <div class="game-name">Рул</div>
+                <div class="game-command">
+                    Рул [ставка] [исход]
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- NORMAL -->
+    <div class="category reveal">
+        <div class="category-title">
+            ⛩️ Обычные игры
+        </div>
+        <div class="games-grid">
+            <div class="game-card">
+                <div class="game-icon">🏹</div>
+                <div class="game-name">Охота</div>
+                <div class="game-command">
+                    Охота [ставка]
+                </div>
+            </div>
+            <div class="game-card">
+                <div class="game-icon">🍬</div>
+                <div class="game-name">Слоты</div>
+                <div class="game-command">
+                    Слоты [ставка]
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- =========================
+     COMMANDS
+========================= -->
+<section id="commands">
+    <div class="section-head reveal">
+        <div class="section-label">Команды</div>
+        <h2 class="section-title">Основные возможности</h2>
+        <p class="section-description">
+            Большинство действий выполняется обычными сообщениями
+            прямо в Telegram.
+        </p>
+    </div>
+    <div class="commands-box reveal">
+        <div class="command-row">
+            <div class="command-name">
+                💰 Баланс
+            </div>
+            <div class="command-desc">
+                <code>Б</code>
+            </div>
+        </div>
+        <div class="command-row">
+            <div class="command-name">
+                👤 Профиль
+            </div>
+            <div class="command-desc">
+                <code>Профиль</code>
+            </div>
+        </div>
+        <div class="command-row">
+            <div class="command-name">
+                🎁 Бонус
+            </div>
+            <div class="command-desc">
+                Получить бонус
+            </div>
+        </div>
+        <div class="command-row">
+            <div class="command-name">
+                💝 Халява
+            </div>
+            <div class="command-desc">
+                Ежедневный розыгрыш
+            </div>
+        </div>
+        <div class="command-row">
+            <div class="command-name">
+                🏆 Чемпионы дня
+            </div>
+            <div class="command-desc">
+                <code>Чд</code>
+            </div>
+        </div>
+        <div class="command-row">
+            <div class="command-name">
+                🤝 Перевод
+            </div>
+            <div class="command-desc">
+                <code>Дать [сумма]</code>
+            </div>
+        </div>
+        <div class="command-row">
+            <div class="command-name">
+                🎟 Промокод
+            </div>
+            <div class="command-desc">
+                <code>Промо [код]</code>
+            </div>
+        </div>
+        <div class="command-row">
+            <div class="command-name">
+                🆘 Помощь
+            </div>
+            <div class="command-desc">
+                <code>Помощь</code>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- =========================
+     CTA
+========================= -->
+<section>
+    <div class="cta reveal">
+        <h2>
+            Готов к игре?
+        </h2>
+        <p>
+            Открывай Telegram и присоединяйся к Lira Game.
+        </p>
+        <div class="cta-buttons">
+            <a
+                href="https://t.me/LiraGame_Bot"
+                target="_blank"
+                class="primary-button"
+            >
+                🚀 Открыть Lira Game
+            </a>
+            <a
+                href="https://t.me/LiraGameNews"
+                target="_blank"
+                class="secondary-button"
+            >
+                📢 Новости проекта
+            </a>
+        </div>
+    </div>
+</section>
+</main>
+<!-- =========================
+     FOOTER
+========================= -->
+<footer>
+    <div>
+        © 2026 Lira Game
+    </div>
+    <div class="footer-links">
+        <a
+            href="https://t.me/LiraGameNews"
+            target="_blank"
+        >
+            Новости
+        </a>
+        <a
+            href="https://t.me/LiraUltimateChat"
+            target="_blank"
+        >
+            Чат
+        </a>
+        <a
+            href="https://t.me/azvaren"
+            target="_blank"
+        >
+            Разработчик
+        </a>
+    </div>
+</footer>
+<script>
+    /* =========================
+       SCROLL REVEAL
+    ========================= */
+    const elements = document.querySelectorAll(".reveal");
+    const observer = new IntersectionObserver(
+        (entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("show");
+                }
+            });
+        },
+        {
+            threshold: 0.12
+        }
+    );
+    elements.forEach(element => {
+        observer.observe(element);
+    });
+    /* =========================
+       NUMBER COUNTER
+    ========================= */
+    function animateNumber(element, target, suffix = "") {
+        let current = 0;
+        const duration = 900;
+        const start = performance.now();
+        function update(time) {
+            const progress = Math.min(
+                (time - start) / duration,
+                1
+            );
+            const eased = 1 - Math.pow(1 - progress, 3);
+            current = Math.floor(target * eased);
+            element.textContent =
+                current + suffix;
+            if (progress < 1) {
+                requestAnimationFrame(update);
+            }
+        }
+        requestAnimationFrame(update);
     }
-
-    animationFrame = requestAnimationFrame(updateFlight);
-}
-
-function updateFlight() {
-    if (gameState !== "FLYING") return;
-
-    const elapsed = (Date.now() - startTime) / 1000;
-    
-    // Рост множителя от времени
-    multiplier = 1 + Math.pow(elapsed, 1.2) * 0.15;
-
-    // Проверка Автовывода
-    const autoVal = parseFloat(autoTargetInput.value);
-    if (autoToggle.checked && isBetPlaced && !hasCashedOut && multiplier >= autoVal) {
-        cashOut();
-    }
-
-    // Проверка на взрыв
-    if (multiplier >= crashPoint) {
-        multiplier = crashPoint;
-        multiplierEl.textContent = multiplier.toFixed(2) + "x";
-        crash();
-        return;
-    }
-
-    multiplierEl.textContent = multiplier.toFixed(2) + "x";
-
-    // Анимация подъёма ракеты
-    const progressHeight = Math.min(220, elapsed * 25);
-    rocketContainer.style.bottom = (65 + progressHeight) + "px";
-
-    animationFrame = requestAnimationFrame(updateFlight);
-}
-
-function cashOut() {
-    if (hasCashedOut || gameState !== "FLYING") return;
-
-    hasCashedOut = true;
-    const winAmount = Math.floor(currentBet * multiplier);
-    balance += winAmount;
-    updateBalanceUI();
-
-    mainBtn.disabled = true;
-    mainBtn.textContent = "УСПЕШНО!";
-    statusEl.innerHTML = `✨ Забрано <b>+${formatNumber(winAmount)}</b> монет (${multiplier.toFixed(2)}x)`;
-}
-
-function crash() {
-    gameState = "FINISHED";
-    cancelAnimationFrame(animationFrame);
-
-    flameEl.style.display = "none";
-    multiplierContainer.classList.add("crashed");
-
-    gameStatusEl.textContent = "ВЗРЫВ";
-    gameStatusEl.className = "info-value crashed";
-
-    if (isBetPlaced && !hasCashedOut) {
-        statusEl.innerHTML = `💥 Ракета взорвалась на <b>${multiplier.toFixed(2)}x</b>. Ставка сгорела!`;
-    } else if (hasCashedOut) {
-        statusEl.innerHTML = `💥 Ракета взорвалась на <b>${multiplier.toFixed(2)}x</b>. Вы успели забрали!`;
-    } else {
-        statusEl.innerHTML = `💥 Полёт завершён на <b>${multiplier.toFixed(2)}x</b>`;
-    }
-
-    mainBtn.disabled = true;
-    mainBtn.className = "action-btn btn-bet";
-    mainBtn.textContent = "ПОЛЁТ ЗАВЕРШЁН";
-
-    setTimeout(resetRound, 3000);
-}
-
-function resetRound() {
-    round++;
-    document.getElementById("round").textContent = round;
-
-    gameState = "WAITING";
-    isBetPlaced = false;
-    hasCashedOut = false;
-
-    rocketContainer.style.bottom = "65px";
-    multiplierEl.textContent = "1.00x";
-    multiplierContainer.classList.remove("crashed");
-
-    betInput.disabled = false;
-    mainBtn.disabled = false;
-    mainBtn.className = "action-btn btn-bet";
-    mainBtn.textContent = "ПОСТАВИТЬ СТАВКУ";
-    
-    gameStatusEl.textContent = "ОЖИДАНИЕ";
-    gameStatusEl.className = "info-value countdown";
-    statusEl.textContent = "Сделайте ставку для участия";
-}
-
-updateBalanceUI();
+    /* =========================
+       TELEGRAM APP DETECTION
+    ========================= */
+    document.querySelectorAll(
+        'a[href*="t.me"]'
+    ).forEach(link => {
+        link.addEventListener("click", () => {
+            console.log(
+                "Открываем Telegram:",
+                link.href
+            );
+        });
+    });
 </script>
-
 </body>
 </html>
