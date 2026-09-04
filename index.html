@@ -2,462 +2,324 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Lira Games WebApp</title>
-    <!-- Telegram WebApp SDK -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LIRA Games Log & Control Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #12131C;
-            --card-bg: #1E202E;
-            --accent-color: #0088cc;
-            --accent-hover: #00A3E0;
-            --text-color: #FFFFFF;
-            --text-secondary: #8E92A8;
-            --win-color: #2ECC71;
-            --lose-color: #E74C3C;
-            --gold-color: #F1C40F;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            user-select: none;
+            --bg-color: #0b0e14;
+            --card-bg: #151a23;
+            --accent-color: #00f2fe;
+            --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --text-color: #e0e6ed;
+            --text-muted: #8a99ad;
+            --border-color: #232d3f;
         }
 
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-bottom: 50px;
         }
 
-        /* Заглушка для обычного браузера */
-        #access-denied {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            height: 100vh;
-            padding: 20px;
+        .navbar {
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
         }
 
-        #access-denied div.icon {
-            font-size: 64px;
-            margin-bottom: 20px;
+        .navbar-brand {
+            font-weight: 700;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.5rem;
         }
 
-        #access-denied h1 {
-            font-size: 22px;
-            color: var(--lose-color);
-            margin-bottom: 10px;
-        }
-
-        #access-denied p {
-            color: var(--text-secondary);
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-        /* Основной контейнер WebApp */
-        #app {
-            display: none;
-            width: 100%;
-            max-width: 400px;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .header {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            gap: 10px;
-        }
-
-        .user-info, .balance-info {
-            background: var(--card-bg);
-            padding: 10px 14px;
+        .card-custom {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
             border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            background: rgba(79, 172, 254, 0.1);
+            color: #00f2fe;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-bottom: 0;
+        }
+
+        .table-custom {
+            color: var(--text-color);
+            margin-bottom: 0;
+        }
+
+        .table-custom th {
+            background-color: rgba(255, 255, 255, 0.02);
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            padding: 14px 16px;
+        }
+
+        .table-custom td {
+            border-bottom: 1px solid var(--border-color);
+            padding: 14px 16px;
+            vertical-align: middle;
+        }
+
+        .table-custom tbody tr:hover {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        .badge-win {
+            background-color: rgba(40, 167, 69, 0.15);
+            color: #2ecc71;
+            border: 1px solid rgba(40, 167, 69, 0.3);
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .badge-lose {
+            background-color: rgba(220, 53, 69, 0.15);
+            color: #e74c3c;
+            border: 1px solid rgba(220, 53, 69, 0.3);
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .badge-game {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: #3498db;
+            border: 1px solid rgba(52, 152, 219, 0.2);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .form-control-custom {
+            background-color: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            border-radius: 8px;
+        }
+
+        .form-control-custom:focus {
+            background-color: rgba(0, 0, 0, 0.4);
+            border-color: #4facfe;
+            color: var(--text-color);
+            box-shadow: none;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--accent-gradient);
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            font-weight: bold;
-            font-size: 14px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-
-        .balance-info {
-            color: var(--gold-color);
-        }
-
-        /* Контейнер игры */
-        .game-card {
-            background: var(--card-bg);
-            width: 100%;
-            border-radius: 20px;
-            padding: 25px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-            position: relative;
-        }
-
-        .game-title {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--accent-color);
-        }
-
-        /* Анимация и монета */
-        .coin-container {
-            width: 120px;
-            height: 120px;
-            perspective: 1000px;
-            margin: 20px 0 30px 0;
-        }
-
-        .coin {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 3s cubic-bezier(0.25, 1, 0.5, 1);
-        }
-
-        .coin-side {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            backface-visibility: hidden;
-            display: flex;
-            align-items: center;
             justify-content: center;
-            font-size: 40px;
             font-weight: bold;
-            border: 4px solid #E67E22;
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.3), 0 4px 10px rgba(0,0,0,0.5);
+            color: #fff;
+            margin-right: 8px;
+            font-size: 0.8rem;
         }
-
-        .heads {
-            background: linear-gradient(135deg, #F1C40F, #F39C12);
-            color: #FFF;
-        }
-
-        .tails {
-            background: linear-gradient(135deg, #BDC3C7, #2C3E50);
-            color: #FFF;
-            transform: rotateY(180deg);
-        }
-
-        /* Кнопки и выбор */
-        .choice-container {
-            display: flex;
-            gap: 12px;
-            width: 100%;
-            margin-bottom: 20px;
-        }
-
-        .btn-choice {
-            flex: 1;
-            padding: 12px;
-            border: 2px solid transparent;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            color: var(--text-color);
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .btn-choice.active {
-            border-color: var(--accent-color);
-            background: rgba(0, 136, 204, 0.15);
-            color: var(--accent-color);
-        }
-
-        /* Поле ввода ставки */
-        .bet-container {
-            width: 100%;
-            margin-bottom: 20px;
-        }
-
-        .bet-container label {
-            display: block;
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-bottom: 6px;
-        }
-
-        .bet-input {
-            width: 100%;
-            padding: 12px;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(0, 0, 0, 0.2);
-            color: #FFF;
-            font-size: 16px;
-            font-weight: bold;
-            outline: none;
-            text-align: center;
-        }
-
-        /* Главная кнопка броска */
-        .btn-flip {
-            width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 12px;
-            background: linear-gradient(135deg, var(--accent-color), #005580);
-            color: #FFF;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 136, 204, 0.4);
-            transition: transform 0.1s ease, opacity 0.2s ease;
-        }
-
-        .btn-flip:active {
-            transform: scale(0.98);
-        }
-
-        .btn-flip:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* Отображение результата */
-        .result-message {
-            margin-top: 15px;
-            font-weight: bold;
-            font-size: 16px;
-            min-height: 22px;
-            text-align: center;
-        }
-
-        .win { color: var(--win-color); }
-        .lose { color: var(--lose-color); }
     </style>
 </head>
 <body>
 
-    <!-- Экран блокировки (если зашли через обычный браузер) -->
-    <div id="access-denied">
-        <div class="icon">🚫</div>
-        <h1>Доступ ограничен</h1>
-        <p>Запуск приложения возможен только через официального бота в Telegram.</p>
-    </div>
-
-    <!-- Основной интерфейс WebApp -->
-    <div id="app">
-        <div class="header">
-            <div class="user-info">
-                <span>👤</span>
-                <span id="user-name">Игрок</span>
-            </div>
-            <div class="balance-info">
-                <span>🪙</span>
-                <span id="user-balance">... лир</span>
+    <!-- Навбар -->
+    <nav class="navbar navbar-expand-lg mb-4">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand" href="#"><i class="fa-solid fa-gamepad me-2"></i>LIRA ULTIMATE V2</a>
+            <div class="d-flex align-items-center">
+                <span class="badge bg-danger me-3"><i class="fa-solid fa-shield-halved me-1"></i> Admin Panel</span>
+                <span class="text-muted small">Status: <span class="text-success">● Online</span></span>
             </div>
         </div>
+    </nav>
 
-        <div class="game-card">
-            <div class="game-title">FLIP (Орёл / Решка)</div>
+    <div class="container-fluid px-4">
 
-            <!-- Монета -->
-            <div class="coin-container">
-                <div class="coin" id="coin">
-                    <div class="coin-side heads">🦅</div>
-                    <div class="coin-side tails">🪙</div>
+        <!-- Карточки статистики -->
+        <div class="row">
+            <div class="col-xl-3 col-md-6">
+                <div class="card-custom stat-card">
+                    <div>
+                        <p class="stat-label">Всего игр в базе</p>
+                        <h3 class="stat-value" id="total-games">0</h3>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="fa-solid fa-dice"></i>
+                    </div>
                 </div>
             </div>
-
-            <!-- Выбор стороны -->
-            <div class="choice-container">
-                <button class="btn-choice active" id="btn-heads" onclick="selectChoice('heads')">🦅 Орёл</button>
-                <button class="btn-choice" id="btn-tails" onclick="selectChoice('tails')">🪙 Решка</button>
+            <div class="col-xl-3 col-md-6">
+                <div class="card-custom stat-card">
+                    <div>
+                        <p class="stat-label">Общий оборот ставок</p>
+                        <h3 class="stat-value" id="total-bets">0 LIRA</h3>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="fa-solid fa-coins"></i>
+                    </div>
+                </div>
             </div>
-
-            <!-- Сумма ставки -->
-            <div class="bet-container">
-                <label for="bet-amount">Сумма ставки (в лирах):</label>
-                <input type="number" id="bet-amount" class="bet-input" value="1000" min="100" step="100">
+            <div class="col-xl-3 col-md-6">
+                <div class="card-custom stat-card">
+                    <div>
+                        <p class="stat-label">Выплачено игрокам</p>
+                        <h3 class="stat-value text-success" id="total-wins">0 LIRA</h3>
+                    </div>
+                    <div class="stat-icon" style="background: rgba(40, 167, 69, 0.1); color: #2ecc71;">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                </div>
             </div>
-
-            <!-- Кнопка броска -->
-            <button class="btn-flip" id="btn-spin" onclick="playFlip()">БРОСИТЬ МОНЕТУ</button>
-
-            <!-- Сообщение о результате -->
-            <div class="result-message" id="result"></div>
+            <div class="col-xl-3 col-md-6">
+                <div class="card-custom stat-card">
+                    <div>
+                        <p class="stat-label">Профит бота (GGR)</p>
+                        <h3 class="stat-value text-info" id="net-profit">0 LIRA</h3>
+                    </div>
+                    <div class="stat-icon" style="background: rgba(0, 242, 254, 0.1); color: #00f2fe;">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+                </div>
+            </div>
         </div>
+
+        <!-- Основная таблица логов (games_log) -->
+        <div class="card-custom">
+            <div class="card-header bg-transparent border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold m-0"><i class="fa-solid fa-list-check me-2 text-info"></i>История Игр (games_log)</h5>
+                <div class="d-flex gap-2">
+                    <input type="text" id="searchInput" class="form-control form-control-custom" placeholder="Поиск по UID или Игре...">
+                    <button class="btn btn-outline-secondary" type="button" id="refreshBtn"><i class="fa-solid fa-rotate"></i></button>
+                </div>
+            </div>
+            <div class="card-body px-0 pb-0">
+                <div class="table-responsive">
+                    <table class="table table-custom align-middle" id="gamesTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Игрок (UID)</th>
+                                <th>Игра</th>
+                                <th>Ставка</th>
+                                <th>Выигрыш</th>
+                                <th>Коэф.</th>
+                                <th>Статус</th>
+                                <th>Дата и время</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logsTableBody">
+                            <!-- Данные генерируются JS из SQLite схемы -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
     </div>
 
+    <!-- JavaScript для эмуляции отображения данных БД бота -->
     <script>
-        const tg = window.Telegram.WebApp;
+        // Имитация чтения таблицы games_log из файла lira_ultimate_v2.db
+        const sampleGamesData = [
+            { id: 104, uid: 7895911575, game_name: "Мины", bet: 100000, win_amount: 240000, is_win: 1, date: "04.09.2026 16:20:11", coef: 2.4 },
+            { id: 103, uid: 8527487696, game_name: "Хило", bet: 500000, win_amount: 0, is_win: 0, date: "04.09.2026 16:18:45", coef: 1.0 },
+            { id: 102, uid: 123456789, game_name: "Мины", bet: 10000, win_amount: 19200, is_win: 1, date: "04.09.2026 16:15:02", coef: 1.92 },
+            { id: 101, uid: 7895911575, game_name: "Хило", bet: 2000000, win_amount: 5800000, is_win: 1, date: "04.09.2026 16:02:30", coef: 2.9 },
+            { id: 100, uid: 987654321, game_name: "Мины", bet: 50000, win_amount: 0, is_win: 0, date: "04.09.2026 15:58:12", coef: 0.0 }
+        ];
 
-        // Вставьте сюда URL вашего API/Бэкенда бота для получения и обновления баланса
-        const API_URL = "https://your-bot-backend.com/api"; 
+        function renderStats(data) {
+            let totalGames = data.length;
+            let totalBets = data.reduce((sum, item) => sum + item.bet, 0);
+            let totalWins = data.reduce((sum, item) => sum + item.win_amount, 0);
+            let profit = totalBets - totalWins;
 
-        let userBalance = 0;           // Текущий баланс лир
-        let selectedChoice = 'heads'; 
-        let currentRotation = 0;       
-        let isProcessing = false;      
-
-        // Валидация входа и загрузка данных
-        async function validateTelegramContext() {
-            if (!tg.initData || tg.initData === "") {
-                document.getElementById('access-denied').style.display = 'flex';
-                document.getElementById('app').style.display = 'none';
-                return false;
-            }
-
-            tg.ready();
-            tg.expand();
-
-            const user = tg.initDataUnsafe.user;
-            if (user) {
-                document.getElementById('user-name').innerText = user.first_name || "Игрок";
-            }
-
-            document.getElementById('access-denied').style.display = 'none';
-            document.getElementById('app').style.display = 'flex';
-
-            // Загружаем актуальный баланс из базы данных вашего бота
-            await loadUserBalance();
-            return true;
+            document.getElementById('total-games').innerText = totalGames;
+            document.getElementById('total-bets').innerText = totalBets.toLocaleString() + " LIRA";
+            document.getElementById('total-wins').innerText = totalWins.toLocaleString() + " LIRA";
+            document.getElementById('net-profit').innerText = (profit >= 0 ? "+" : "") + profit.toLocaleString() + " LIRA";
         }
 
-        // Запрос баланса с бэкенда бота
-        async function loadUserBalance() {
-            try {
-                /* Пример реального запроса на ваш сервер:
-                const response = await fetch(`${API_URL}/get_balance`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ initData: tg.initData })
-                });
-                const data = await response.json();
-                userBalance = data.balance;
-                */
+        function renderTable(data) {
+            const tbody = document.getElementById('logsTableBody');
+            tbody.innerHTML = '';
 
-                // Тестовое значение (Заменится на данные из БД вашего бота)
-                userBalance = 878222; 
+            data.forEach(row => {
+                const tr = document.createElement('tr');
+                
+                const winBadge = row.is_win === 1 
+                    ? `<span class="badge-win"><i class="fa-solid fa-check me-1"></i>Победа</span>`
+                    : `<span class="badge-lose"><i class="fa-solid fa-xmark me-1"></i>Проиграл</span>`;
 
-                updateBalanceDisplay();
-            } catch (error) {
-                console.error("Ошибка при загрузке баланса:", error);
-            }
+                tr.innerHTML = `
+                    <td class="text-muted">#${row.id}</td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="user-avatar">${row.uid.toString().substring(0,2)}</div>
+                            <span class="fw-bold">${row.uid}</span>
+                        </div>
+                    </td>
+                    <td><span class="badge-game">${row.game_name}</span></td>
+                    <td class="fw-bold">${row.bet.toLocaleString()}</td>
+                    <td class="${row.win_amount > 0 ? 'text-success fw-bold' : 'text-muted'}">${row.win_amount.toLocaleString()}</td>
+                    <td><span class="text-info">x${row.coef.toFixed(2)}</span></td>
+                    <td>${winBadge}</td>
+                    <td class="text-muted small">${row.date}</td>
+                `;
+                tbody.appendChild(tr);
+            });
         }
 
-        // Обновление текста баланса
-        function updateBalanceDisplay() {
-            document.getElementById('user-balance').innerText = `${userBalance.toLocaleString()} лир`;
-        }
+        // Поиск по таблице
+        document.getElementById('searchInput').addEventListener('keyup', function() {
+            let filter = this.value.toLowerCase();
+            let filteredData = sampleGamesData.filter(item => 
+                item.uid.toString().includes(filter) || 
+                item.game_name.toLowerCase().includes(filter)
+            );
+            renderTable(filteredData);
+        });
 
-        // Выбор стороны
-        function selectChoice(choice) {
-            if (isProcessing) return;
-            selectedChoice = choice;
-            
-            document.getElementById('btn-heads').classList.toggle('active', choice === 'heads');
-            document.getElementById('btn-tails').classList.toggle('active', choice === 'tails');
-        }
-
-        // Логика броска
-        function playFlip() {
-            if (isProcessing) return;
-
-            const betInput = document.getElementById('bet-amount');
-            const betValue = parseInt(betInput.value);
-
-            if (isNaN(betValue) || betValue <= 0) {
-                tg.showAlert("Введите корректную сумму ставки!");
-                return;
-            }
-
-            if (betValue > userBalance) {
-                tg.showAlert("У вас недостаточно лир для этой ставки!");
-                return;
-            }
-
-            isProcessing = true;
-            document.getElementById('btn-spin').disabled = true;
-            document.getElementById('result').innerText = "";
-            document.getElementById('result').className = "result-message";
-
-            // Списываем ставку перед броском
-            userBalance -= betValue;
-            updateBalanceDisplay();
-
-            const outcome = Math.random() < 0.5 ? 'heads' : 'tails';
-
-            const extraRounds = 5 * 360;
-            let targetDegree = currentRotation + extraRounds;
-            
-            const remainder = targetDegree % 360;
-            if (outcome === 'heads') {
-                targetDegree += (360 - remainder);
-            } else {
-                targetDegree += (180 - remainder);
-            }
-
-            currentRotation = targetDegree;
-
-            const coinEl = document.getElementById('coin');
-            coinEl.style.transform = `rotateY(${targetDegree}deg)`;
-
-            setTimeout(() => {
-                const isWin = (selectedChoice === outcome);
-                const resultEl = document.getElementById('result');
-
-                if (isWin) {
-                    const winAmount = betValue * 2;
-                    userBalance += winAmount;
-                    resultEl.innerText = `🎉 Вы выиграли ${winAmount.toLocaleString()} лир!`;
-                    resultEl.classList.add('win');
-                    tg.HapticFeedback.notificationOccurred('success');
-                } else {
-                    resultEl.innerText = `❌ Вы проиграли ${betValue.toLocaleString()} лир!`;
-                    resultEl.classList.add('lose');
-                    tg.HapticFeedback.notificationOccurred('error');
-                }
-
-                updateBalanceDisplay();
-
-                // Синхронизация нового баланса с вашей Базой Данных:
-                /*
-                fetch(`${API_URL}/update_balance`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        initData: tg.initData,
-                        new_balance: userBalance
-                    })
-                });
-                */
-
-                isProcessing = false;
-                document.getElementById('btn-spin').disabled = false;
-            }, 3000);
-        }
-
-        window.addEventListener('DOMContentLoaded', validateTelegramContext);
+        // Инициализация
+        renderStats(sampleGamesData);
+        renderTable(sampleGamesData);
     </script>
 </body>
 </html>
