@@ -2,153 +2,184 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lira Game — Игровой Telegram бот</title>
-    <meta name="description" content="Lira Game — игровой Telegram бот с лирами, играми, профилем, бонусами и соревнованиями.">
-    <meta name="theme-color" content="#08090d">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Lira Game</title>
+    <meta name="description" content="Lira Game — игровой Telegram бот">
+    <meta name="theme-color" content="#08090f">
     <style>
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
         }
         html {
             scroll-behavior: smooth;
         }
         body {
-            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Roboto,
+                Arial,
+                sans-serif;
             background:
-                radial-gradient(circle at 20% 10%, rgba(122, 76, 255, .18), transparent 30%),
-                radial-gradient(circle at 80% 30%, rgba(0, 190, 255, .10), transparent 30%),
-                #08090d;
-            color: #fff;
+                radial-gradient(
+                    circle at 20% 0%,
+                    rgba(120, 70, 255, .20),
+                    transparent 32%
+                ),
+                radial-gradient(
+                    circle at 90% 20%,
+                    rgba(60, 110, 255, .12),
+                    transparent 30%
+                ),
+                #08090f;
+            color: #ffffff;
             min-height: 100vh;
             overflow-x: hidden;
         }
-        a {
-            color: inherit;
-            text-decoration: none;
-        }
-        button {
-            font-family: inherit;
-        }
-        /* =========================
-           BACKGROUND
-        ========================= */
-        .background {
+        body::before {
+            content: "";
             position: fixed;
             inset: 0;
             pointer-events: none;
-            z-index: -1;
-            overflow: hidden;
+            background-image:
+                linear-gradient(
+                    rgba(255,255,255,.015) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(255,255,255,.015) 1px,
+                    transparent 1px
+                );
+            background-size: 40px 40px;
+            mask-image: linear-gradient(
+                to bottom,
+                black,
+                transparent 80%
+            );
         }
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        button,
+        input {
+            font-family: inherit;
+        }
+        button {
+            border: 0;
+            cursor: pointer;
+        }
+        /* ================================
+           BACKGROUND
+        ================================= */
         .orb {
-            position: absolute;
+            position: fixed;
             border-radius: 50%;
-            filter: blur(90px);
-            opacity: .35;
-            animation: float 9s ease-in-out infinite;
+            filter: blur(100px);
+            pointer-events: none;
+            z-index: -1;
+            opacity: .22;
         }
-        .orb.one {
-            width: 260px;
-            height: 260px;
+        .orb-1 {
+            width: 250px;
+            height: 250px;
             background: #743cff;
+            top: 120px;
             left: -100px;
-            top: 180px;
+            animation: floating 8s ease-in-out infinite;
         }
-        .orb.two {
+        .orb-2 {
             width: 220px;
             height: 220px;
-            background: #087cff;
-            right: -90px;
-            top: 520px;
-            animation-delay: 2s;
+            background: #2369ff;
+            top: 550px;
+            right: -100px;
+            animation: floating 10s ease-in-out infinite reverse;
         }
-        .orb.three {
-            width: 180px;
-            height: 180px;
-            background: #b13cff;
-            left: 40%;
-            top: 1000px;
-            animation-delay: 4s;
-        }
-        @keyframes float {
+        @keyframes floating {
             0%, 100% {
-                transform: translateY(0) scale(1);
+                transform: translateY(0);
             }
             50% {
-                transform: translateY(-35px) scale(1.08);
+                transform: translateY(-35px);
             }
         }
-        /* =========================
-           NAVBAR
-        ========================= */
+        /* ================================
+           NAVIGATION
+        ================================= */
         .navbar {
             position: sticky;
             top: 0;
-            z-index: 1000;
+            z-index: 100;
+            height: 68px;
+            background: rgba(8, 9, 15, .76);
             backdrop-filter: blur(20px);
-            background: rgba(8, 9, 13, .72);
+            -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(255,255,255,.06);
         }
         .nav-inner {
-            max-width: 1180px;
+            max-width: 1150px;
+            height: 100%;
             margin: auto;
-            height: 72px;
+            padding: 0 18px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 20px;
         }
         .logo {
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 900;
-            letter-spacing: -.5px;
         }
         .logo-icon {
-            width: 40px;
-            height: 40px;
+            width: 39px;
+            height: 39px;
             border-radius: 13px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #7c3cff, #4c6fff);
-            box-shadow: 0 10px 35px rgba(108, 63, 255, .35);
-        }
-        .nav-links {
-            display: flex;
-            gap: 28px;
-            color: #a6a8b3;
-            font-size: 14px;
-            font-weight: 600;
-        }
-        .nav-links a {
-            transition: .2s;
-        }
-        .nav-links a:hover {
-            color: white;
+            background:
+                linear-gradient(
+                    135deg,
+                    #7c3cff,
+                    #4d70ff
+                );
+            box-shadow:
+                0 8px 30px
+                rgba(110,70,255,.35);
         }
         .nav-button {
-            padding: 11px 17px;
+            padding: 10px 15px;
             border-radius: 12px;
-            background: rgba(255,255,255,.08);
+            background: rgba(255,255,255,.07);
             border: 1px solid rgba(255,255,255,.08);
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 800;
+            transition: .2s;
         }
-        /* =========================
+        .nav-button:hover {
+            background: rgba(255,255,255,.12);
+            transform: translateY(-1px);
+        }
+        /* ================================
            HERO
-        ========================= */
+        ================================= */
         .hero {
-            max-width: 1180px;
+            max-width: 1150px;
             margin: auto;
-            min-height: 700px;
-            padding: 100px 20px 70px;
+            min-height: 650px;
+            padding:
+                90px
+                18px
+                70px;
             display: grid;
-            grid-template-columns: 1.1fr .9fr;
+            grid-template-columns: 1fr 400px;
             align-items: center;
             gap: 50px;
         }
@@ -158,685 +189,1194 @@
             gap: 8px;
             padding: 8px 13px;
             border-radius: 100px;
-            background: rgba(124, 60, 255, .12);
-            border: 1px solid rgba(124, 60, 255, .3);
-            color: #c4b0ff;
-            font-size: 13px;
+            background: rgba(124,60,255,.11);
+            border: 1px solid rgba(124,60,255,.25);
+            color: #c3b0ff;
+            font-size: 12px;
             font-weight: 700;
-            margin-bottom: 25px;
+            margin-bottom: 24px;
         }
         .badge-dot {
             width: 7px;
             height: 7px;
             border-radius: 50%;
-            background: #8d62ff;
-            box-shadow: 0 0 15px #8d62ff;
+            background: #8c62ff;
+            box-shadow:
+                0 0 14px #8c62ff;
         }
-        .hero h1 {
-            font-size: clamp(48px, 7vw, 84px);
-            line-height: .95;
+        .hero-title {
+            font-size:
+                clamp(
+                    48px,
+                    7vw,
+                    82px
+                );
+            line-height: .94;
             letter-spacing: -4px;
             font-weight: 950;
             margin-bottom: 25px;
         }
-        .gradient-text {
-            background: linear-gradient(100deg, #fff, #a879ff, #6e8dff);
+        .gradient {
+            background:
+                linear-gradient(
+                    100deg,
+                    #ffffff,
+                    #aa7aff,
+                    #6487ff
+                );
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
         }
-        .hero p {
-            max-width: 650px;
-            color: #989aa7;
+        .hero-description {
+            max-width: 630px;
+            color: #9295a3;
             line-height: 1.7;
-            font-size: 17px;
-            margin-bottom: 32px;
+            font-size: 16px;
+            margin-bottom: 30px;
         }
         .hero-buttons {
             display: flex;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 10px;
         }
-        .primary-button,
-        .secondary-button {
+        .primary {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 9px;
-            min-height: 50px;
-            padding: 0 22px;
+            gap: 8px;
+            min-height: 49px;
+            padding: 0 21px;
             border-radius: 14px;
-            font-size: 14px;
+            background:
+                linear-gradient(
+                    135deg,
+                    #7d3cff,
+                    #536fff
+                );
+            box-shadow:
+                0 12px 40px
+                rgba(102,65,255,.3);
+            font-size: 13px;
+            font-weight: 900;
+            transition: .25s;
+        }
+        .primary:hover {
+            transform: translateY(-3px);
+            box-shadow:
+                0 17px 50px
+                rgba(102,65,255,.45);
+        }
+        .secondary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 49px;
+            padding: 0 21px;
+            border-radius: 14px;
+            background: rgba(255,255,255,.05);
+            border: 1px solid rgba(255,255,255,.08);
+            font-size: 13px;
             font-weight: 850;
             transition: .25s;
         }
-        .primary-button {
-            background: linear-gradient(135deg, #7c3cff, #536fff);
-            box-shadow: 0 12px 40px rgba(101, 65, 255, .3);
-        }
-        .primary-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 17px 50px rgba(101, 65, 255, .45);
-        }
-        .secondary-button {
-            background: rgba(255,255,255,.055);
-            border: 1px solid rgba(255,255,255,.09);
-        }
-        .secondary-button:hover {
+        .secondary:hover {
             background: rgba(255,255,255,.1);
             transform: translateY(-3px);
         }
-        /* =========================
-           PHONE CARD
-        ========================= */
-        .hero-visual {
+        /* ================================
+           PHONE
+        ================================= */
+        .phone-wrapper {
             display: flex;
             justify-content: center;
         }
         .phone {
-            width: 300px;
-            padding: 10px;
+            width: 295px;
+            padding: 9px;
             border-radius: 38px;
-            background: linear-gradient(145deg, #22242d, #0d0e13);
-            border: 1px solid rgba(255,255,255,.12);
+            background:
+                linear-gradient(
+                    145deg,
+                    #252731,
+                    #0c0d12
+                );
+            border:
+                1px solid
+                rgba(255,255,255,.12);
             box-shadow:
-                0 40px 100px rgba(0,0,0,.55),
-                0 0 80px rgba(110,70,255,.15);
+                0 40px 100px
+                rgba(0,0,0,.55),
+                0 0 80px
+                rgba(100,70,255,.14);
             transform: rotate(3deg);
-            animation: phoneFloat 5s ease-in-out infinite;
+            animation:
+                phoneFloat
+                5s
+                ease-in-out
+                infinite;
         }
         @keyframes phoneFloat {
             0%, 100% {
-                transform: rotate(3deg) translateY(0);
+                transform:
+                    rotate(3deg)
+                    translateY(0);
             }
             50% {
-                transform: rotate(1deg) translateY(-12px);
+                transform:
+                    rotate(1deg)
+                    translateY(-12px);
             }
         }
         .phone-screen {
-            min-height: 550px;
-            border-radius: 29px;
-            padding: 20px;
+            min-height: 535px;
+            border-radius: 30px;
+            padding: 19px;
             background:
-                radial-gradient(circle at top, rgba(117, 72, 255, .25), transparent 35%),
+                radial-gradient(
+                    circle at top,
+                    rgba(120,70,255,.25),
+                    transparent 35%
+                ),
                 #101116;
             overflow: hidden;
         }
-        .phone-top {
+        .phone-header {
             display: flex;
+            align-items: center;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            color: #aaa;
-            font-size: 12px;
+            margin-bottom: 23px;
         }
-        .profile-mini {
+        .phone-profile {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 9px;
         }
-        .avatar {
+        .phone-avatar {
             width: 42px;
             height: 42px;
             border-radius: 14px;
-            background: linear-gradient(135deg, #7c3cff, #4c7aff);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 19px;
+            background:
+                linear-gradient(
+                    135deg,
+                    #7d3cff,
+                    #4f78ff
+                );
         }
-        .mini-name {
-            font-weight: 800;
-            color: white;
+        .phone-name {
+            font-size: 12px;
+            font-weight: 900;
         }
-        .mini-status {
-            color: #777a87;
-            font-size: 10px;
+        .phone-status {
+            color: #717480;
+            font-size: 9px;
             margin-top: 2px;
         }
-        .balance {
-            padding: 20px;
-            border-radius: 22px;
-            background: linear-gradient(145deg, rgba(124,60,255,.22), rgba(70,100,255,.08));
-            border: 1px solid rgba(145,120,255,.18);
-            margin-bottom: 14px;
+        .online {
+            color: #55d48b;
+            font-size: 9px;
+        }
+        .balance-card {
+            padding: 19px;
+            border-radius: 20px;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(124,60,255,.22),
+                    rgba(70,100,255,.06)
+                );
+            border:
+                1px solid
+                rgba(145,120,255,.18);
+            margin-bottom: 11px;
         }
         .balance-label {
-            color: #999bab;
-            font-size: 11px;
-            margin-bottom: 8px;
+            color: #858895;
+            font-size: 10px;
+            margin-bottom: 7px;
         }
         .balance-value {
-            font-size: 30px;
+            font-size: 27px;
             font-weight: 950;
         }
         .lira {
-            color: #a879ff;
+            color: #aa80ff;
         }
-        .game-mini {
+        .phone-games {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 9px;
+            gap: 8px;
         }
-        .game-box {
-            padding: 15px;
-            border-radius: 17px;
+        .phone-game {
+            padding: 14px;
+            border-radius: 16px;
             background: rgba(255,255,255,.045);
-            border: 1px solid rgba(255,255,255,.06);
+            border:
+                1px solid
+                rgba(255,255,255,.055);
         }
-        .game-box-icon {
-            font-size: 25px;
-            margin-bottom: 8px;
+        .phone-game-icon {
+            font-size: 22px;
+            margin-bottom: 7px;
         }
-        .game-box-name {
-            font-size: 12px;
-            font-weight: 800;
+        .phone-game-name {
+            font-size: 11px;
+            font-weight: 900;
         }
-        .game-box-desc {
-            font-size: 9px;
-            color: #777a87;
+        .phone-game-description {
+            color: #686b77;
+            font-size: 8px;
             margin-top: 3px;
         }
-        /* =========================
-           SECTION
-        ========================= */
+        /* ================================
+           SECTIONS
+        ================================= */
         section {
-            max-width: 1180px;
+            max-width: 1150px;
             margin: auto;
-            padding: 80px 20px;
-        }
-        .section-head {
-            margin-bottom: 35px;
+            padding: 75px 18px;
         }
         .section-label {
-            color: #8c65ff;
-            font-size: 12px;
+            color: #8d64ff;
+            font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 2px;
             font-weight: 900;
             margin-bottom: 10px;
         }
         .section-title {
-            font-size: clamp(30px, 5vw, 48px);
+            font-size:
+                clamp(
+                    30px,
+                    5vw,
+                    47px
+                );
             letter-spacing: -2px;
             font-weight: 950;
         }
         .section-description {
-            color: #858792;
+            color: #858894;
             max-width: 650px;
             line-height: 1.6;
-            margin-top: 12px;
+            margin-top: 10px;
         }
-        /* =========================
-           STATS
-        ========================= */
-        .stats {
+        /* ================================
+           MAIN MENU CARDS
+        ================================= */
+        .main-menu {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
+            grid-template-columns:
+                repeat(3, 1fr);
+            gap: 14px;
+            margin-top: 32px;
         }
-        .stat {
-            padding: 25px;
-            border-radius: 20px;
-            background: rgba(255,255,255,.035);
-            border: 1px solid rgba(255,255,255,.065);
+        .menu-card {
+            position: relative;
+            padding: 27px;
+            min-height: 180px;
+            border-radius: 24px;
+            background:
+                rgba(255,255,255,.035);
+            border:
+                1px solid
+                rgba(255,255,255,.065);
+            overflow: hidden;
+            transition: .3s;
         }
-        .stat-number {
-            font-size: 30px;
+        .menu-card::after {
+            content: "";
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            right: -55px;
+            top: -55px;
+            border-radius: 50%;
+            background: #7545ff;
+            filter: blur(55px);
+            opacity: .15;
+        }
+        .menu-card:hover {
+            transform: translateY(-6px);
+            border-color:
+                rgba(139,100,255,.35);
+            background:
+                rgba(255,255,255,.055);
+        }
+        .menu-icon {
+            width: 55px;
+            height: 55px;
+            border-radius: 17px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background:
+                rgba(124,60,255,.12);
+            border:
+                1px solid
+                rgba(124,60,255,.2);
+            font-size: 27px;
+            margin-bottom: 18px;
+        }
+        .menu-title {
+            font-size: 18px;
             font-weight: 950;
-            margin-bottom: 5px;
+            margin-bottom: 7px;
         }
-        .stat-name {
+        .menu-description {
             color: #777a86;
-            font-size: 13px;
+            font-size: 12px;
+            line-height: 1.5;
         }
-        /* =========================
+        .menu-arrow {
+            position: absolute;
+            right: 22px;
+            bottom: 20px;
+            color: #747784;
+            font-size: 18px;
+        }
+        /* ================================
            GAMES
-        ========================= */
+        ================================= */
         .category {
-            margin-top: 45px;
+            margin-top: 38px;
         }
         .category-title {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 16px;
-            font-size: 19px;
-            font-weight: 900;
+            gap: 9px;
+            font-size: 18px;
+            font-weight: 950;
+            margin-bottom: 15px;
         }
         .games-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
+            grid-template-columns:
+                repeat(4, 1fr);
+            gap: 10px;
         }
         .game-card {
             position: relative;
-            overflow: hidden;
-            padding: 22px;
-            min-height: 155px;
-            border-radius: 20px;
-            background: rgba(255,255,255,.035);
-            border: 1px solid rgba(255,255,255,.065);
+            padding: 20px;
+            min-height: 145px;
+            border-radius: 19px;
+            background:
+                rgba(255,255,255,.035);
+            border:
+                1px solid
+                rgba(255,255,255,.06);
             transition: .3s;
-        }
-        .game-card::before {
-            content: "";
-            position: absolute;
-            width: 100px;
-            height: 100px;
-            right: -50px;
-            top: -50px;
-            background: #7546ff;
-            filter: blur(55px);
-            opacity: 0;
-            transition: .3s;
+            cursor: pointer;
         }
         .game-card:hover {
             transform: translateY(-5px);
-            border-color: rgba(138,100,255,.35);
-            background: rgba(255,255,255,.055);
-        }
-        .game-card:hover::before {
-            opacity: .35;
+            background:
+                rgba(255,255,255,.06);
+            border-color:
+                rgba(140,100,255,.35);
         }
         .game-icon {
-            position: relative;
-            font-size: 30px;
-            margin-bottom: 15px;
+            font-size: 28px;
+            margin-bottom: 13px;
         }
         .game-name {
-            position: relative;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 900;
         }
         .game-command {
-            position: relative;
-            color: #777a87;
-            font-size: 11px;
-            margin-top: 7px;
+            color: #70737f;
             font-family: monospace;
+            font-size: 9px;
+            margin-top: 7px;
+            line-height: 1.4;
         }
-        /* =========================
-           COMMANDS
-        ========================= */
-        .commands-box {
-            border-radius: 25px;
-            overflow: hidden;
-            background: rgba(255,255,255,.035);
-            border: 1px solid rgba(255,255,255,.07);
+        /* ================================
+           FEATURES
+        ================================= */
+        .features {
+            display: grid;
+            grid-template-columns:
+                repeat(2, 1fr);
+            gap: 11px;
+            margin-top: 30px;
         }
-        .command-row {
+        .feature {
+            padding: 21px;
+            border-radius: 19px;
+            background:
+                rgba(255,255,255,.035);
+            border:
+                1px solid
+                rgba(255,255,255,.06);
+        }
+        .feature-icon {
+            font-size: 25px;
+            margin-bottom: 10px;
+        }
+        .feature-title {
+            font-weight: 900;
+            font-size: 15px;
+            margin-bottom: 5px;
+        }
+        .feature-text {
+            color: #777a86;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+        /* ================================
+           DEVELOPER
+        ================================= */
+        .developer {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            gap: 20px;
-            padding: 19px 23px;
-            border-bottom: 1px solid rgba(255,255,255,.05);
+            justify-content: space-between;
+            gap: 25px;
+            padding: 32px;
+            margin-top: 30px;
+            border-radius: 25px;
+            background:
+                radial-gradient(
+                    circle at right,
+                    rgba(124,60,255,.18),
+                    transparent 45%
+                ),
+                rgba(255,255,255,.035);
+            border:
+                1px solid
+                rgba(255,255,255,.07);
         }
-        .command-row:last-child {
-            border-bottom: 0;
+        .developer-left {
+            display: flex;
+            align-items: center;
+            gap: 17px;
         }
-        .command-name {
-            font-weight: 850;
+        .developer-avatar {
+            width: 70px;
+            height: 70px;
+            flex-shrink: 0;
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            background:
+                linear-gradient(
+                    135deg,
+                    #7d3cff,
+                    #4d73ff
+                );
+            box-shadow:
+                0 10px 40px
+                rgba(108,63,255,.25);
         }
-        .command-desc {
-            color: #777a87;
+        .developer-title {
+            font-size: 18px;
+            font-weight: 950;
+            margin-bottom: 4px;
+        }
+        .developer-name {
+            color: #858793;
             font-size: 13px;
-            text-align: right;
         }
-        code {
-            color: #ad91ff;
-            background: rgba(124,60,255,.09);
-            padding: 5px 8px;
-            border-radius: 7px;
-        }
-        /* =========================
+        /* ================================
            CTA
-        ========================= */
+        ================================= */
         .cta {
-            position: relative;
-            overflow: hidden;
+            padding: 70px 20px;
+        }
+        .cta-box {
             text-align: center;
             padding: 70px 25px;
             border-radius: 30px;
             background:
-                radial-gradient(circle at 50% 0%, rgba(124,60,255,.3), transparent 55%),
+                radial-gradient(
+                    circle at 50% 0%,
+                    rgba(124,60,255,.28),
+                    transparent 55%
+                ),
                 rgba(255,255,255,.035);
-            border: 1px solid rgba(255,255,255,.08);
+            border:
+                1px solid
+                rgba(255,255,255,.07);
         }
-        .cta h2 {
-            font-size: clamp(32px, 6vw, 55px);
+        .cta-title {
+            font-size:
+                clamp(
+                    32px,
+                    6vw,
+                    55px
+                );
             letter-spacing: -2px;
             font-weight: 950;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
-        .cta p {
-            color: #858792;
-            margin-bottom: 28px;
+        .cta-text {
+            color: #81838f;
+            margin-bottom: 26px;
         }
         .cta-buttons {
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 10px;
         }
-        /* =========================
+        /* ================================
            FOOTER
-        ========================= */
+        ================================= */
         footer {
-            max-width: 1180px;
+            max-width: 1150px;
             margin: auto;
-            padding: 30px 20px 50px;
-            border-top: 1px solid rgba(255,255,255,.06);
+            padding:
+                30px
+                18px
+                45px;
+            border-top:
+                1px solid
+                rgba(255,255,255,.06);
             display: flex;
             align-items: center;
             justify-content: space-between;
             color: #666975;
-            font-size: 12px;
+            font-size: 11px;
         }
         .footer-links {
             display: flex;
-            gap: 20px;
+            gap: 18px;
         }
         .footer-links a:hover {
             color: white;
         }
-        /* =========================
-           SCROLL ANIMATION
-        ========================= */
+        /* ================================
+           MODAL
+        ================================= */
+        .modal {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background:
+                rgba(0,0,0,.72);
+            backdrop-filter:
+                blur(12px);
+            -webkit-backdrop-filter:
+                blur(12px);
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-box {
+            width: 100%;
+            max-width: 390px;
+            padding: 25px;
+            border-radius: 25px;
+            background:
+                linear-gradient(
+                    145deg,
+                    #171820,
+                    #0d0e13
+                );
+            border:
+                1px solid
+                rgba(255,255,255,.1);
+            box-shadow:
+                0 30px 100px
+                rgba(0,0,0,.65);
+            animation:
+                modalIn
+                .25s
+                ease;
+        }
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(.94) translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        .modal-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 22px;
+        }
+        .modal-game {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .modal-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background:
+                rgba(124,60,255,.13);
+            font-size: 25px;
+        }
+        .modal-title {
+            font-size: 17px;
+            font-weight: 950;
+        }
+        .modal-command {
+            color: #717480;
+            font-family: monospace;
+            font-size: 10px;
+            margin-top: 3px;
+        }
+        .close {
+            width: 35px;
+            height: 35px;
+            border-radius: 11px;
+            background:
+                rgba(255,255,255,.06);
+            color: #9a9ca7;
+            font-size: 17px;
+            transition: .2s;
+        }
+        .close:hover {
+            background:
+                rgba(255,255,255,.1);
+            color: white;
+        }
+        .input-label {
+            color: #8d8f9b;
+            font-size: 11px;
+            margin-bottom: 7px;
+            display: block;
+        }
+        .bet-input {
+            width: 100%;
+            height: 53px;
+            padding: 0 16px;
+            border-radius: 14px;
+            outline: none;
+            background:
+                rgba(255,255,255,.05);
+            border:
+                1px solid
+                rgba(255,255,255,.08);
+            color: white;
+            font-size: 17px;
+            font-weight: 800;
+        }
+        .bet-input:focus {
+            border-color:
+                rgba(130,90,255,.6);
+            box-shadow:
+                0 0 0 3px
+                rgba(124,60,255,.08);
+        }
+        .extra-field {
+            display: none;
+            margin-top: 14px;
+        }
+        .extra-select {
+            width: 100%;
+            height: 50px;
+            border-radius: 13px;
+            padding: 0 14px;
+            background:
+                rgba(255,255,255,.05);
+            color: white;
+            border:
+                1px solid
+                rgba(255,255,255,.08);
+            outline: none;
+        }
+        .play-button {
+            width: 100%;
+            height: 53px;
+            margin-top: 17px;
+            border-radius: 14px;
+            background:
+                linear-gradient(
+                    135deg,
+                    #7c3cff,
+                    #536fff
+                );
+            color: white;
+            font-size: 14px;
+            font-weight: 950;
+            box-shadow:
+                0 12px 35px
+                rgba(101,65,255,.25);
+            transition: .2s;
+        }
+        .play-button:hover {
+            transform: translateY(-2px);
+        }
+        .modal-note {
+            color: #646773;
+            font-size: 10px;
+            line-height: 1.5;
+            text-align: center;
+            margin-top: 13px;
+        }
+        /* ================================
+           TOAST
+        ================================= */
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: 25px;
+            z-index: 2000;
+            transform:
+                translate(-50%, 100px);
+            opacity: 0;
+            padding: 12px 17px;
+            border-radius: 13px;
+            background:
+                #1a1b22;
+            border:
+                1px solid
+                rgba(255,255,255,.1);
+            box-shadow:
+                0 15px 50px
+                rgba(0,0,0,.4);
+            color: #ddd;
+            font-size: 12px;
+            font-weight: 700;
+            transition: .3s;
+            white-space: nowrap;
+        }
+        .toast.show {
+            transform:
+                translate(-50%, 0);
+            opacity: 1;
+        }
+        /* ================================
+           REVEAL
+        ================================= */
         .reveal {
             opacity: 0;
-            transform: translateY(25px);
-            transition: .7s ease;
+            transform:
+                translateY(25px);
+            transition:
+                opacity .7s ease,
+                transform .7s ease;
         }
-        .reveal.show {
+        .reveal.visible {
             opacity: 1;
-            transform: translateY(0);
+            transform:
+                translateY(0);
         }
-        /* =========================
+        /* ================================
            MOBILE
-        ========================= */
+        ================================= */
         @media (max-width: 900px) {
-            .nav-links {
-                display: none;
-            }
             .hero {
                 grid-template-columns: 1fr;
                 text-align: center;
                 padding-top: 70px;
             }
-            .hero p {
+            .hero-description {
                 margin-left: auto;
                 margin-right: auto;
             }
             .hero-buttons {
                 justify-content: center;
             }
-            .hero-visual {
+            .phone-wrapper {
                 margin-top: 20px;
             }
-            .stats {
-                grid-template-columns: repeat(2, 1fr);
+            .main-menu {
+                grid-template-columns:
+                    1fr 1fr;
             }
             .games-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns:
+                    1fr 1fr;
             }
         }
-        @media (max-width: 520px) {
-            .nav-inner {
-                height: 64px;
-            }
-            .nav-button {
-                padding: 9px 12px;
-            }
+        @media (max-width: 560px) {
             .hero {
-                min-height: auto;
-                padding-top: 65px;
+                padding-top: 55px;
             }
-            .hero h1 {
+            .hero-title {
                 font-size: 52px;
-                letter-spacing: -3px;
-            }
-            .hero p {
-                font-size: 15px;
             }
             .phone {
                 width: 270px;
             }
-            .stats {
-                grid-template-columns: 1fr 1fr;
-            }
-            .stat {
-                padding: 19px;
-            }
-            .stat-number {
-                font-size: 24px;
+            .main-menu {
+                grid-template-columns:
+                    1fr;
             }
             .games-grid {
-                grid-template-columns: 1fr 1fr;
+                grid-template-columns:
+                    1fr 1fr;
             }
-            .game-card {
-                padding: 17px;
-                min-height: 140px;
+            .features {
+                grid-template-columns:
+                    1fr;
             }
-            .command-row {
-                align-items: flex-start;
+            .developer {
                 flex-direction: column;
-                gap: 7px;
-            }
-            .command-desc {
-                text-align: left;
+                align-items: flex-start;
             }
             footer {
                 flex-direction: column;
-                gap: 15px;
+                gap: 14px;
                 text-align: center;
             }
         }
     </style>
 </head>
 <body>
-<div class="background">
-    <div class="orb one"></div>
-    <div class="orb two"></div>
-    <div class="orb three"></div>
-</div>
-<!-- =========================
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<!-- =====================================
      NAVBAR
-========================= -->
+===================================== -->
 <header class="navbar">
     <div class="nav-inner">
         <a href="#" class="logo">
-            <span class="logo-icon">💎</span>
-            <span>Lira Game</span>
+            <span class="logo-icon">
+                💎
+            </span>
+            <span>
+                Lira Game
+            </span>
         </a>
-        <nav class="nav-links">
-            <a href="#games">Игры</a>
-            <a href="#commands">Команды</a>
-            <a href="#about">О боте</a>
-        </nav>
         <a
+            class="nav-button"
             href="https://t.me/LiraGame_Bot"
             target="_blank"
-            class="nav-button"
         >
-            Запустить бота
+            🚀 Запустить
         </a>
     </div>
 </header>
-<!-- =========================
+<!-- =====================================
      HERO
-========================= -->
-<main>
-<section class="hero" id="about">
-    <div class="hero-content">
+===================================== -->
+<section class="hero">
+    <div>
         <div class="badge">
             <span class="badge-dot"></span>
-            Lira Game работает в Telegram
+            Lira Game • Telegram Bot
         </div>
-        <h1>
-            Играй.<br>
-            <span class="gradient-text">Выигрывай.</span><br>
-            Забирай лиры.
+        <h1 class="hero-title">
+            Твоя игра.<br>
+            <span class="gradient">
+                Твои лиры.
+            </span>
         </h1>
-        <p>
-            Lira Game — игровой Telegram-бот с виртуальной валютой,
-            большим выбором игр, бонусами, профилем и соревнованиями
-            между игроками.
+        <p class="hero-description">
+            Большой игровой Telegram-бот с виртуальной
+            валютой, множеством игр, бонусами, профилем
+            и соревнованиями между игроками.
         </p>
         <div class="hero-buttons">
             <a
+                class="primary"
                 href="https://t.me/LiraGame_Bot"
                 target="_blank"
-                class="primary-button"
             >
-                🚀 Запустить Lira Game
+                🚀 Открыть бота
             </a>
             <a
-                href="https://t.me/LiraUltimateChat"
-                target="_blank"
-                class="secondary-button"
+                class="secondary"
+                href="#games"
             >
-                👥 Игровой чат
+                🎮 Игры
             </a>
         </div>
     </div>
-    <div class="hero-visual">
+    <!-- PHONE -->
+    <div class="phone-wrapper">
         <div class="phone">
             <div class="phone-screen">
-                <div class="phone-top">
-                    <div class="profile-mini">
-                        <div class="avatar">
+                <div class="phone-header">
+                    <div class="phone-profile">
+                        <div class="phone-avatar">
                             💎
                         </div>
                         <div>
-                            <div class="mini-name">
+                            <div class="phone-name">
                                 Lira Game
                             </div>
-                            <div class="mini-status">
-                                игровой бот
+                            <div class="phone-status">
+                                игровой Telegram-бот
                             </div>
                         </div>
                     </div>
-                    <span>● online</span>
+                    <span class="online">
+                        ● online
+                    </span>
                 </div>
-                <div class="balance">
+                <div class="balance-card">
                     <div class="balance-label">
                         💰 Ваш баланс
                     </div>
                     <div class="balance-value">
-                        125 000 <span class="lira">₺</span>
+                        125 000
+                        <span class="lira">₺</span>
                     </div>
                 </div>
-                <div class="game-mini">
-                    <div class="game-box">
-                        <div class="game-box-icon">🎡</div>
-                        <div class="game-box-name">Х50</div>
-                        <div class="game-box-desc">множители</div>
+                <div class="phone-games">
+                    <div class="phone-game">
+                        <div class="phone-game-icon">🎡</div>
+                        <div class="phone-game-name">Х50</div>
+                        <div class="phone-game-description">множители</div>
                     </div>
-                    <div class="game-box">
-                        <div class="game-box-icon">💣</div>
-                        <div class="game-box-name">Мины</div>
-                        <div class="game-box-desc">риск</div>
+                    <div class="phone-game">
+                        <div class="phone-game-icon">💣</div>
+                        <div class="phone-game-name">Мины</div>
+                        <div class="phone-game-description">риск</div>
                     </div>
-                    <div class="game-box">
-                        <div class="game-box-icon">🪙</div>
-                        <div class="game-box-name">Флип</div>
-                        <div class="game-box-desc">орёл / решка</div>
+                    <div class="phone-game">
+                        <div class="phone-game-icon">🪙</div>
+                        <div class="phone-game-name">Флип</div>
+                        <div class="phone-game-description">орёл / решка</div>
                     </div>
-                    <div class="game-box">
-                        <div class="game-box-icon">🃏</div>
-                        <div class="game-box-name">Блэкджек</div>
-                        <div class="game-box-desc">карточная игра</div>
+                    <div class="phone-game">
+                        <div class="phone-game-icon">🧮</div>
+                        <div class="phone-game-name">Хило</div>
+                        <div class="phone-game-description">карты</div>
                     </div>
-                    <div class="game-box">
-                        <div class="game-box-icon">🎯</div>
-                        <div class="game-box-name">Дартс</div>
-                        <div class="game-box-desc">эмодзи игра</div>
+                    <div class="phone-game">
+                        <div class="phone-game-icon">🎯</div>
+                        <div class="phone-game-name">Дартс</div>
+                        <div class="phone-game-description">эмодзи</div>
                     </div>
-                    <div class="game-box">
-                        <div class="game-box-icon">🚀</div>
-                        <div class="game-box-name">Оверго</div>
-                        <div class="game-box-desc">коэффициент</div>
+                    <div class="phone-game">
+                        <div class="phone-game-icon">🚀</div>
+                        <div class="phone-game-name">Оверго</div>
+                        <div class="phone-game-description">коэффициент</div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
-<!-- =========================
-     STATS
-========================= -->
-<section class="reveal">
-    <div class="section-head">
-        <div class="section-label">Lira Game</div>
-        <h2 class="section-title">Всё в одном боте</h2>
-        <p class="section-description">
-            Баланс, игры, бонусы, профиль и соревнования —
-            всё доступно прямо в Telegram.
-        </p>
+<!-- =====================================
+     MAIN MENU
+===================================== -->
+<section>
+    <div class="section-label">
+        LIRA GAME
     </div>
-    <div class="stats">
-        <div class="stat">
-            <div class="stat-number">20+</div>
-            <div class="stat-name">игровых режимов</div>
+    <h2 class="section-title">
+        Всё необходимое
+    </h2>
+    <p class="section-description">
+        Используй основные функции бота прямо из Telegram.
+    </p>
+    <div class="main-menu">
+        <a
+            href="#features"
+            class="menu-card reveal"
+        >
+            <div class="menu-icon">
+                🌐
+            </div>
+            <div class="menu-title">
+                Функционалы бота
+            </div>
+            <div class="menu-description">
+                Баланс, профиль, бонусы, топ игроков,
+                промокоды и другие возможности.
+            </div>
+            <div class="menu-arrow">
+                →
+            </div>
+        </a>
+        <a
+            href="#games"
+            class="menu-card reveal"
+        >
+            <div class="menu-icon">
+                🎮
+            </div>
+            <div class="menu-title">
+                Игры
+            </div>
+            <div class="menu-description">
+                Большой выбор игр с виртуальными
+                ставками в лирах.
+            </div>
+            <div class="menu-arrow">
+                →
+            </div>
+        </a>
+        <a
+            href="#developer"
+            class="menu-card reveal"
+        >
+            <div class="menu-icon">
+                🧑‍💻
+            </div>
+            <div class="menu-title">
+                Разработчик бота
+            </div>
+            <div class="menu-description">
+                Информация о разработчике
+                проекта Lira Game.
+            </div>
+            <div class="menu-arrow">
+                →
+            </div>
+        </a>
+    </div>
+</section>
+<!-- =====================================
+     FEATURES
+===================================== -->
+<section id="features">
+    <div class="section-label">
+        🌐 Функционалы
+    </div>
+    <h2 class="section-title">
+        Возможности бота
+    </h2>
+    <p class="section-description">
+        Основные команды и функции Lira Game.
+    </p>
+    <div class="features">
+        <div class="feature reveal">
+            <div class="feature-icon">💰</div>
+            <div class="feature-title">Баланс</div>
+            <div class="feature-text">
+                Проверяй количество своих виртуальных лир.
+            </div>
         </div>
-        <div class="stat">
-            <div class="stat-number">₺</div>
-            <div class="stat-name">виртуальная валюта</div>
+        <div class="feature reveal">
+            <div class="feature-icon">👤</div>
+            <div class="feature-title">Профиль</div>
+            <div class="feature-text">
+                Твоя игровая карточка, статистика и информация.
+            </div>
         </div>
-        <div class="stat">
-            <div class="stat-number">24/7</div>
-            <div class="stat-name">доступ к боту</div>
+        <div class="feature reveal">
+            <div class="feature-icon">🎁</div>
+            <div class="feature-title">Бонус</div>
+            <div class="feature-text">
+                Получай доступные бонусы и награды.
+            </div>
         </div>
-        <div class="stat">
-            <div class="stat-number">⚡</div>
-            <div class="stat-name">быстрые игры</div>
+        <div class="feature reveal">
+            <div class="feature-icon">🏆</div>
+            <div class="feature-title">Чемпионы дня</div>
+            <div class="feature-text">
+                Смотри лучших игроков дня.
+            </div>
+        </div>
+        <div class="feature reveal">
+            <div class="feature-icon">🤝</div>
+            <div class="feature-title">Переводы</div>
+            <div class="feature-text">
+                Передавай лиры другим игрокам.
+            </div>
+        </div>
+        <div class="feature reveal">
+            <div class="feature-icon">🎟️</div>
+            <div class="feature-title">Промокоды</div>
+            <div class="feature-text">
+                Активируй доступные промокоды.
+            </div>
+        </div>
+        <div class="feature reveal">
+            <div class="feature-icon">💝</div>
+            <div class="feature-title">Халява</div>
+            <div class="feature-text">
+                Участвуй в ежедневных розыгрышах.
+            </div>
+        </div>
+        <div class="feature reveal">
+            <div class="feature-icon">🆘</div>
+            <div class="feature-title">Помощь</div>
+            <div class="feature-text">
+                Получай список доступных команд.
+            </div>
         </div>
     </div>
 </section>
-<!-- =========================
+<!-- =====================================
      GAMES
-========================= -->
+===================================== -->
 <section id="games">
-    <div class="section-head reveal">
-        <div class="section-label">Игровой зал</div>
-        <h2 class="section-title">Выбирай свою игру</h2>
-        <p class="section-description">
-            От классических игр до рискованных режимов
-            с коэффициентами.
-        </p>
+    <div class="section-label">
+        🎮 Игровой зал
     </div>
+    <h2 class="section-title">
+        Выбирай игру
+    </h2>
+    <p class="section-description">
+        Нажми на любую игру, укажи ставку и получи
+        готовую команду для Telegram.
+    </p>
     <!-- PREMIUM -->
-    <div class="category reveal">
+    <div class="category">
         <div class="category-title">
             💎 Премиум игры
         </div>
         <div class="games-grid">
-            <div class="game-card">
+            <div
+                class="game-card reveal"
+                data-game="Х50"
+                data-icon="🎡"
+                data-command="Х50"
+                data-extra="color"
+            >
                 <div class="game-icon">🎡</div>
-                <div class="game-name">Х50</div>
+                <div class="game-name">
+                    Х50
+                </div>
                 <div class="game-command">
                     Х50 [ставка] [цвет]
                 </div>
             </div>
-            <div class="game-card">
+            <div
+                class="game-card reveal"
+                data-game="Мегавил"
+                data-icon="🎡"
+                data-command="Мегавил"
+                data-extra="sector"
+            >
                 <div class="game-icon">🎡</div>
-                <div class="game-name">Мегавил</div>
+                <div class="game-name">
+                    Мегавил
+                </div>
                 <div class="game-command">
                     Мегавил [ставка] [сектор]
                 </div>
             </div>
-            <div class="game-card">
+            <div
+                class="game-card reveal"
+                data-game="Джекпот"
+                data-icon="🎟️"
+                data-command="Джекпот"
+            >
                 <div class="game-icon">🎟️</div>
-                <div class="game-name">Джекпот</div>
+                <div class="game-name">
+                    Джекпот
+                </div>
                 <div class="game-command">
                     Джекпот [ставка]
                 </div>
             </div>
-            <div class="game-card">
+            <div
+                class="game-card reveal"
+                data-game="Колесо"
+                data-icon="🫟"
+                data-command="Колесо"
+            >
                 <div class="game-icon">🫟</div>
-                <div class="game-name">Колесо</div>
+                <div class="game-name">
+                    Колесо
+                </div>
                 <div class="game-command">
                     Колесо [ставка]
                 </div>
@@ -844,21 +1384,35 @@
         </div>
     </div>
     <!-- CARDS -->
-    <div class="category reveal">
+    <div class="category">
         <div class="category-title">
             🃏 Карточные игры
         </div>
         <div class="games-grid">
-            <div class="game-card">
+            <div
+                class="game-card reveal"
+                data-game="Хило"
+                data-icon="🧮"
+                data-command="Хило"
+            >
                 <div class="game-icon">🧮</div>
-                <div class="game-name">Хило</div>
+                <div class="game-name">
+                    Хило
+                </div>
                 <div class="game-command">
                     Хило [ставка]
                 </div>
             </div>
-            <div class="game-card">
+            <div
+                class="game-card reveal"
+                data-game="Бж"
+                data-icon="🎴"
+                data-command="Бж"
+            >
                 <div class="game-icon">🎴</div>
-                <div class="game-name">Бж</div>
+                <div class="game-name">
+                    Бж
+                </div>
                 <div class="game-command">
                     Бж [ставка]
                 </div>
@@ -866,35 +1420,66 @@
         </div>
     </div>
     <!-- MINES -->
-    <div class="category reveal">
+    <div class="category">
         <div class="category-title">
             🔮 Игры с минами
         </div>
         <div class="games-grid">
-            <div class="game-card">
+            <div
+                class="game-card reveal"
+                data-game="Башня"
+                data-icon="🗼"
+                data-command="Башня"
+                data-extra="tower"
+            >
                 <div class="game-icon">🗼</div>
-                <div class="game-name">Башня</div>
+                <div class="game-name">
+                    Башня
+                </div>
                 <div class="game-command">
                     Башня [ставка] [мины 1-4]
                 </div>
             </div>
-            <div class="game-card">
+            <div
+                class="game-card reveal"
+                data-game="Мины"
+                data-icon="💣"
+                data-command="Мины"
+                data-extra="mines"
+            >
                 <div class="game-icon">💣</div>
-                <div class="game-name">Мины</div>
+                <div class="game-name">
+                    Мины
+                </div>
                 <div class="game-command">
                     Мины [ставка] [мины 2-24]
                 </div>
             </div>
-            <div class="game-card">
+            <div
+                class="game-card reveal"
+                data-game="Мосты"
+                data-icon="🌉"
+                data-command="Мосты"
+            >
                 <div class="game-icon">🌉</div>
-                <div class="game-name">Мосты</div>
+                <div class="game-name">
+                    Мосты
+                </div>
                 <div class="game-command">
                     Мосты [ставка]
                 </div>
             </div>
-            <div class="game-card">
+            <div
+                class="game-card reveal"
+                data-game="Пират"
+                data-icon="🏴‍☠️"
+                data-command="Пират"
+                data-extra="pirate"
+            >
                 <div class="game-icon">🏴‍☠️</div>
-                <div class="game-name">Пират</div>
+                <div class="game-name">
+                    Пират
+                </div>
                 <div class="game-command">
                     Пират [ставка] [мины 1-2]
                 </div>
@@ -902,49 +1487,91 @@
         </div>
     </div>
     <!-- EMOJI -->
-    <div class="category reveal">
+    <div class="category">
         <div class="category-title">
             🧩 Эмодзи игры
         </div>
         <div class="games-grid">
-            <div class="game-card">
+            <div
+                class="game-card reveal"
+                data-game="Дартс"
+                data-icon="🎯"
+                data-command="Дартс"
+            >
                 <div class="game-icon">🎯</div>
-                <div class="game-name">Дартс</div>
+                <div class="game-name">
+                    Дартс
+                </div>
                 <div class="game-command">
                     Дартс [ставка]
                 </div>
             </div>
-            <div class="game-card">
+            <div
+                class="game-card reveal"
+                data-game="Боулинг"
+                data-icon="🎳"
+                data-command="Боулинг"
+            >
                 <div class="game-icon">🎳</div>
-                <div class="game-name">Боулинг</div>
+                <div class="game-name">
+                    Боулинг
+                </div>
                 <div class="game-command">
                     Боулинг [ставка]
                 </div>
             </div>
-            <div class="game-card">
+            <div
+                class="game-card reveal"
+                data-game="Спин"
+                data-icon="🎰"
+                data-command="Спин"
+            >
                 <div class="game-icon">🎰</div>
-                <div class="game-name">Спин</div>
+                <div class="game-name">
+                    Спин
+                </div>
                 <div class="game-command">
                     Спин [ставка]
                 </div>
             </div>
-            <div class="game-card">
+            <div
+                class="game-card reveal"
+                data-game="Кубик"
+                data-icon="🎲"
+                data-command="Кубик"
+            >
                 <div class="game-icon">🎲</div>
-                <div class="game-name">Кубик</div>
+                <div class="game-name">
+                    Кубик
+                </div>
                 <div class="game-command">
                     Кубик [ставка]
                 </div>
             </div>
-            <div class="game-card">
+            <div
+                class="game-card reveal"
+                data-game="Баскетбол"
+                data-icon="🏀"
+                data-command="Баскетбол"
+            >
                 <div class="game-icon">🏀</div>
-                <div class="game-name">Баскетбол</div>
+                <div class="game-name">
+                    Баскетбол
+                </div>
                 <div class="game-command">
                     Баскетбол [ставка]
                 </div>
             </div>
-            <div class="game-card">
+            <div
+                class="game-card reveal"
+                data-game="Футбол"
+                data-icon="⚽️"
+                data-command="Футбол"
+            >
                 <div class="game-icon">⚽️</div>
-                <div class="game-name">Футбол</div>
+                <div class="game-name">
+                    Футбол
+                </div>
                 <div class="game-command">
                     Футбол [ставка]
                 </div>
@@ -952,28 +1579,50 @@
         </div>
     </div>
     <!-- RISK -->
-    <div class="category reveal">
+    <div class="category">
         <div class="category-title">
             💠 Риск игры
         </div>
         <div class="games-grid">
-            <div class="game-card">
+            <div
+                class="game-card reveal"
+                data-game="Вилин"
+                data-icon="⚠️"
+                data-command="Вилин"
+            >
                 <div class="game-icon">⚠️</div>
-                <div class="game-name">Вилин</div>
+                <div class="game-name">
+                    Вилин
+                </div>
                 <div class="game-command">
-                    Риск / всё или ничего
+                    Вилин
                 </div>
             </div>
-            <div class="game-card">
+            <div
+                class="game-card reveal"
+                data-game="Оверго"
+                data-icon="🚀"
+                data-command="Оверго"
+                data-extra="overgo"
+            >
                 <div class="game-icon">🚀</div>
-                <div class="game-name">Оверго</div>
+                <div class="game-name">
+                    Оверго
+                </div>
                 <div class="game-command">
-                    Оверго [ставка] [х от 1.01х]
+                    Оверго [ставка] [х]
                 </div>
             </div>
-            <div class="game-card">
+            <div
+                class="game-card reveal"
+                data-game="Флип"
+                data-icon="🪙"
+                data-command="Флип"
+            >
                 <div class="game-icon">🪙</div>
-                <div class="game-name">Флип</div>
+                <div class="game-name">
+                    Флип
+                </div>
                 <div class="game-command">
                     Флип [ставка]
                 </div>
@@ -981,14 +1630,22 @@
         </div>
     </div>
     <!-- GROUP -->
-    <div class="category reveal">
+    <div class="category">
         <div class="category-title">
             👥 Групповая игра
         </div>
         <div class="games-grid">
-            <div class="game-card">
+            <div
+                class="game-card reveal"
+                data-game="Рул"
+                data-icon="🔫"
+                data-command="Рул"
+                data-extra="roulette"
+            >
                 <div class="game-icon">🔫</div>
-                <div class="game-name">Рул</div>
+                <div class="game-name">
+                    Рул
+                </div>
                 <div class="game-command">
                     Рул [ставка] [исход]
                 </div>
@@ -996,21 +1653,35 @@
         </div>
     </div>
     <!-- NORMAL -->
-    <div class="category reveal">
+    <div class="category">
         <div class="category-title">
             ⛩️ Обычные игры
         </div>
         <div class="games-grid">
-            <div class="game-card">
+            <div
+                class="game-card reveal"
+                data-game="Охота"
+                data-icon="🏹"
+                data-command="Охота"
+            >
                 <div class="game-icon">🏹</div>
-                <div class="game-name">Охота</div>
+                <div class="game-name">
+                    Охота
+                </div>
                 <div class="game-command">
                     Охота [ставка]
                 </div>
             </div>
-            <div class="game-card">
+            <div
+                class="game-card reveal"
+                data-game="Слоты"
+                data-icon="🍬"
+                data-command="Слоты"
+            >
                 <div class="game-icon">🍬</div>
-                <div class="game-name">Слоты</div>
+                <div class="game-name">
+                    Слоты
+                </div>
                 <div class="game-command">
                     Слоты [ставка]
                 </div>
@@ -1018,118 +1689,74 @@
         </div>
     </div>
 </section>
-<!-- =========================
-     COMMANDS
-========================= -->
-<section id="commands">
-    <div class="section-head reveal">
-        <div class="section-label">Команды</div>
-        <h2 class="section-title">Основные возможности</h2>
-        <p class="section-description">
-            Большинство действий выполняется обычными сообщениями
-            прямо в Telegram.
-        </p>
+<!-- =====================================
+     DEVELOPER
+===================================== -->
+<section id="developer">
+    <div class="section-label">
+        🧑‍💻 DEVELOPER
     </div>
-    <div class="commands-box reveal">
-        <div class="command-row">
-            <div class="command-name">
-                💰 Баланс
+    <h2 class="section-title">
+        Разработчик бота
+    </h2>
+    <p class="section-description">
+        Создание и развитие проекта Lira Game.
+    </p>
+    <div class="developer reveal">
+        <div class="developer-left">
+            <div class="developer-avatar">
+                👨‍💻
             </div>
-            <div class="command-desc">
-                <code>Б</code>
-            </div>
-        </div>
-        <div class="command-row">
-            <div class="command-name">
-                👤 Профиль
-            </div>
-            <div class="command-desc">
-                <code>Профиль</code>
-            </div>
-        </div>
-        <div class="command-row">
-            <div class="command-name">
-                🎁 Бонус
-            </div>
-            <div class="command-desc">
-                Получить бонус
+            <div>
+                <div class="developer-title">
+                    Azvaren
+                </div>
+                <div class="developer-name">
+                    Разработчик Lira Game
+                </div>
             </div>
         </div>
-        <div class="command-row">
-            <div class="command-name">
-                💝 Халява
-            </div>
-            <div class="command-desc">
-                Ежедневный розыгрыш
-            </div>
-        </div>
-        <div class="command-row">
-            <div class="command-name">
-                🏆 Чемпионы дня
-            </div>
-            <div class="command-desc">
-                <code>Чд</code>
-            </div>
-        </div>
-        <div class="command-row">
-            <div class="command-name">
-                🤝 Перевод
-            </div>
-            <div class="command-desc">
-                <code>Дать [сумма]</code>
-            </div>
-        </div>
-        <div class="command-row">
-            <div class="command-name">
-                🎟 Промокод
-            </div>
-            <div class="command-desc">
-                <code>Промо [код]</code>
-            </div>
-        </div>
-        <div class="command-row">
-            <div class="command-name">
-                🆘 Помощь
-            </div>
-            <div class="command-desc">
-                <code>Помощь</code>
-            </div>
-        </div>
+        <a
+            href="https://t.me/azvaren"
+            target="_blank"
+            class="primary"
+        >
+            💬 Написать
+        </a>
     </div>
 </section>
-<!-- =========================
+<!-- =====================================
      CTA
-========================= -->
-<section>
-    <div class="cta reveal">
-        <h2>
+===================================== -->
+<section class="cta">
+    <div class="cta-box reveal">
+        <h2 class="cta-title">
             Готов к игре?
         </h2>
-        <p>
+        <p class="cta-text">
             Открывай Telegram и присоединяйся к Lira Game.
         </p>
         <div class="cta-buttons">
             <a
+                class="primary"
                 href="https://t.me/LiraGame_Bot"
                 target="_blank"
-                class="primary-button"
             >
-                🚀 Открыть Lira Game
+                🚀 Запустить бота
             </a>
             <a
-                href="https://t.me/LiraGameNews"
+                class="secondary"
+                href="https://t.me/LiraUltimateChat"
                 target="_blank"
-                class="secondary-button"
             >
-                📢 Новости проекта
+                👥 Игровой чат
             </a>
         </div>
     </div>
 </section>
-</main>
-<!-- =========================
+<!-- =====================================
      FOOTER
-========================= -->
+===================================== -->
 <footer>
     <div>
         © 2026 Lira Game
@@ -1139,77 +1766,528 @@
             href="https://t.me/LiraGameNews"
             target="_blank"
         >
-            Новости
+            📢 Новости
         </a>
         <a
             href="https://t.me/LiraUltimateChat"
             target="_blank"
         >
-            Чат
-        </a>
-        <a
-            href="https://t.me/azvaren"
-            target="_blank"
-        >
-            Разработчик
+            👥 Чат
         </a>
     </div>
 </footer>
+<!-- =====================================
+     GAME MODAL
+===================================== -->
+<div
+    class="modal"
+    id="gameModal"
+>
+    <div class="modal-box">
+        <div class="modal-top">
+            <div class="modal-game">
+                <div
+                    class="modal-icon"
+                    id="modalIcon"
+                >
+                    🎮
+                </div>
+                <div>
+                    <div
+                        class="modal-title"
+                        id="modalTitle"
+                    >
+                        Игра
+                    </div>
+                    <div
+                        class="modal-command"
+                        id="modalCommand"
+                    >
+                        Команда
+                    </div>
+                </div>
+            </div>
+            <button
+                class="close"
+                id="closeModal"
+            >
+                ×
+            </button>
+        </div>
+        <label
+            class="input-label"
+            for="bet"
+        >
+            💰 Сумма ставки
+        </label>
+        <input
+            id="bet"
+            class="bet-input"
+            type="number"
+            inputmode="numeric"
+            min="1"
+            placeholder="Например: 100"
+        >
+        <!-- EXTRA -->
+        <div
+            class="extra-field"
+            id="extraField"
+        >
+            <label
+                class="input-label"
+                id="extraLabel"
+            >
+                Дополнительный параметр
+            </label>
+            <select
+                class="extra-select"
+                id="extraSelect"
+            ></select>
+        </div>
+        <button
+            class="play-button"
+            id="playButton"
+        >
+            🎮 Играть
+        </button>
+        <div class="modal-note">
+            После нажатия Telegram откроет чат с
+            подготовленной командой. Отправку сообщения
+            необходимо подтвердить самостоятельно.
+        </div>
+    </div>
+</div>
+<!-- =====================================
+     TOAST
+===================================== -->
+<div
+    class="toast"
+    id="toast"
+>
+    Команда подготовлена
+</div>
 <script>
-    /* =========================
-       SCROLL REVEAL
-    ========================= */
-    const elements = document.querySelectorAll(".reveal");
-    const observer = new IntersectionObserver(
-        (entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add("show");
+    /* ==================================
+       CONFIG
+    ================================== */
+    /*
+       Укажи username группового чата.
+       Например:
+       const GROUP_USERNAME = "LiraUltimateChat";
+       Тогда сайт будет открывать:
+       https://t.me/LiraUltimateChat
+       Если бот принимает команды только в другом чате,
+       поменяй значение ниже.
+    */
+    const GROUP_USERNAME = "LiraUltimateChat";
+    /* ==================================
+       ELEMENTS
+    ================================== */
+    const modal =
+        document.getElementById("gameModal");
+    const modalIcon =
+        document.getElementById("modalIcon");
+    const modalTitle =
+        document.getElementById("modalTitle");
+    const modalCommand =
+        document.getElementById("modalCommand");
+    const betInput =
+        document.getElementById("bet");
+    const extraField =
+        document.getElementById("extraField");
+    const extraLabel =
+        document.getElementById("extraLabel");
+    const extraSelect =
+        document.getElementById("extraSelect");
+    const closeModal =
+        document.getElementById("closeModal");
+    const playButton =
+        document.getElementById("playButton");
+    const toast =
+        document.getElementById("toast");
+    let currentGame = null;
+    /* ==================================
+       OPEN GAME
+    ================================== */
+    document
+        .querySelectorAll(".game-card")
+        .forEach(card => {
+            card.addEventListener("click", () => {
+                currentGame = {
+                    name:
+                        card.dataset.game,
+                    icon:
+                        card.dataset.icon,
+                    command:
+                        card.dataset.command,
+                    extra:
+                        card.dataset.extra || ""
+                };
+                modalIcon.textContent =
+                    currentGame.icon;
+                modalTitle.textContent =
+                    currentGame.name;
+                modalCommand.textContent =
+                    currentGame.command +
+                    " [ставка]";
+                betInput.value = "";
+                extraField.style.display =
+                    "none";
+                /* =========================
+                   EXTRA OPTIONS
+                ========================= */
+                if (currentGame.extra) {
+                    extraField.style.display =
+                        "block";
+                    extraSelect.innerHTML =
+                        "";
+                    if (
+                        currentGame.extra ===
+                        "color"
+                    ) {
+                        extraLabel.textContent =
+                            "🎨 Выбери цвет";
+                        addOption(
+                            "🔴 Красное",
+                            "красное"
+                        );
+                        addOption(
+                            "⚫ Чёрное",
+                            "черное"
+                        );
+                    }
+                    if (
+                        currentGame.extra ===
+                        "sector"
+                    ) {
+                        extraLabel.textContent =
+                            "🎡 Выбери сектор";
+                        for (
+                            let i = 1;
+                            i <= 8;
+                            i++
+                        ) {
+                            addOption(
+                                "Сектор " + i,
+                                String(i)
+                            );
+                        }
+                    }
+                    if (
+                        currentGame.extra ===
+                        "tower"
+                    ) {
+                        extraLabel.textContent =
+                            "🗼 Количество мин";
+                        for (
+                            let i = 1;
+                            i <= 4;
+                            i++
+                        ) {
+                            addOption(
+                                i + " мины",
+                                String(i)
+                            );
+                        }
+                    }
+                    if (
+                        currentGame.extra ===
+                        "mines"
+                    ) {
+                        extraLabel.textContent =
+                            "💣 Количество мин";
+                        for (
+                            let i = 2;
+                            i <= 24;
+                            i++
+                        ) {
+                            addOption(
+                                i + " мин",
+                                String(i)
+                            );
+                        }
+                    }
+                    if (
+                        currentGame.extra ===
+                        "pirate"
+                    ) {
+                        extraLabel.textContent =
+                            "🏴‍☠️ Количество мин";
+                        addOption(
+                            "1 мина",
+                            "1"
+                        );
+                        addOption(
+                            "2 мины",
+                            "2"
+                        );
+                    }
+                    if (
+                        currentGame.extra ===
+                        "overgo"
+                    ) {
+                        extraLabel.textContent =
+                            "🚀 Коэффициент";
+                        for (
+                            let i = 101;
+                            i <= 500;
+                            i += 10
+                        ) {
+                            const value =
+                                (
+                                    i / 100
+                                ).toFixed(2);
+                            addOption(
+                                value + "x",
+                                value
+                            );
+                        }
+                    }
+                    if (
+                        currentGame.extra ===
+                        "roulette"
+                    ) {
+                        extraLabel.textContent =
+                            "🎯 Исход";
+                        addOption(
+                            "🔴 Красное",
+                            "красное"
+                        );
+                        addOption(
+                            "⚫ Чёрное",
+                            "черное"
+                        );
+                        addOption(
+                            "🟢 Зеро",
+                            "зеро"
+                        );
+                    }
                 }
+                modal.classList.add(
+                    "active"
+                );
+                setTimeout(() => {
+                    betInput.focus();
+                }, 150);
             });
-        },
-        {
-            threshold: 0.12
-        }
-    );
-    elements.forEach(element => {
-        observer.observe(element);
-    });
-    /* =========================
-       NUMBER COUNTER
-    ========================= */
-    function animateNumber(element, target, suffix = "") {
-        let current = 0;
-        const duration = 900;
-        const start = performance.now();
-        function update(time) {
-            const progress = Math.min(
-                (time - start) / duration,
-                1
+        });
+    /* ==================================
+       OPTION
+    ================================== */
+    function addOption(
+        text,
+        value
+    ) {
+        const option =
+            document.createElement(
+                "option"
             );
-            const eased = 1 - Math.pow(1 - progress, 3);
-            current = Math.floor(target * eased);
-            element.textContent =
-                current + suffix;
-            if (progress < 1) {
-                requestAnimationFrame(update);
+        option.textContent =
+            text;
+        option.value =
+            value;
+        extraSelect.appendChild(
+            option
+        );
+    }
+    /* ==================================
+       CLOSE
+    ================================== */
+    closeModal.addEventListener(
+        "click",
+        closeGameModal
+    );
+    modal.addEventListener(
+        "click",
+        event => {
+            if (
+                event.target === modal
+            ) {
+                closeGameModal();
             }
         }
-        requestAnimationFrame(update);
+    );
+    function closeGameModal() {
+        modal.classList.remove(
+            "active"
+        );
     }
-    /* =========================
-       TELEGRAM APP DETECTION
-    ========================= */
-    document.querySelectorAll(
-        'a[href*="t.me"]'
-    ).forEach(link => {
-        link.addEventListener("click", () => {
-            console.log(
-                "Открываем Telegram:",
-                link.href
+    /* ==================================
+       PLAY
+    ================================== */
+    playButton.addEventListener(
+        "click",
+        playGame
+    );
+    function playGame() {
+        if (!currentGame) {
+            return;
+        }
+        const bet =
+            betInput.value.trim();
+        if (!bet) {
+            showToast(
+                "❌ Введи сумму ставки"
             );
-        });
-    });
+            betInput.focus();
+            return;
+        }
+        const number =
+            Number(bet);
+        if (
+            !Number.isFinite(number) ||
+            number <= 0
+        ) {
+            showToast(
+                "❌ Некорректная ставка"
+            );
+            return;
+        }
+        /*
+           Формируем команду.
+           Например:
+           Хило 100
+           Мины 100 5
+           Башня 100 2
+           Х50 100 красное
+           Оверго 100 2.50
+        */
+        let command =
+            currentGame.command +
+            " " +
+            bet;
+        if (
+            currentGame.extra
+        ) {
+            const extra =
+                extraSelect.value;
+            if (extra) {
+                command +=
+                    " " +
+                    extra;
+            }
+        }
+        closeGameModal();
+        showToast(
+            "🎮 Открываем Telegram..."
+        );
+        /*
+           Telegram deep-link.
+           Пользователь попадёт в чат,
+           после чего сможет отправить
+           подготовленную команду.
+        */
+        const telegramUrl =
+            "https://t.me/" +
+            GROUP_USERNAME +
+            "?text=" +
+            encodeURIComponent(
+                command
+            );
+        setTimeout(() => {
+            window.location.href =
+                telegramUrl;
+        }, 500);
+    }
+    /* ==================================
+       TOAST
+    ================================== */
+    let toastTimer;
+    function showToast(message) {
+        toast.textContent =
+            message;
+        toast.classList.add(
+            "show"
+        );
+        clearTimeout(
+            toastTimer
+        );
+        toastTimer =
+            setTimeout(() => {
+                toast.classList.remove(
+                    "show"
+                );
+            }, 2500);
+    }
+    /* ==================================
+       ENTER KEY
+    ================================== */
+    betInput.addEventListener(
+        "keydown",
+        event => {
+            if (
+                event.key ===
+                "Enter"
+            ) {
+                playGame();
+            }
+        }
+    );
+    /* ==================================
+       SCROLL REVEAL
+    ================================== */
+    const revealObserver =
+        new IntersectionObserver(
+            entries => {
+                entries.forEach(
+                    entry => {
+                        if (
+                            entry.isIntersecting
+                        ) {
+                            entry.target
+                                .classList
+                                .add(
+                                    "visible"
+                                );
+                        }
+                    }
+                );
+            },
+            {
+                threshold: .1
+            }
+        );
+    document
+        .querySelectorAll(
+            ".reveal"
+        )
+        .forEach(
+            element => {
+                revealObserver.observe(
+                    element
+                );
+            }
+        );
+    /* ==================================
+       TELEGRAM WEB APP
+    ================================== */
+    /*
+       Если сайт открыт внутри
+       Telegram Web App, пытаемся
+       использовать Telegram API.
+    */
+    if (
+        window.Telegram &&
+        window.Telegram.WebApp
+    ) {
+        const tg =
+            window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+    }
+    /* ==================================
+       ESC CLOSE
+    ================================== */
+    document.addEventListener(
+        "keydown",
+        event => {
+            if (
+                event.key === "Escape"
+            ) {
+                closeGameModal();
+            }
+        }
+    );
 </script>
 </body>
 </html>
