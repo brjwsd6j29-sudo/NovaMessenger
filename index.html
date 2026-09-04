@@ -2,1434 +2,406 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width,
-        initial-scale=1.0,
-        maximum-scale=1.0,
-        user-scalable=no"
-    >
-
-    <title>Lira Game</title>
-
-    <script src="https://telegram.org/js/telegram-web-app.js?63"></script>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Lira Games WebApp</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        :root {
+            --bg-color: #12131C;
+            --card-bg: #1E202E;
+            --accent-color: #0088cc;
+            --accent-hover: #00A3E0;
+            --text-color: #FFFFFF;
+            --text-secondary: #8E92A8;
+            --win-color: #2ECC71;
+            --lose-color: #E74C3C;
+            --gold-color: #F1C40F;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            -webkit-tap-highlight-color: transparent;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            user-select: none;
         }
 
         body {
-            font-family:
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                Roboto,
-                Arial,
-                sans-serif;
-
-            background:
-                radial-gradient(
-                    circle at 20% 0%,
-                    rgba(98, 75, 255, .22),
-                    transparent 35%
-                ),
-                radial-gradient(
-                    circle at 100% 30%,
-                    rgba(0, 190, 255, .14),
-                    transparent 35%
-                ),
-                #070910;
-
-            color: white;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        button {
-            font-family: inherit;
-            border: 0;
-            cursor: pointer;
-        }
-
-        .app {
-            max-width: 600px;
-            margin: auto;
-            min-height: 100vh;
-            padding-bottom: 35px;
-        }
-
-        /* BLOCKED */
-
-        #blocked {
-            display: none;
-            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 25px;
-            text-align: center;
-        }
-
-        .blocked-card {
-            width: 100%;
-            padding: 30px 22px;
-            border-radius: 25px;
-
-            background:
-                linear-gradient(
-                    145deg,
-                    rgba(105, 80, 255, .18),
-                    rgba(255,255,255,.04)
-                );
-
-            border: 1px solid rgba(255,255,255,.08);
-        }
-
-        .blocked-icon {
-            font-size: 60px;
-            margin-bottom: 18px;
-        }
-
-        .blocked-card h1 {
-            font-size: 25px;
-            margin-bottom: 10px;
-        }
-
-        .blocked-card p {
-            color: #8d95aa;
-            font-size: 13px;
-            line-height: 1.5;
-        }
-
-        /* HEADER */
-
-        .header {
-            padding: 18px 17px 8px;
-        }
-
-        .profile {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .avatar {
-            width: 52px;
-            height: 52px;
-            border-radius: 17px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            font-size: 24px;
-            font-weight: 900;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #7357ff,
-                    #00c9ff
-                );
-
+            padding: 20px;
             overflow: hidden;
         }
 
-        .avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .user-name {
-            font-size: 17px;
-            font-weight: 900;
-        }
-
-        .user-tag {
-            color: #777f94;
-            font-size: 11px;
-            margin-top: 3px;
-        }
-
-        /* BALANCE */
-
-        .balance-card {
-            margin: 17px;
-            padding: 23px;
-
-            border-radius: 25px;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    rgba(103, 79, 255, .34),
-                    rgba(0, 193, 255, .11)
-                );
-
-            border: 1px solid rgba(255,255,255,.09);
-
-            box-shadow:
-                0 20px 60px rgba(0,0,0,.25);
-        }
-
-        .balance-label {
-            color: #a3aac0;
-            font-size: 11px;
-        }
-
-        .balance-value {
-            font-size: 31px;
-            font-weight: 950;
-            margin-top: 6px;
-        }
-
-        .currency {
-            color: #63d9ff;
-        }
-
-        .balance-status {
-            margin-top: 10px;
-            color: #8f97aa;
-            font-size: 10px;
-        }
-
-        /* NAV */
-
-        .nav {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 7px;
-            padding: 0 17px 18px;
-        }
-
-        .nav button {
-            padding: 12px 5px;
-            border-radius: 13px;
-
-            color: #7f879b;
-            background: rgba(255,255,255,.045);
-
-            border: 1px solid rgba(255,255,255,.06);
-
-            font-size: 11px;
-            font-weight: 800;
-        }
-
-        .nav button.active {
-            color: white;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    rgba(105,82,255,.35),
-                    rgba(0,190,255,.13)
-                );
-
-            border-color: rgba(107,91,255,.4);
-        }
-
-        /* SECTIONS */
-
-        .section {
+        /* Заглушка для обычного браузера */
+        #access-denied {
             display: none;
-            padding: 0 17px;
-        }
-
-        .section.active {
-            display: block;
-            animation: appear .25s ease;
-        }
-
-        @keyframes appear {
-            from {
-                opacity: 0;
-                transform: translateY(8px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .title {
-            font-size: 21px;
-            font-weight: 950;
-            margin-bottom: 6px;
-        }
-
-        .subtitle {
-            color: #747c91;
-            font-size: 11px;
-            margin-bottom: 17px;
-        }
-
-        /* HOME */
-
-        .welcome {
-            padding: 21px;
-            border-radius: 21px;
-
-            background: rgba(255,255,255,.045);
-            border: 1px solid rgba(255,255,255,.07);
-        }
-
-        .welcome h2 {
-            font-size: 18px;
-            margin-bottom: 7px;
-        }
-
-        .welcome p {
-            color: #858da1;
-            font-size: 12px;
-            line-height: 1.5;
-        }
-
-        .quick-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 9px;
-            margin-top: 12px;
-        }
-
-        .quick-card {
-            padding: 17px;
-            border-radius: 18px;
-
-            background: rgba(255,255,255,.045);
-            border: 1px solid rgba(255,255,255,.06);
-        }
-
-        .quick-card span {
-            font-size: 24px;
-        }
-
-        .quick-card h3 {
-            margin-top: 9px;
-            font-size: 13px;
-        }
-
-        .quick-card p {
-            margin-top: 4px;
-            color: #737b90;
-            font-size: 10px;
-        }
-
-        /* GAMES */
-
-        .game-card {
-            padding: 20px;
-            border-radius: 22px;
-
-            background:
-                linear-gradient(
-                    145deg,
-                    rgba(255,255,255,.065),
-                    rgba(255,255,255,.025)
-                );
-
-            border: 1px solid rgba(255,255,255,.07);
-        }
-
-        .game-icon {
-            width: 58px;
-            height: 58px;
-
-            display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-
-            border-radius: 18px;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    rgba(110,83,255,.3),
-                    rgba(0,200,255,.12)
-                );
-
-            font-size: 31px;
+            text-align: center;
+            height: 100vh;
+            padding: 20px;
         }
 
-        .game-card h2 {
-            margin-top: 14px;
-            font-size: 20px;
+        #access-denied div.icon {
+            font-size: 64px;
+            margin-bottom: 20px;
         }
 
-        .game-card p {
-            margin-top: 6px;
-            color: #858da2;
-            font-size: 11px;
+        #access-denied h1 {
+            font-size: 22px;
+            color: var(--lose-color);
+            margin-bottom: 10px;
+        }
+
+        #access-denied p {
+            color: var(--text-secondary);
+            font-size: 14px;
             line-height: 1.5;
         }
 
-        .flip-button {
-            width: 100%;
-            margin-top: 18px;
-            padding: 15px;
-
-            border-radius: 15px;
-
-            color: white;
-            font-weight: 900;
-            font-size: 13px;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #6b55ff,
-                    #00bff5
-                );
-
-            box-shadow:
-                0 12px 30px rgba(70,90,255,.2);
-        }
-
-        /* COIN */
-
-        .coin-area {
+        /* Основной контейнер WebApp */
+        #app {
             display: none;
-            text-align: center;
-            padding-top: 18px;
+            width: 100%;
+            max-width: 400px;
+            flex-direction: column;
+            align-items: center;
         }
 
-        .coin-area.show {
-            display: block;
+        .header {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .user-info {
+            background: var(--card-bg);
+            padding: 10px 16px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Контейнер игры */
+        .game-card {
+            background: var(--card-bg);
+            width: 100%;
+            border-radius: 20px;
+            padding: 25px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .game-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent-color);
+        }
+
+        /* Анимация и монета */
+        .coin-container {
+            width: 120px;
+            height: 120px;
+            perspective: 1000px;
+            margin: 20px 0 30px 0;
         }
 
         .coin {
-            width: 125px;
-            height: 125px;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
 
-            margin: 10px auto 20px;
-
+        .coin-side {
+            position: absolute;
+            width: 100%;
+            height: 100%;
             border-radius: 50%;
-
+            backface-visibility: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
-
-            font-size: 65px;
-
-            background:
-                radial-gradient(
-                    circle,
-                    #f8d86a,
-                    #c58d20
-                );
-
-            box-shadow:
-                0 15px 45px rgba(0,0,0,.4),
-                inset 0 0 0 7px rgba(255,255,255,.13);
-
-            transition: transform .9s;
+            font-size: 40px;
+            font-weight: bold;
+            border: 4px solid #E67E22;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.3), 0 4px 10px rgba(0,0,0,0.5);
         }
 
-        .coin.flipping {
-            animation: flip 1s ease;
+        .heads {
+            background: linear-gradient(135deg, #F1C40F, #F39C12);
+            color: #FFF;
         }
 
-        @keyframes flip {
-            0% {
-                transform: rotateY(0deg);
-            }
-
-            50% {
-                transform: rotateY(900deg);
-            }
-
-            100% {
-                transform: rotateY(1800deg);
-            }
+        .tails {
+            background: linear-gradient(135deg, #BDC3C7, #2C3E50);
+            color: #FFF;
+            transform: rotateY(180deg);
         }
 
-        .result {
-            min-height: 23px;
+        /* Кнопки и выбор */
+        .choice-container {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .btn-choice {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid transparent;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            color: var(--text-color);
             font-size: 15px;
-            font-weight: 900;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
 
-        /* PROFILE */
-
-        .profile-card {
-            padding: 21px;
-            border-radius: 22px;
-
-            background: rgba(255,255,255,.045);
-            border: 1px solid rgba(255,255,255,.07);
+        .btn-choice.active {
+            border-color: var(--accent-color);
+            background: rgba(0, 136, 204, 0.15);
+            color: var(--accent-color);
         }
 
-        .profile-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-
-            padding: 15px 0;
-
-            border-bottom:
-                1px solid rgba(255,255,255,.06);
+        /* Поле ввода ставки */
+        .bet-container {
+            width: 100%;
+            margin-bottom: 20px;
         }
 
-        .profile-row:last-child {
-            border-bottom: 0;
-        }
-
-        .profile-row span {
-            color: #7d8599;
-            font-size: 11px;
-        }
-
-        .profile-row strong {
+        .bet-container label {
+            display: block;
             font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
         }
 
-        /* TOAST */
-
-        .toast {
-            position: fixed;
-            z-index: 100;
-
-            left: 50%;
-            bottom: 22px;
-
-            transform:
-                translate(-50%, 100px);
-
-            padding: 13px 17px;
-
-            border-radius: 13px;
-
-            background: #171b28;
-            border: 1px solid rgba(255,255,255,.09);
-
-            font-size: 11px;
-            font-weight: 800;
-
-            transition: .3s;
-        }
-
-        .toast.show {
-            transform:
-                translate(-50%, 0);
-        }
-
-        /* LOADING */
-
-        #loading {
-            position: fixed;
-            inset: 0;
-            z-index: 300;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            background: #070910;
-        }
-
-        .loader {
+        .bet-input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.2);
+            color: #FFF;
+            font-size: 16px;
+            font-weight: bold;
+            outline: none;
             text-align: center;
         }
 
-        .loader-icon {
-            font-size: 48px;
-            animation: pulse 1s infinite;
+        /* Главная кнопка броска */
+        .btn-flip {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--accent-color), #005580);
+            color: #FFF;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 136, 204, 0.4);
+            transition: transform 0.1s ease, opacity 0.2s ease;
         }
 
-        .loader p {
-            color: #777f93;
-            font-size: 12px;
-            margin-top: 12px;
+        .btn-flip:active {
+            transform: scale(0.98);
         }
 
-        @keyframes pulse {
-            50% {
-                transform: scale(1.12);
-            }
+        .btn-flip:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
+
+        /* Отображение результата */
+        .result-message {
+            margin-top: 15px;
+            font-weight: bold;
+            font-size: 16px;
+            min-height: 22px;
+            text-align: center;
+        }
+
+        .win { color: var(--win-color); }
+        .lose { color: var(--lose-color); }
     </style>
 </head>
-
 <body>
 
-<!-- ЗАГРУЗКА -->
-
-<div id="loading">
-    <div class="loader">
-        <div class="loader-icon">💠</div>
-        <p>Подключение к Lira Game...</p>
-    </div>
-</div>
-
-
-<!-- ЕСЛИ НЕ TELEGRAM -->
-
-<div id="blocked">
-
-    <div class="blocked-card">
-
-        <div class="blocked-icon">✈️</div>
-
-        <h1>Откройте Lira Game в Telegram</h1>
-
-        <p>
-            Это Telegram Mini App.
-            Откройте приложение через Telegram,
-            чтобы авторизация и профиль работали правильно.
-        </p>
-
+    <div id="access-denied">
+        <div class="icon">🚫</div>
+        <h1>Доступ ограничен</h1>
+        <p>Запуск приложения возможен только через официального бота в Telegram.</p>
     </div>
 
-</div>
-
-
-<!-- ОСНОВНОЕ ПРИЛОЖЕНИЕ -->
-
-<div class="app" id="app" style="display:none;">
-
-    <!-- HEADER -->
-
-    <header class="header">
-
-        <div class="profile">
-
-            <div class="avatar" id="avatar">
-                👤
+    <div id="app">
+        <div class="header">
+            <div class="user-info">
+                <span>👤</span>
+                <span id="user-name">Игрок</span>
             </div>
-
-            <div>
-
-                <div
-                    class="user-name"
-                    id="userName"
-                >
-                    Игрок
-                </div>
-
-                <div
-                    class="user-tag"
-                    id="userTag"
-                >
-                    Telegram
-                </div>
-
-            </div>
-
         </div>
-
-    </header>
-
-
-    <!-- BALANCE -->
-
-    <div class="balance-card">
-
-        <div class="balance-label">
-            ТВОЙ БАЛАНС
-        </div>
-
-        <div class="balance-value">
-
-            <span id="balance">
-                0
-            </span>
-
-            <span class="currency">
-                💠
-            </span>
-
-        </div>
-
-        <div class="balance-status">
-            ● Синхронизация с аккаунтом
-        </div>
-
-    </div>
-
-
-    <!-- NAV -->
-
-    <nav class="nav">
-
-        <button
-            class="active"
-            onclick="openTab('home', this)"
-        >
-            🏠 Главная
-        </button>
-
-        <button
-            onclick="openTab('games', this)"
-        >
-            🎮 Игры
-        </button>
-
-        <button
-            onclick="openTab('profile', this)"
-        >
-            👤 Профиль
-        </button>
-
-    </nav>
-
-
-    <!-- HOME -->
-
-    <section
-        id="home"
-        class="section active"
-    >
-
-        <div class="title">
-            💠 Lira Game
-        </div>
-
-        <div class="subtitle">
-            Твой игровой кабинет внутри Telegram
-        </div>
-
-        <div class="welcome">
-
-            <h2>
-                Привет, <span id="helloName">игрок</span> 👋
-            </h2>
-
-            <p>
-                Здесь будут твой профиль, баланс,
-                статистика и игры.
-            </p>
-
-        </div>
-
-        <div class="quick-grid">
-
-            <div class="quick-card">
-
-                <span>💰</span>
-
-                <h3>
-                    Баланс
-                </h3>
-
-                <p>
-                    Синхронизирован с аккаунтом
-                </p>
-
-            </div>
-
-            <div class="quick-card">
-
-                <span>🎮</span>
-
-                <h3>
-                    Игры
-                </h3>
-
-                <p>
-                    Открыть игровой раздел
-                </p>
-
-            </div>
-
-            <div class="quick-card">
-
-                <span>🏆</span>
-
-                <h3>
-                    Победы
-                </h3>
-
-                <p id="homeWins">
-                    0
-                </p>
-
-            </div>
-
-            <div class="quick-card">
-
-                <span>📊</span>
-
-                <h3>
-                    Игр сыграно
-                </h3>
-
-                <p id="homeGames">
-                    0
-                </p>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- GAMES -->
-
-    <section
-        id="games"
-        class="section"
-    >
-
-        <div class="title">
-            🎮 Игры
-        </div>
-
-        <div class="subtitle">
-            Первый доступный режим
-        </div>
-
 
         <div class="game-card">
+            <div class="game-title">FLIP (Орёл / Решка)</div>
 
-            <div class="game-icon">
-                🪙
-            </div>
-
-            <h2>
-                Флип
-            </h2>
-
-            <p>
-                Подбрось виртуальную монетку
-                и узнай случайный результат.
-                Игра не списывает Лиры.
-            </p>
-
-            <button
-                class="flip-button"
-                onclick="playFlip()"
-                id="flipButton"
-            >
-                🪙 Бросить монетку
-            </button>
-
-
-            <div
-                class="coin-area"
-                id="coinArea"
-            >
-
-                <div
-                    class="coin"
-                    id="coin"
-                >
-                    🪙
+            <div class="coin-container">
+                <div class="coin" id="coin">
+                    <div class="coin-side heads">🦅</div>
+                    <div class="coin-side tails">🪙</div>
                 </div>
-
-                <div
-                    class="result"
-                    id="result"
-                >
-                </div>
-
             </div>
 
+            <div class="choice-container">
+                <button class="btn-choice active" id="btn-heads" onclick="selectChoice('heads')">🦅 Орёл</button>
+                <button class="btn-choice" id="btn-tails" onclick="selectChoice('tails')">🪙 Решка</button>
+            </div>
+
+            <div class="bet-container">
+                <label for="bet-amount">Сумма ставки (ромб):</label>
+                <input type="number" id="bet-amount" class="bet-input" value="1000" min="100" step="100">
+            </div>
+
+            <button class="btn-flip" id="btn-spin" onclick="playFlip()">БРОСИТЬ МОНЕТУ</button>
+
+            <div class="result-message" id="result"></div>
         </div>
-
-    </section>
-
-
-    <!-- PROFILE -->
-
-    <section
-        id="profile"
-        class="section"
-    >
-
-        <div class="title">
-            👤 Профиль
-        </div>
-
-        <div class="subtitle">
-            Данные Telegram-аккаунта
-        </div>
-
-        <div class="profile-card">
-
-            <div class="profile-row">
-
-                <span>
-                    Имя
-                </span>
-
-                <strong id="profileName">
-                    —
-                </strong>
-
-            </div>
-
-            <div class="profile-row">
-
-                <span>
-                    Username
-                </span>
-
-                <strong id="profileUsername">
-                    —
-                </strong>
-
-            </div>
-
-            <div class="profile-row">
-
-                <span>
-                    Telegram ID
-                </span>
-
-                <strong id="profileId">
-                    —
-                </strong>
-
-            </div>
-
-            <div class="profile-row">
-
-                <span>
-                    Баланс
-                </span>
-
-                <strong>
-                    <span id="profileBalance">
-                        0
-                    </span>
-                    💠
-                </strong>
-
-            </div>
-
-            <div class="profile-row">
-
-                <span>
-                    Игр сыграно
-                </span>
-
-                <strong id="profileGames">
-                    0
-                </strong>
-
-            </div>
-
-            <div class="profile-row">
-
-                <span>
-                    Побед
-                </span>
-
-                <strong id="profileWins">
-                    0
-                </strong>
-
-            </div>
-
-        </div>
-
-    </section>
-
-</div>
-
-
-<div
-    class="toast"
-    id="toast"
->
-</div>
-
-
-<script>
-
-/* ==========================================
-   TELEGRAM
-========================================== */
-
-const tg = window.Telegram?.WebApp;
-
-
-/*
- * Сайт разрешён только внутри Telegram.
- */
-
-if (!tg) {
-
-    document.getElementById("loading")
-        .style.display = "none";
-
-    document.getElementById("blocked")
-        .style.display = "flex";
-
-} else {
-
-    tg.ready();
-    tg.expand();
-
-    startApp();
-
-}
-
-
-/* ==========================================
-   USER
-========================================== */
-
-let telegramUser = null;
-
-
-/*
- * Важно:
- * initDataUnsafe удобно использовать
- * для отображения интерфейса,
- * но нельзя использовать для доверенных
- * операций на сервере.
- */
-
-function loadTelegramUser() {
-
-    telegramUser =
-        tg.initDataUnsafe?.user || null;
-
-
-    if (!telegramUser) {
-
-        showToast(
-            "⚠️ Не удалось получить Telegram-профиль"
-        );
-
-        return;
-
-    }
-
-
-    const firstName =
-        telegramUser.first_name || "Игрок";
-
-    const lastName =
-        telegramUser.last_name || "";
-
-    const fullName =
-        `${firstName} ${lastName}`.trim();
-
-
-    document.getElementById("userName")
-        .textContent = fullName;
-
-    document.getElementById("helloName")
-        .textContent = firstName;
-
-    document.getElementById("profileName")
-        .textContent = fullName;
-
-
-    document.getElementById("profileUsername")
-        .textContent =
-            telegramUser.username
-                ? "@" + telegramUser.username
-                : "нет";
-
-
-    document.getElementById("profileId")
-        .textContent =
-            telegramUser.id;
-
-
-    /*
-     * Фото профиля Telegram,
-     * если Telegram его передал.
-     */
-
-    if (telegramUser.photo_url) {
-
-        document.getElementById("avatar").innerHTML =
-            `<img src="${escapeHtml(
-                telegramUser.photo_url
-            )}" alt="avatar">`;
-
-    } else {
-
-        document.getElementById("avatar")
-            .textContent =
-                firstName
-                    .charAt(0)
-                    .toUpperCase();
-
-    }
-
-}
-
-
-/* ==========================================
-   START
-========================================== */
-
-async function startApp() {
-
-    loadTelegramUser();
-
-    /*
-     * Здесь будет настоящий запрос
-     * к твоему Python API.
-     *
-     * Пока используем демонстрационный
-     * баланс, чтобы интерфейс работал.
-     */
-
-    await loadAccount();
-
-    document.getElementById("loading")
-        .style.display = "none";
-
-    document.getElementById("app")
-        .style.display = "block";
-
-}
-
-
-/* ==========================================
-   ACCOUNT
-========================================== */
-
-let account = {
-
-    balance: 0,
-    games: 0,
-    wins: 0
-
-};
-
-
-async function loadAccount() {
-
-    /*
-     * ПОКА ДЕМО.
-     *
-     * Когда подключим Python API,
-     * здесь будет:
-     *
-     * fetch("/api/me", {
-     *     headers: {
-     *         Authorization:
-     *             tg.initData
-     *     }
-     * })
-     *
-     * и сервер вернёт настоящий
-     * баланс из SQLite.
-     */
-
-
-    const saved =
-        localStorage.getItem(
-            "lira_demo_stats"
-        );
-
-
-    if (saved) {
-
-        try {
-
-            account =
-                JSON.parse(saved);
-
-        } catch {
-
-            account = {
-                balance: 0,
-                games: 0,
-                wins: 0
-            };
-
+    </div>
+
+    <script>
+        // Инициализация Telegram WebApp
+        const tg = window.Telegram.WebApp;
+
+        let selectedChoice = 'heads'; // Выбранная сторона
+        let currentRotation = 0;       // Текущий угол поворота монеты
+        let isProcessing = false;      // Флаг анимации
+
+        // Валидация доступа: проверка запуска внутри Telegram
+        function validateTelegramContext() {
+            // Если initData или initDataUnsafe пусты — вход был осуществлён через браузер
+            if (!tg.initData || tg.initData === "") {
+                document.getElementById('access-denied').style.display = 'flex';
+                document.getElementById('app').style.display = 'none';
+                return false;
+            }
+
+            // Уведомляем Telegram, что приложение готово
+            tg.ready();
+            tg.expand(); // Разворачиваем на весь экран
+
+            // Отображение имени пользователя
+            const user = tg.initDataUnsafe.user;
+            if (user) {
+                document.getElementById('user-name').innerText = user.first_name || "Игрок";
+            }
+
+            document.getElementById('access-denied').style.display = 'none';
+            document.getElementById('app').style.display = 'flex';
+            return true;
         }
 
-    }
-
-
-    updateAccountUI();
-
-}
-
-
-/* ==========================================
-   UI ACCOUNT
-========================================== */
-
-function updateAccountUI() {
-
-    const balance =
-        Number(account.balance || 0);
-
-    const games =
-        Number(account.games || 0);
-
-    const wins =
-        Number(account.wins || 0);
-
-
-    document.getElementById("balance")
-        .textContent =
-            balance.toLocaleString("ru-RU");
-
-
-    document.getElementById("profileBalance")
-        .textContent =
-            balance.toLocaleString("ru-RU");
-
-
-    document.getElementById("profileGames")
-        .textContent =
-            games;
-
-
-    document.getElementById("profileWins")
-        .textContent =
-            wins;
-
-
-    document.getElementById("homeGames")
-        .textContent =
-            games;
-
-
-    document.getElementById("homeWins")
-        .textContent =
-            wins;
-
-
-    localStorage.setItem(
-        "lira_demo_stats",
-        JSON.stringify(account)
-    );
-
-}
-
-
-/* ==========================================
-   TABS
-========================================== */
-
-function openTab(id, button) {
-
-    document
-        .querySelectorAll(".section")
-        .forEach(section => {
-
-            section.classList.remove("active");
-
-        });
-
-
-    document
-        .getElementById(id)
-        .classList.add("active");
-
-
-    document
-        .querySelectorAll(".nav button")
-        .forEach(btn => {
-
-            btn.classList.remove("active");
-
-        });
-
-
-    if (button) {
-
-        button.classList.add("active");
-
-    }
-
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
-
-}
-
-
-/* ==========================================
-   FLIP
-========================================== */
-
-let flipLocked = false;
-
-
-function playFlip() {
-
-    if (flipLocked) return;
-
-    flipLocked = true;
-
-
-    const coin =
-        document.getElementById("coin");
-
-    const area =
-        document.getElementById("coinArea");
-
-    const result =
-        document.getElementById("result");
-
-    const button =
-        document.getElementById("flipButton");
-
-
-    area.classList.add("show");
-
-    result.textContent =
-        "Монетка летит...";
-
-
-    button.disabled = true;
-
-    button.style.opacity = ".55";
-
-
-    coin.classList.remove("flipping");
-
-    /*
-     * Перезапускаем CSS-анимацию.
-     */
-
-    void coin.offsetWidth;
-
-    coin.classList.add("flipping");
-
-
-    const isHeads =
-        Math.random() < 0.5;
-
-
-    setTimeout(() => {
-
-        coin.classList.remove("flipping");
-
-
-        if (isHeads) {
-
-            coin.textContent = "👑";
-
-            result.textContent =
-                "👑 Выпала сторона 1!";
-
-        } else {
-
-            coin.textContent = "🪙";
-
-            result.textContent =
-                "🪙 Выпала сторона 2!";
-
+        // Выбор Орёл / Решка
+        function selectChoice(choice) {
+            if (isProcessing) return;
+            selectedChoice = choice;
+            
+            document.getElementById('btn-heads').classList.toggle('active', choice === 'heads');
+            document.getElementById('btn-tails').classList.toggle('active', choice === 'tails');
         }
 
+        // Логика броска
+        function playFlip() {
+            if (isProcessing) return;
 
-        account.games++;
+            const betInput = document.getElementById('bet-amount');
+            const betValue = parseInt(betInput.value);
 
-        /*
-         * Флип здесь не меняет баланс.
-         */
+            if (isNaN(betValue) || betValue <= 0) {
+                tg.showAlert("Введите корректную сумму ставки!");
+                return;
+            }
 
-        updateAccountUI();
+            isProcessing = true;
+            document.getElementById('btn-spin').disabled = true;
+            document.getElementById('result').innerText = "";
+            document.getElementById('result').className = "result-message";
 
+            // Генерация исхода (50% шанс на стороне клиенте для теста)
+            const outcome = Math.random() < 0.5 ? 'heads' : 'tails';
 
-        button.disabled = false;
+            // Вычисление градусов вращения (минимум 5 полных оборотов = 1800°)
+            const extraRounds = 5 * 360;
+            let targetDegree = currentRotation + extraRounds;
+            
+            // Выравниваем градусы для нужной стороны
+            const remainder = targetDegree % 360;
+            if (outcome === 'heads') {
+                targetDegree += (360 - remainder);
+            } else {
+                targetDegree += (180 - remainder);
+            }
 
-        button.style.opacity = "1";
+            currentRotation = targetDegree;
 
-        flipLocked = false;
+            // Запуск анимации
+            const coinEl = document.getElementById('coin');
+            coinEl.style.transform = `rotateY(${targetDegree}deg)`;
 
+            // Подведение итогов по завершении анимации (3 сек)
+            setTimeout(() => {
+                const isWin = (selectedChoice === outcome);
+                const resultEl = document.getElementById('result');
 
-        showToast(
-            "🪙 Результат готов"
-        );
+                if (isWin) {
+                    const winAmount = betValue * 2;
+                    resultEl.innerText = `🎉 Вы выиграли ${winAmount.toLocaleString()} ромб!`;
+                    resultEl.classList.add('win');
+                    tg.HapticFeedback.notificationOccurred('success');
+                } else {
+                    resultEl.innerText = `❌ Вы проиграли ${betValue.toLocaleString()} ромб!`;
+                    resultEl.classList.add('lose');
+                    tg.HapticFeedback.notificationOccurred('error');
+                }
 
+                // Отправка результатов обратно боту (при необходимости)
+                /*
+                tg.sendData(JSON.stringify({
+                    game: "flip",
+                    bet: betValue,
+                    choice: selectedChoice,
+                    outcome: outcome,
+                    win: isWin
+                }));
+                */
 
-    }, 1000);
+                isProcessing = false;
+                document.getElementById('btn-spin').disabled = false;
+            }, 3000);
+        }
 
-}
-
-
-/* ==========================================
-   TOAST
-========================================== */
-
-let toastTimer;
-
-
-function showToast(text) {
-
-    const toast =
-        document.getElementById("toast");
-
-
-    toast.textContent = text;
-
-    toast.classList.add("show");
-
-
-    clearTimeout(toastTimer);
-
-
-    toastTimer =
-        setTimeout(() => {
-
-            toast.classList.remove("show");
-
-        }, 2300);
-
-}
-
-
-/* ==========================================
-   HTML ESCAPE
-========================================== */
-
-function escapeHtml(value) {
-
-    return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-
-}
-
-
-/* ==========================================
-   TELEGRAM THEME
-========================================== */
-
-if (tg) {
-
-    /*
-     * Сообщаем Telegram,
-     * что приложение готово.
-     */
-
-    tg.ready();
-
-
-    /*
-     * Если доступна кнопка закрытия,
-     * используем стандартный интерфейс Telegram.
-     */
-
-    if (tg.BackButton) {
-
-        tg.BackButton.onClick(() => {
-
-            tg.close();
-
-        });
-
-    }
-
-}
-
-</script>
-
+        // Запуск проверки контекста при загрузке страницы
+        window.addEventListener('DOMContentLoaded', validateTelegramContext);
+    </script>
 </body>
 </html>
