@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Lira Games WebApp</title>
+    <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -77,20 +78,27 @@
 
         .header {
             width: 100%;
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
+            gap: 10px;
         }
 
-        .user-info {
+        .user-info, .balance-info {
             background: var(--card-bg);
-            padding: 10px 16px;
+            padding: 10px 14px;
             border-radius: 12px;
             display: inline-flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             font-weight: bold;
             font-size: 14px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .balance-info {
+            color: var(--gold-color);
         }
 
         /* Контейнер игры */
@@ -109,7 +117,7 @@
         .game-title {
             font-size: 20px;
             font-weight: 700;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             text-transform: uppercase;
             letter-spacing: 1px;
             color: var(--accent-color);
@@ -249,23 +257,30 @@
 </head>
 <body>
 
+    <!-- Экран блокировки (если зашли через обычный браузер) -->
     <div id="access-denied">
         <div class="icon">🚫</div>
         <h1>Доступ ограничен</h1>
         <p>Запуск приложения возможен только через официального бота в Telegram.</p>
     </div>
 
+    <!-- Основной интерфейс WebApp -->
     <div id="app">
         <div class="header">
             <div class="user-info">
                 <span>👤</span>
                 <span id="user-name">Игрок</span>
             </div>
+            <div class="balance-info">
+                <span>🪙</span>
+                <span id="user-balance">... лир</span>
+            </div>
         </div>
 
         <div class="game-card">
             <div class="game-title">FLIP (Орёл / Решка)</div>
 
+            <!-- Монета -->
             <div class="coin-container">
                 <div class="coin" id="coin">
                     <div class="coin-side heads">🦅</div>
@@ -273,44 +288,48 @@
                 </div>
             </div>
 
+            <!-- Выбор стороны -->
             <div class="choice-container">
                 <button class="btn-choice active" id="btn-heads" onclick="selectChoice('heads')">🦅 Орёл</button>
                 <button class="btn-choice" id="btn-tails" onclick="selectChoice('tails')">🪙 Решка</button>
             </div>
 
+            <!-- Сумма ставки -->
             <div class="bet-container">
-                <label for="bet-amount">Сумма ставки (ромб):</label>
+                <label for="bet-amount">Сумма ставки (в лирах):</label>
                 <input type="number" id="bet-amount" class="bet-input" value="1000" min="100" step="100">
             </div>
 
+            <!-- Кнопка броска -->
             <button class="btn-flip" id="btn-spin" onclick="playFlip()">БРОСИТЬ МОНЕТУ</button>
 
+            <!-- Сообщение о результате -->
             <div class="result-message" id="result"></div>
         </div>
     </div>
 
     <script>
-        // Инициализация Telegram WebApp
         const tg = window.Telegram.WebApp;
 
-        let selectedChoice = 'heads'; // Выбранная сторона
-        let currentRotation = 0;       // Текущий угол поворота монеты
-        let isProcessing = false;      // Флаг анимации
+        // Вставьте сюда URL вашего API/Бэкенда бота для получения и обновления баланса
+        const API_URL = "https://your-bot-backend.com/api"; 
 
-        // Валидация доступа: проверка запуска внутри Telegram
-        function validateTelegramContext() {
-            // Если initData или initDataUnsafe пусты — вход был осуществлён через браузер
+        let userBalance = 0;           // Текущий баланс лир
+        let selectedChoice = 'heads'; 
+        let currentRotation = 0;       
+        let isProcessing = false;      
+
+        // Валидация входа и загрузка данных
+        async function validateTelegramContext() {
             if (!tg.initData || tg.initData === "") {
                 document.getElementById('access-denied').style.display = 'flex';
                 document.getElementById('app').style.display = 'none';
                 return false;
             }
 
-            // Уведомляем Telegram, что приложение готово
             tg.ready();
-            tg.expand(); // Разворачиваем на весь экран
+            tg.expand();
 
-            // Отображение имени пользователя
             const user = tg.initDataUnsafe.user;
             if (user) {
                 document.getElementById('user-name').innerText = user.first_name || "Игрок";
@@ -318,10 +337,40 @@
 
             document.getElementById('access-denied').style.display = 'none';
             document.getElementById('app').style.display = 'flex';
+
+            // Загружаем актуальный баланс из базы данных вашего бота
+            await loadUserBalance();
             return true;
         }
 
-        // Выбор Орёл / Решка
+        // Запрос баланса с бэкенда бота
+        async function loadUserBalance() {
+            try {
+                /* Пример реального запроса на ваш сервер:
+                const response = await fetch(`${API_URL}/get_balance`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ initData: tg.initData })
+                });
+                const data = await response.json();
+                userBalance = data.balance;
+                */
+
+                // Тестовое значение (Заменится на данные из БД вашего бота)
+                userBalance = 878222; 
+
+                updateBalanceDisplay();
+            } catch (error) {
+                console.error("Ошибка при загрузке баланса:", error);
+            }
+        }
+
+        // Обновление текста баланса
+        function updateBalanceDisplay() {
+            document.getElementById('user-balance').innerText = `${userBalance.toLocaleString()} лир`;
+        }
+
+        // Выбор стороны
         function selectChoice(choice) {
             if (isProcessing) return;
             selectedChoice = choice;
@@ -342,19 +391,25 @@
                 return;
             }
 
+            if (betValue > userBalance) {
+                tg.showAlert("У вас недостаточно лир для этой ставки!");
+                return;
+            }
+
             isProcessing = true;
             document.getElementById('btn-spin').disabled = true;
             document.getElementById('result').innerText = "";
             document.getElementById('result').className = "result-message";
 
-            // Генерация исхода (50% шанс на стороне клиенте для теста)
+            // Списываем ставку перед броском
+            userBalance -= betValue;
+            updateBalanceDisplay();
+
             const outcome = Math.random() < 0.5 ? 'heads' : 'tails';
 
-            // Вычисление градусов вращения (минимум 5 полных оборотов = 1800°)
             const extraRounds = 5 * 360;
             let targetDegree = currentRotation + extraRounds;
             
-            // Выравниваем градусы для нужной стороны
             const remainder = targetDegree % 360;
             if (outcome === 'heads') {
                 targetDegree += (360 - remainder);
@@ -364,35 +419,37 @@
 
             currentRotation = targetDegree;
 
-            // Запуск анимации
             const coinEl = document.getElementById('coin');
             coinEl.style.transform = `rotateY(${targetDegree}deg)`;
 
-            // Подведение итогов по завершении анимации (3 сек)
             setTimeout(() => {
                 const isWin = (selectedChoice === outcome);
                 const resultEl = document.getElementById('result');
 
                 if (isWin) {
                     const winAmount = betValue * 2;
-                    resultEl.innerText = `🎉 Вы выиграли ${winAmount.toLocaleString()} ромб!`;
+                    userBalance += winAmount;
+                    resultEl.innerText = `🎉 Вы выиграли ${winAmount.toLocaleString()} лир!`;
                     resultEl.classList.add('win');
                     tg.HapticFeedback.notificationOccurred('success');
                 } else {
-                    resultEl.innerText = `❌ Вы проиграли ${betValue.toLocaleString()} ромб!`;
+                    resultEl.innerText = `❌ Вы проиграли ${betValue.toLocaleString()} лир!`;
                     resultEl.classList.add('lose');
                     tg.HapticFeedback.notificationOccurred('error');
                 }
 
-                // Отправка результатов обратно боту (при необходимости)
+                updateBalanceDisplay();
+
+                // Синхронизация нового баланса с вашей Базой Данных:
                 /*
-                tg.sendData(JSON.stringify({
-                    game: "flip",
-                    bet: betValue,
-                    choice: selectedChoice,
-                    outcome: outcome,
-                    win: isWin
-                }));
+                fetch(`${API_URL}/update_balance`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        initData: tg.initData,
+                        new_balance: userBalance
+                    })
+                });
                 */
 
                 isProcessing = false;
@@ -400,7 +457,6 @@
             }, 3000);
         }
 
-        // Запуск проверки контекста при загрузке страницы
         window.addEventListener('DOMContentLoaded', validateTelegramContext);
     </script>
 </body>
