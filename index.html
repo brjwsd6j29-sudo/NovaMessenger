@@ -1,552 +1,733 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Управление хостингом</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #0d1117;
-            color: #e6edf3;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        .container {
-            max-width: 900px;
-            width: 100%;
-            background: #161b22;
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-            border: 1px solid #30363d;
-        }
-        h1, h2, h3 {
-            color: #f0f6fc;
-            margin-bottom: 16px;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #30363d;
-            padding-bottom: 16px;
-            margin-bottom: 24px;
-        }
-        .header h1 {
-            margin: 0;
-            font-size: 24px;
-        }
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .user-info span {
-            color: #8b949e;
-        }
-        .btn {
-            background: #21262d;
-            border: 1px solid #30363d;
-            color: #c9d1d9;
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.2s;
-            display: inline-block;
-            text-decoration: none;
-            font-weight: 500;
-        }
-        .btn:hover {
-            background: #30363d;
-        }
-        .btn-danger {
-            background: #da3633;
-            border-color: #f85149;
-            color: white;
-        }
-        .btn-danger:hover {
-            background: #f85149;
-        }
-        .btn-success {
-            background: #238636;
-            border-color: #2ea043;
-            color: white;
-        }
-        .btn-success:hover {
-            background: #2ea043;
-        }
-        .btn-primary {
-            background: #1f6feb;
-            border-color: #58a6ff;
-            color: white;
-        }
-        .btn-primary:hover {
-            background: #58a6ff;
-        }
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        .login-form {
-            max-width: 360px;
-            margin: 0 auto;
-            padding: 20px 0;
-        }
-        .login-form label {
-            display: block;
-            margin-top: 12px;
-            font-weight: 500;
-            color: #8b949e;
-        }
-        .login-form input {
-            width: 100%;
-            padding: 10px 12px;
-            margin-top: 4px;
-            background: #0d1117;
-            border: 1px solid #30363d;
-            border-radius: 6px;
-            color: #e6edf3;
-            font-size: 16px;
-        }
-        .login-form input:focus {
-            outline: none;
-            border-color: #58a6ff;
-        }
-        .login-form .error {
-            color: #f85149;
-            margin-top: 8px;
-            font-size: 14px;
-        }
-        .login-form .btn {
-            width: 100%;
-            margin-top: 20px;
-            padding: 12px;
-            font-size: 16px;
-        }
-        .server-card {
-            background: #0d1117;
-            border: 1px solid #30363d;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 16px;
-        }
-        .server-card h3 {
-            margin-top: 0;
-            font-size: 20px;
-        }
-        .server-info {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px 20px;
-            margin: 12px 0;
-        }
-        .server-info .label {
-            color: #8b949e;
-            font-weight: 400;
-        }
-        .server-info .value {
-            font-weight: 500;
-        }
-        .status-badge {
-            display: inline-block;
-            padding: 2px 12px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-            background: #21262d;
-        }
-        .status-running { color: #3fb950; }
-        .status-offline { color: #f85149; }
-        .status-starting { color: #d29922; }
-        .status-stopping { color: #d29922; }
-        .expired-badge {
-            color: #f85149;
-            font-weight: bold;
-            margin-left: 8px;
-        }
-        .actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 12px;
-        }
-        .actions .btn {
-            flex: 1 0 auto;
-            text-align: center;
-        }
-        .admin-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 12px;
-        }
-        .admin-table th {
-            text-align: left;
-            padding: 10px 12px;
-            background: #0d1117;
-            border-bottom: 1px solid #30363d;
-            color: #8b949e;
-            font-weight: 500;
-        }
-        .admin-table td {
-            padding: 10px 12px;
-            border-bottom: 1px solid #21262d;
-            vertical-align: middle;
-        }
-        .admin-table tr:hover td {
-            background: #161b22;
-        }
-        .admin-actions .btn {
-            padding: 4px 10px;
-            font-size: 12px;
-            margin-right: 4px;
-        }
-        .hidden {
-            display: none !important;
-        }
-        .text-center {
-            text-align: center;
-        }
-        .mt-20 { margin-top: 20px; }
-        .mb-10 { margin-bottom: 10px; }
-        .flex-between { display: flex; justify-content: space-between; align-items: center; }
-        @media (max-width: 600px) {
-            .container { padding: 16px; }
-            .server-info { grid-template-columns: 1fr; }
-            .header { flex-wrap: wrap; gap: 12px; }
-            .admin-table { font-size: 13px; }
-            .admin-actions .btn { font-size: 11px; padding: 3px 8px; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Лира — личный кабинет</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0E1614;
+    --panel:#152420;
+    --panel-2:#1B2E28;
+    --line:#2B4038;
+    --gold:#C7A05C;
+    --gold-soft:#8A7042;
+    --verdigris:#4E9C82;
+    --parchment:#EDE6D4;
+    --parchment-dim:#A8A196;
+    --oxide:#B0503C;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1200px 600px at 15% -10%, rgba(78,156,130,0.10), transparent 60%),
+      radial-gradient(900px 500px at 100% 0%, rgba(199,160,92,0.08), transparent 55%),
+      var(--ink);
+    color:var(--parchment);
+    font-family:'IBM Plex Sans', sans-serif;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  .serif{font-family:'Fraunces', serif;}
+  #app{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;position:relative;}
+
+  /* ---------- shared ---------- */
+  .hairline{border:1px solid var(--line);}
+  .btn{
+    font-family:'IBM Plex Sans', sans-serif;
+    font-weight:600;font-size:15px;
+    padding:13px 18px;border-radius:3px;border:1px solid var(--gold-soft);
+    background:linear-gradient(180deg, rgba(199,160,92,0.16), rgba(199,160,92,0.05));
+    color:var(--gold);cursor:pointer;transition:transform .15s ease, background .15s ease;
+    letter-spacing:.2px;
+  }
+  .btn:hover{background:linear-gradient(180deg, rgba(199,160,92,0.26), rgba(199,160,92,0.09));}
+  .btn:active{transform:scale(0.98);}
+  .btn.primary{background:var(--gold);color:#12211C;border-color:var(--gold);}
+  .btn.primary:hover{background:#D6B06C;}
+  .btn.ghost{background:transparent;color:var(--parchment-dim);border-color:var(--line);}
+  .btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+  input.code-input{
+    width:100%;font-family:'Fraunces',serif;font-size:28px;letter-spacing:6px;text-align:center;
+    background:var(--panel-2);border:1px solid var(--line);color:var(--parchment);
+    padding:16px 10px;border-radius:3px;
+  }
+  input.code-input:focus{outline:none;border-color:var(--gold-soft);}
+
+  /* ---------- login ---------- */
+  #screen-login{flex:1;display:flex;flex-direction:column;justify-content:center;padding:32px 28px;gap:22px;}
+  .brand-mark{display:flex;align-items:center;gap:12px;margin-bottom:6px;}
+  .coin{
+    width:38px;height:38px;border-radius:50%;border:1.5px solid var(--gold);
+    display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;
+    color:var(--gold);font-size:18px;flex-shrink:0;
+    box-shadow: inset 0 0 0 3px rgba(199,160,92,0.15);
+  }
+  .brand-name{font-family:'Fraunces',serif;font-size:22px;letter-spacing:.5px;}
+  .brand-sub{color:var(--parchment-dim);font-size:13px;margin-top:2px;}
+  .login-copy h1{font-family:'Fraunces',serif;font-weight:500;font-size:26px;line-height:1.25;margin:0 0 8px;}
+  .login-copy p{color:var(--parchment-dim);font-size:14px;line-height:1.5;margin:0;}
+  .code-steps{color:var(--parchment-dim);font-size:13px;line-height:1.7;margin-top:4px;}
+  .code-steps b{color:var(--parchment);font-weight:600;}
+  #login-error{color:var(--oxide);font-size:13px;min-height:18px;}
+
+  /* ---------- shell ---------- */
+  #screen-main{display:none;flex:1;flex-direction:column;}
+  header.topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 20px;border-bottom:1px solid var(--line);
+  }
+  .balance-pill{
+    display:flex;align-items:baseline;gap:6px;font-family:'Fraunces',serif;
+  }
+  .balance-pill .num{font-size:22px;color:var(--gold);}
+  .balance-pill .unit{font-size:12px;color:var(--parchment-dim);}
+  nav.tabs{display:flex;border-bottom:1px solid var(--line);}
+  nav.tabs button{
+    flex:1;background:none;border:none;color:var(--parchment-dim);
+    font-family:'IBM Plex Sans';font-size:13px;font-weight:500;padding:14px 4px;
+    cursor:pointer;border-bottom:2px solid transparent;
+  }
+  nav.tabs button.active{color:var(--gold);border-bottom-color:var(--gold);}
+  main{flex:1;padding:22px 20px 90px;overflow-y:auto;}
+  .view{display:none;}
+  .view.active{display:block;}
+
+  /* ---------- profile ---------- */
+  .banknote{
+    border:1px solid var(--gold-soft);border-radius:6px;padding:22px;position:relative;
+    background:linear-gradient(160deg, rgba(199,160,92,0.10), rgba(199,160,92,0.02));
+    overflow:hidden;margin-bottom:20px;
+  }
+  .banknote::before{
+    content:"";position:absolute;inset:6px;border:1px solid rgba(199,160,92,0.35);border-radius:3px;pointer-events:none;
+  }
+  .banknote .label{font-size:11px;letter-spacing:1.5px;color:var(--parchment-dim);}
+  .banknote .amount{font-family:'Fraunces',serif;font-size:38px;color:var(--gold);margin:6px 0 2px;}
+  .banknote .who{font-size:13px;color:var(--parchment-dim);}
+  .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+  .stat-card{border:1px solid var(--line);border-radius:4px;padding:14px;}
+  .stat-card .v{font-family:'Fraunces',serif;font-size:20px;}
+  .stat-card .k{font-size:12px;color:var(--parchment-dim);margin-top:3px;}
+  .section-title{font-family:'Fraunces',serif;font-size:15px;color:var(--parchment-dim);margin:22px 0 10px;}
+  .history-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line);font-size:13px;}
+  .history-row .g{color:var(--parchment);}
+  .history-row .t{color:var(--parchment-dim);font-size:11px;}
+  .history-row .w.win{color:var(--verdigris);}
+  .history-row .w.loss{color:var(--oxide);}
+  .code-box{border:1px dashed var(--line);border-radius:4px;padding:16px;text-align:center;}
+  .code-box .code{font-family:'Fraunces',serif;font-size:26px;letter-spacing:5px;color:var(--gold);margin:8px 0 14px;}
+
+  /* ---------- games shared ---------- */
+  .game-panel{border:1px solid var(--line);border-radius:6px;padding:20px;}
+  .game-title{font-family:'Fraunces',serif;font-size:19px;margin:0 0 4px;}
+  .game-sub{color:var(--parchment-dim);font-size:13px;margin:0 0 18px;}
+  .bet-row{display:flex;gap:8px;margin-bottom:16px;}
+  .bet-row input{
+    flex:1;background:var(--panel-2);border:1px solid var(--line);color:var(--parchment);
+    padding:11px 12px;border-radius:3px;font-size:15px;font-family:'IBM Plex Sans';
+  }
+  .bet-row input:focus{outline:none;border-color:var(--gold-soft);}
+  .chip-row{display:flex;gap:8px;margin-bottom:18px;}
+  .chip{
+    background:var(--panel-2);border:1px solid var(--line);color:var(--parchment-dim);
+    padding:6px 12px;border-radius:20px;font-size:12px;cursor:pointer;
+  }
+  .chip:hover{border-color:var(--gold-soft);color:var(--gold);}
+
+  /* crash */
+  .crash-stage{
+    height:190px;border:1px solid var(--line);border-radius:4px;position:relative;overflow:hidden;
+    background:var(--panel-2);margin-bottom:16px;
+  }
+  .crash-mult{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    font-family:'Fraunces',serif;font-size:42px;
+  }
+  .crash-mult.rising{color:var(--verdigris);}
+  .crash-mult.busted{color:var(--oxide);}
+  .crash-line{position:absolute;bottom:0;left:0;height:2px;background:var(--verdigris);width:0%;transition:width .1s linear;}
+  .crash-status{position:absolute;bottom:10px;left:0;right:0;text-align:center;font-size:12px;color:var(--parchment-dim);}
+
+  /* plinko */
+  .plinko-board{
+    position:relative;height:230px;border:1px solid var(--line);border-radius:4px;
+    background:var(--panel-2);margin-bottom:14px;overflow:hidden;
+  }
+  .plinko-peg{position:absolute;width:4px;height:4px;border-radius:50%;background:var(--line);}
+  .plinko-ball{position:absolute;width:9px;height:9px;border-radius:50%;background:var(--gold);box-shadow:0 0 6px rgba(199,160,92,0.6);}
+  .plinko-slots{display:flex;height:100%;position:absolute;bottom:0;left:0;right:0;}
+  .plinko-slots div{flex:1;border-right:1px solid var(--line);display:flex;align-items:flex-end;justify-content:center;
+    font-size:10px;color:var(--parchment-dim);padding-bottom:4px;}
+  .plinko-slots div:last-child{border-right:none;}
+  .plinko-slots div.hit{background:rgba(199,160,92,0.18);color:var(--gold);}
+
+  /* pyramid */
+  .pyramid-grid{display:flex;flex-direction:column-reverse;gap:6px;margin-bottom:16px;}
+  .pyramid-row{display:flex;gap:6px;justify-content:center;}
+  .pyramid-tile{
+    width:52px;height:44px;border:1px solid var(--line);border-radius:4px;background:var(--panel-2);
+    display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:13px;
+    color:var(--parchment-dim);cursor:pointer;
+  }
+  .pyramid-row.active .pyramid-tile{cursor:pointer;color:var(--parchment);}
+  .pyramid-row.active .pyramid-tile:hover{border-color:var(--gold-soft);}
+  .pyramid-row.done .pyramid-tile{cursor:default;}
+  .pyramid-tile.safe{background:rgba(78,156,130,0.18);border-color:var(--verdigris);color:var(--verdigris);}
+  .pyramid-tile.bomb{background:rgba(176,80,60,0.2);border-color:var(--oxide);color:var(--oxide);}
+  .pyramid-tile.locked{opacity:.35;}
+  .pyramid-info{display:flex;justify-content:space-between;margin-bottom:14px;font-size:13px;color:var(--parchment-dim);}
+  .pyramid-info b{color:var(--gold);font-family:'Fraunces',serif;font-size:16px;}
+
+  .toast{
+    position:fixed;left:50%;bottom:24px;transform:translateX(-50%);
+    background:var(--panel-2);border:1px solid var(--gold-soft);color:var(--parchment);
+    padding:11px 18px;border-radius:4px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .25s ease;
+    max-width:88%;text-align:center;z-index:50;
+  }
+  .toast.show{opacity:1;}
+
+  .modal-backdrop{
+    position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:60;
+  }
+  .modal-backdrop.show{display:flex;}
+  .modal{
+    background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:22px;width:85%;max-width:340px;
+  }
+  .modal h3{font-family:'Fraunces',serif;font-weight:500;margin:0 0 8px;font-size:18px;}
+  .modal p{color:var(--parchment-dim);font-size:13px;line-height:1.5;margin:0 0 18px;}
+  .modal .row{display:flex;gap:10px;}
+  .modal .row .btn{flex:1;}
+</style>
 </head>
 <body>
-<div class="container" id="app">
+<div id="app">
 
-    <!-- Страница входа -->
-    <div id="loginPage">
-        <h1 class="text-center">🔐 Вход в систему</h1>
-        <div class="login-form">
-            <form id="loginForm" onsubmit="return login(event)">
-                <label for="username">Логин</label>
-                <input type="text" id="username" placeholder="Введите логин" required>
-                <label for="password">Пароль</label>
-                <input type="password" id="password" placeholder="Введите пароль" required>
-                <div id="loginError" class="error"></div>
-                <button type="submit" class="btn btn-primary">Войти</button>
-            </form>
-        </div>
+  <!-- ================= LOGIN ================= -->
+  <section id="screen-login">
+    <div class="brand-mark">
+      <div class="coin">₺</div>
+      <div>
+        <div class="brand-name">Лира</div>
+        <div class="brand-sub">Личный кабинет игрока</div>
+      </div>
     </div>
-
-    <!-- Основная панель (показывается после входа) -->
-    <div id="dashboardPage" class="hidden">
-        <div class="header">
-            <h1>📦 Управление хостингом</h1>
-            <div class="user-info">
-                <span id="currentUser"></span>
-                <button class="btn btn-danger" onclick="logout()">Выйти</button>
-            </div>
-        </div>
-
-        <!-- Панель клиента -->
-        <div id="clientPanel">
-            <h2>🖥 Мои серверы</h2>
-            <div id="clientServers"></div>
-        </div>
-
-        <!-- Панель администратора -->
-        <div id="adminPanel" class="hidden">
-            <h2>👑 Администрирование</h2>
-            <p style="color:#8b949e;">Управление всеми серверами</p>
-            <div id="adminServers"></div>
-        </div>
+    <div class="login-copy">
+      <h1>Введите код из бота</h1>
+      <p>Код выдаётся одноразово и привязан к вашему профилю.</p>
     </div>
+    <input type="text" id="code-field" class="code-input" placeholder="000000" maxlength="8" autocomplete="off">
+    <div id="login-error"></div>
+    <button class="btn primary" id="btn-login" style="width:100%;">Войти</button>
+    <div class="code-steps">
+      <b>1.</b> Откройте бота и отправьте <b>/mycode</b><br>
+      <b>2.</b> Скопируйте код из сообщения<br>
+      <b>3.</b> Вставьте его сюда — код действует один раз
+    </div>
+  </section>
+
+  <!-- ================= MAIN ================= -->
+  <section id="screen-main">
+    <header class="topbar">
+      <div class="brand-mark" style="margin:0;">
+        <div class="coin" style="width:30px;height:30px;font-size:14px;">₺</div>
+        <div class="brand-name" style="font-size:16px;">Лира</div>
+      </div>
+      <div class="balance-pill"><span class="num" id="hdr-balance">0</span><span class="unit">лир</span></div>
+    </header>
+
+    <nav class="tabs">
+      <button data-view="profile" class="active">Профиль</button>
+      <button data-view="crash">Краш</button>
+      <button data-view="plinko">Плинко</button>
+      <button data-view="pyramid">Пирамида</button>
+    </nav>
+
+    <main>
+
+      <!-- ---- PROFILE ---- -->
+      <div class="view active" id="view-profile">
+        <div class="banknote">
+          <div class="label">БАЛАНС ИГРОКА</div>
+          <div class="amount" id="p-balance">0</div>
+          <div class="who" id="p-name">—</div>
+        </div>
+        <div class="stat-grid">
+          <div class="stat-card"><div class="v" id="p-played">0</div><div class="k">Сыграно игр</div></div>
+          <div class="stat-card"><div class="v" id="p-won">0</div><div class="k">Выиграно всего</div></div>
+        </div>
+
+        <div class="section-title">Код доступа</div>
+        <div class="code-box">
+          <div style="font-size:12px;color:var(--parchment-dim);">Текущая сессия открыта по коду из /mycode</div>
+          <div class="code" id="p-code">••••••</div>
+          <button class="btn ghost" id="btn-refresh-code" style="width:100%;">Обновить код</button>
+        </div>
+
+        <div class="section-title">Последние игры</div>
+        <div id="history-list"></div>
+      </div>
+
+      <!-- ---- CRASH ---- -->
+      <div class="view" id="view-crash">
+        <div class="game-panel">
+          <div class="game-title">Краш</div>
+          <p class="game-sub">Множитель растёт со временем. Заберите выигрыш до краша.</p>
+          <div class="crash-stage">
+            <div class="crash-line" id="crash-line"></div>
+            <div class="crash-mult" id="crash-mult">1.00x</div>
+            <div class="crash-status" id="crash-status">Сделайте ставку, чтобы начать</div>
+          </div>
+          <div class="bet-row">
+            <input type="number" id="crash-bet" placeholder="Ставка" value="100">
+          </div>
+          <button class="btn primary" id="crash-btn" style="width:100%;">Сделать ставку</button>
+        </div>
+      </div>
+
+      <!-- ---- PLINKO ---- -->
+      <div class="view" id="view-plinko">
+        <div class="game-panel">
+          <div class="game-title">Плинко</div>
+          <p class="game-sub">Шарик падает через штифты и попадает в один из слотов.</p>
+          <div class="plinko-board" id="plinko-board"></div>
+          <div class="bet-row">
+            <input type="number" id="plinko-bet" placeholder="Ставка" value="100">
+          </div>
+          <button class="btn primary" id="plinko-btn" style="width:100%;">Бросить шарик</button>
+        </div>
+      </div>
+
+      <!-- ---- PYRAMID ---- -->
+      <div class="view" id="view-pyramid">
+        <div class="game-panel">
+          <div class="game-title">Пирамида</div>
+          <p class="game-sub">Поднимайтесь по ступеням. На каждой — одна ловушка из трёх плит.</p>
+          <div class="pyramid-info">
+            <div>Текущий выигрыш<br><b id="pyr-current">0</b></div>
+            <div style="text-align:right;">След. множитель<br><b id="pyr-next">x1.00</b></div>
+          </div>
+          <div class="pyramid-grid" id="pyramid-grid"></div>
+          <div class="bet-row">
+            <input type="number" id="pyramid-bet" placeholder="Ставка" value="100">
+          </div>
+          <div style="display:flex;gap:10px;">
+            <button class="btn primary" id="pyramid-start" style="flex:1;">Начать</button>
+            <button class="btn ghost" id="pyramid-cashout" style="flex:1;" disabled>Забрать</button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </section>
+
+  <div class="toast" id="toast"></div>
+
+  <div class="modal-backdrop" id="code-modal">
+    <div class="modal">
+      <h3>Обновить код доступа?</h3>
+      <p>Бот пришлёт запрос на подтверждение в личные сообщения. После подтверждения текущий код перестанет действовать и будет выдан новый.</p>
+      <div class="row">
+        <button class="btn ghost" id="code-modal-cancel">Отмена</button>
+        <button class="btn primary" id="code-modal-confirm">Подтвердить</button>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>
-// ============================================================
-//  ДАННЫЕ (полностью в памяти браузера)
-// ============================================================
+/* =========================================================================
+   MOCK API LAYER
+   -------------------------------------------------------------------------
+   Всё в этом блоке — заглушка вместо реального бэкенда бота.
+   Когда будет готов REST API на стороне бота, нужно заменить функции
+   ниже на реальные fetch()-запросы к нему. Контракт эндпоинтов:
 
-// Пользователи
-const USERS = {
-    'ZZLOYPP': {
-        password: 'PAANDAHOOST',
-        role: 'owner'
-    },
-    'CLIENTTLIRA2026': {
-        password: 'LIRAROMB20026',
-        role: 'client'
-    }
+   POST /api/auth/code           { code }            -> { token, profile }
+   POST /api/auth/regen-code     { token }            -> { pending: true }  (бот шлёт подтверждение в ЛС)
+   GET  /api/profile             (token in header)    -> { name, balance, played, won_total, history[] }
+   POST /api/games/crash/bet     { token, bet }       -> результат раунда
+   POST /api/games/plinko/bet    { token, bet }       -> { slot_index, multiplier }
+   POST /api/games/pyramid/start { token, bet }       -> { round_id }
+   POST /api/games/pyramid/pick  { token, round_id, row, tile } -> { safe, multiplier }
+   POST /api/games/pyramid/cashout { token, round_id } -> { win }
+   ========================================================================= */
+
+const mockDB = {
+  validCodes: { "482913": { name: "Игрок #7841", balance: 1250000, played: 132, won_total: 3400000 } },
+  session: null,
 };
 
-// Серверы (ключ - server_id)
-let servers = {
-    'srv1': {
-        name: 'Проект Alpha',
-        tariff: 'Базовый',
-        expiry_date: '15.09.2026',
-        expiry_time: '23:59',
-        owner_tg: 123456789,   // условно
-        status: 'running',
-        cpu: 12.5,
-        ram_mb: 512,
-        disk_mb: 1024
-    },
-    'srv2': {
-        name: 'Проект Beta',
-        tariff: 'Премиум',
-        expiry_date: '01.12.2026',
-        expiry_time: '18:00',
-        owner_tg: 123456789,
-        status: 'offline',
-        cpu: 0,
-        ram_mb: 0,
-        disk_mb: 2048
-    }
+const api = {
+  async loginByCode(code){
+    await wait(400);
+    const rec = mockDB.validCodes[code];
+    if(!rec) throw new Error("Код неверен или уже использован");
+    mockDB.session = { token: "mock-token", ...rec, history: mockHistory() };
+    return mockDB.session;
+  },
+  async regenCode(){
+    await wait(500);
+    return { pending: true };
+  },
+  getSession(){ return mockDB.session; }
 };
 
-// Какие серверы принадлежат клиенту
-const CLIENT_SERVERS = {
-    'CLIENTTLIRA2026': ['srv1', 'srv2']
-};
+function wait(ms){ return new Promise(r=>setTimeout(r,ms)); }
 
-// Текущий пользователь (устанавливается при входе)
-let currentUser = null;
-let currentRole = null;
-
-// ============================================================
-//  ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
-// ============================================================
-
-function getStatusLabel(status) {
-    const map = {
-        'running': '🟢 Запущен',
-        'starting': '🟡 Запускается',
-        'stopping': '🟠 Останавливается',
-        'offline': '🔴 Выключен'
-    };
-    return map[status] || status;
+function mockHistory(){
+  const games=["Краш","Плинко","Пирамида"];
+  const rows=[];
+  for(let i=0;i<8;i++){
+    const win = Math.random()>0.45;
+    const bet = [100,250,500,1000][Math.floor(Math.random()*4)];
+    rows.push({
+      game: games[Math.floor(Math.random()*games.length)],
+      bet, win,
+      amount: win ? Math.round(bet*(1+Math.random()*3)) : -bet,
+      time: `${String(Math.floor(Math.random()*23)).padStart(2,'0')}:${String(Math.floor(Math.random()*59)).padStart(2,'0')}`
+    });
+  }
+  return rows;
 }
 
-function isExpired(server) {
-    try {
-        const dt = new Date(server.expiry_date.split('.').reverse().join('-') + 'T' + server.expiry_time + ':00');
-        return dt <= new Date();
-    } catch(e) {
-        return false;
-    }
+/* ========================= UI WIRING ========================= */
+
+const toastEl = document.getElementById('toast');
+function toast(msg){
+  toastEl.textContent = msg;
+  toastEl.classList.add('show');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(()=>toastEl.classList.remove('show'), 2200);
 }
 
-function formatDate(dateStr) {
-    // просто возвращаем как есть
-    return dateStr;
+function fmt(n){ return Math.round(n).toLocaleString('ru-RU'); }
+
+/* ---- login ---- */
+document.getElementById('btn-login').addEventListener('click', doLogin);
+document.getElementById('code-field').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+
+async function doLogin(){
+  const code = document.getElementById('code-field').value.trim();
+  const errEl = document.getElementById('login-error');
+  errEl.textContent = '';
+  if(!code){ errEl.textContent = 'Введите код'; return; }
+  const btn = document.getElementById('btn-login');
+  btn.disabled = true; btn.textContent = 'Проверка…';
+  try{
+    const session = await api.loginByCode(code);
+    enterApp(session);
+  }catch(e){
+    errEl.textContent = e.message;
+  }finally{
+    btn.disabled = false; btn.textContent = 'Войти';
+  }
 }
 
-// ============================================================
-//  РЕНДЕРИНГ
-// ============================================================
-
-function renderClientServers() {
-    const container = document.getElementById('clientServers');
-    const serverIds = CLIENT_SERVERS[currentUser] || [];
-    if (serverIds.length === 0) {
-        container.innerHTML = '<p style="color:#8b949e;">У вас нет серверов.</p>';
-        return;
-    }
-    let html = '';
-    for (const sid of serverIds) {
-        const s = servers[sid];
-        if (!s) continue;
-        const expired = isExpired(s);
-        const statusClass = 'status-' + s.status;
-        html += `
-            <div class="server-card" id="server-${sid}">
-                <h3>🖥 ${s.name}</h3>
-                <div class="server-info">
-                    <div><span class="label">Тариф:</span> <span class="value">${s.tariff}</span></div>
-                    <div><span class="label">Доступен до:</span> <span class="value">${s.expiry_date} (${s.expiry_time} МСК) ${expired ? '<span class="expired-badge">⚠️ Истёк</span>' : ''}</span></div>
-                    <div><span class="label">Статус:</span> <span class="value"><span class="status-badge ${statusClass}">${getStatusLabel(s.status)}</span></span></div>
-                    <div><span class="label">CPU:</span> <span class="value" id="cpu-${sid}">${s.cpu}</span>%</div>
-                    <div><span class="label">RAM:</span> <span class="value" id="ram-${sid}">${s.ram_mb}</span> МБ</div>
-                    <div><span class="label">Диск:</span> <span class="value">${s.disk_mb} МБ</span></div>
-                </div>
-                <div class="actions">
-                    <button class="btn btn-success" onclick="powerAction('${sid}','start')" ${expired ? 'disabled' : ''}>▶️ Запустить</button>
-                    <button class="btn btn-danger" onclick="powerAction('${sid}','stop')" ${expired ? 'disabled' : ''}>⏹ Остановить</button>
-                </div>
-                ${expired ? '<p style="color:#f85149;margin-top:8px;">⛔ Управление заблокировано – срок истёк</p>' : ''}
-            </div>
-        `;
-    }
-    container.innerHTML = html;
+function enterApp(session){
+  document.getElementById('screen-login').style.display='none';
+  document.getElementById('screen-main').style.display='flex';
+  renderProfile(session);
 }
 
-function renderAdminServers() {
-    const container = document.getElementById('adminServers');
-    const sids = Object.keys(servers);
-    if (sids.length === 0) {
-        container.innerHTML = '<p style="color:#8b949e;">Нет серверов.</p>';
-        return;
-    }
-    let html = `<table class="admin-table">
-        <thead><tr>
-            <th>Название</th>
-            <th>Владелец (tg)</th>
-            <th>Тариф</th>
-            <th>Доступен до</th>
-            <th>Статус</th>
-            <th>Действия</th>
-        </tr></thead><tbody>`;
-    for (const sid of sids) {
-        const s = servers[sid];
-        const expired = isExpired(s);
-        html += `<tr>
-            <td><strong>${s.name}</strong></td>
-            <td>${s.owner_tg}</td>
-            <td>${s.tariff}</td>
-            <td>${s.expiry_date} ${s.expiry_time} МСК ${expired ? '<span class="expired-badge">Истёк</span>' : ''}</td>
-            <td><span class="status-badge status-${s.status}">${getStatusLabel(s.status)}</span></td>
-            <td class="admin-actions">
-                <button class="btn btn-success" onclick="extendServer('${sid}',7)">+7д</button>
-                <button class="btn btn-success" onclick="extendServer('${sid}',30)">+30д</button>
-                <button class="btn btn-danger" onclick="if(confirm('Удалить сервер ${s.name}?')) deleteServer('${sid}')">Удалить</button>
-            </td>
-        </tr>`;
-    }
-    html += '</tbody></table>';
-    container.innerHTML = html;
+function renderProfile(s){
+  document.getElementById('hdr-balance').textContent = fmt(s.balance);
+  document.getElementById('p-balance').textContent = fmt(s.balance);
+  document.getElementById('p-name').textContent = s.name;
+  document.getElementById('p-played').textContent = fmt(s.played);
+  document.getElementById('p-won').textContent = fmt(s.won_total);
+  document.getElementById('p-code').textContent = '482913';
+
+  const list = document.getElementById('history-list');
+  list.innerHTML = '';
+  s.history.forEach(h=>{
+    const row = document.createElement('div');
+    row.className='history-row';
+    row.innerHTML = `
+      <div><div class="g">${h.game}</div><div class="t">${h.time} · ставка ${fmt(h.bet)}</div></div>
+      <div class="w ${h.win?'win':'loss'}">${h.win?'+':''}${fmt(h.amount)}</div>
+    `;
+    list.appendChild(row);
+  });
 }
 
-function renderAll() {
-    if (!currentUser) return;
-    document.getElementById('currentUser').textContent = currentUser + (currentRole === 'owner' ? ' (админ)' : '');
-    if (currentRole === 'client') {
-        document.getElementById('clientPanel').classList.remove('hidden');
-        document.getElementById('adminPanel').classList.add('hidden');
-        renderClientServers();
-    } else if (currentRole === 'owner') {
-        document.getElementById('clientPanel').classList.add('hidden');
-        document.getElementById('adminPanel').classList.remove('hidden');
-        renderAdminServers();
-    }
+function adjustBalance(delta){
+  const s = api.getSession();
+  s.balance += delta;
+  document.getElementById('hdr-balance').textContent = fmt(s.balance);
+  document.getElementById('p-balance').textContent = fmt(s.balance);
 }
 
-// ============================================================
-//  ДЕЙСТВИЯ
-// ============================================================
-
-function login(e) {
-    e.preventDefault();
-    const username = document.getElementById('username').value.trim();
-    const password = document.getElementById('password').value.trim();
-    const errorEl = document.getElementById('loginError');
-    const user = USERS[username];
-    if (!user || user.password !== password) {
-        errorEl.textContent = '❌ Неверный логин или пароль';
-        return false;
-    }
-    currentUser = username;
-    currentRole = user.role;
-    document.getElementById('loginPage').classList.add('hidden');
-    document.getElementById('dashboardPage').classList.remove('hidden');
-    renderAll();
-    errorEl.textContent = '';
-    return false;
-}
-
-function logout() {
-    currentUser = null;
-    currentRole = null;
-    document.getElementById('loginPage').classList.remove('hidden');
-    document.getElementById('dashboardPage').classList.add('hidden');
-}
-
-function powerAction(serverId, action) {
-    const s = servers[serverId];
-    if (!s) return;
-    if (isExpired(s)) {
-        alert('Срок аренды истёк! Управление заблокировано.');
-        return;
-    }
-    // Имитация отправки команды
-    const btn = document.querySelector(`#server-${serverId} .btn-${action === 'start' ? 'success' : 'danger'}`);
-    if (btn) { btn.disabled = true; btn.textContent = '⏳ ...'; }
-
-    // Эмуляция задержки
-    setTimeout(() => {
-        if (action === 'start') {
-            if (s.status === 'running') {
-                alert('Сервер уже запущен');
-            } else {
-                s.status = 'running';
-                s.cpu = 15 + Math.random() * 20;
-                s.ram_mb = 400 + Math.random() * 200;
-            }
-        } else if (action === 'stop') {
-            if (s.status === 'offline') {
-                alert('Сервер уже остановлен');
-            } else {
-                s.status = 'offline';
-                s.cpu = 0;
-                s.ram_mb = 0;
-            }
-        }
-        renderAll(); // перерисовать
-        if (btn) { btn.disabled = false; btn.textContent = action === 'start' ? '▶️ Запустить' : '⏹ Остановить'; }
-    }, 1500);
-}
-
-// Админские функции
-function extendServer(serverId, days) {
-    const s = servers[serverId];
-    if (!s) return;
-    try {
-        let parts = s.expiry_date.split('.');
-        let dateObj = new Date(parts[2], parts[1]-1, parts[0], ...s.expiry_time.split(':'));
-        dateObj.setDate(dateObj.getDate() + days);
-        s.expiry_date = String(dateObj.getDate()).padStart(2,'0') + '.' + String(dateObj.getMonth()+1).padStart(2,'0') + '.' + dateObj.getFullYear();
-        s.expiry_time = String(dateObj.getHours()).padStart(2,'0') + ':' + String(dateObj.getMinutes()).padStart(2,'0');
-        renderAll();
-        alert(`✅ Срок продлён на ${days} дней`);
-    } catch(e) {
-        alert('Ошибка при продлении');
-    }
-}
-
-function deleteServer(serverId) {
-    if (!servers[serverId]) return;
-    delete servers[serverId];
-    // Удалить из привязок клиентов
-    for (let client in CLIENT_SERVERS) {
-        const idx = CLIENT_SERVERS[client].indexOf(serverId);
-        if (idx !== -1) CLIENT_SERVERS[client].splice(idx, 1);
-    }
-    renderAll();
-    alert('✅ Сервер удалён');
-}
-
-// ============================================================
-//  ИНИЦИАЛИЗАЦИЯ
-// ============================================================
-
-// При загрузке показываем страницу входа
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('loginPage').classList.remove('hidden');
-    document.getElementById('dashboardPage').classList.add('hidden');
+/* ---- tabs ---- */
+document.querySelectorAll('nav.tabs button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    document.getElementById('view-'+btn.dataset.view).classList.add('active');
+  });
 });
+
+/* ---- update code modal ---- */
+const codeModal = document.getElementById('code-modal');
+document.getElementById('btn-refresh-code').addEventListener('click', ()=> codeModal.classList.add('show'));
+document.getElementById('code-modal-cancel').addEventListener('click', ()=> codeModal.classList.remove('show'));
+document.getElementById('code-modal-confirm').addEventListener('click', async ()=>{
+  codeModal.classList.remove('show');
+  await api.regenCode();
+  toast('Запрос отправлен в бота — подтвердите там, чтобы получить новый код');
+});
+
+/* ========================= CRASH ========================= */
+let crashRunning = false;
+document.getElementById('crash-btn').addEventListener('click', runCrash);
+
+function runCrash(){
+  if(crashRunning) return;
+  const betInput = document.getElementById('crash-bet');
+  const bet = parseInt(betInput.value)||0;
+  const s = api.getSession();
+  if(bet<=0 || bet>s.balance){ toast('Некорректная ставка'); return; }
+
+  crashRunning = true;
+  adjustBalance(-bet);
+  const btn = document.getElementById('crash-btn');
+  const multEl = document.getElementById('crash-mult');
+  const lineEl = document.getElementById('crash-line');
+  const statusEl = document.getElementById('crash-status');
+  multEl.className='crash-mult rising';
+  btn.textContent = 'Забрать';
+  statusEl.textContent = 'В игре…';
+
+  const crashPoint = 1 + Math.random()*4; // демо-логика краша
+  let mult = 1.0;
+  let cashed = false;
+
+  const btnHandler = ()=>{
+    if(cashed || mult>=crashPoint) return;
+    cashed = true;
+    const win = Math.round(bet*mult);
+    adjustBalance(win);
+    statusEl.textContent = `Забрано на x${mult.toFixed(2)} · +${fmt(win-bet)}`;
+    endCrash();
+  };
+  btn.removeEventListener('click', runCrash);
+  btn.addEventListener('click', btnHandler);
+
+  const timer = setInterval(()=>{
+    mult += 0.03 + mult*0.01;
+    lineEl.style.width = Math.min(100, mult*12)+'%';
+    multEl.textContent = 'x'+mult.toFixed(2);
+    if(mult>=crashPoint){
+      clearInterval(timer);
+      if(!cashed){
+        multEl.className='crash-mult busted';
+        statusEl.textContent = 'Крах! Ставка проиграна';
+      }
+      endCrash();
+    }
+  }, 90);
+
+  function endCrash(){
+    clearInterval(timer);
+    crashRunning = false;
+    btn.textContent = 'Сделать ставку';
+    btn.removeEventListener('click', btnHandler);
+    btn.addEventListener('click', runCrash);
+  }
+}
+
+/* ========================= PLINKO ========================= */
+const plinkoBoard = document.getElementById('plinko-board');
+const ROWS = 8, SLOT_COUNT = ROWS+1;
+const multipliers = [8,3,1.5,1,0.5,1,1.5,3,8];
+
+function buildPlinkoBoard(){
+  plinkoBoard.querySelectorAll('.plinko-peg').forEach(p=>p.remove());
+  const w = plinkoBoard.clientWidth, h = 170;
+  for(let r=0;r<ROWS;r++){
+    const count = r+2;
+    for(let c=0;c<count;c++){
+      const peg = document.createElement('div');
+      peg.className='plinko-peg';
+      const x = w/2 + (c-(count-1)/2)*(w/(ROWS+2));
+      const y = 14 + r*(h/ROWS);
+      peg.style.left = x+'px'; peg.style.top = y+'px';
+      plinkoBoard.appendChild(peg);
+    }
+  }
+  let slots = plinkoBoard.querySelector('.plinko-slots');
+  if(!slots){
+    slots = document.createElement('div');
+    slots.className='plinko-slots';
+    plinkoBoard.appendChild(slots);
+  }
+  slots.innerHTML='';
+  multipliers.forEach(m=>{
+    const d = document.createElement('div');
+    d.textContent = 'x'+m;
+    slots.appendChild(d);
+  });
+}
+buildPlinkoBoard();
+window.addEventListener('resize', buildPlinkoBoard);
+
+document.getElementById('plinko-btn').addEventListener('click', runPlinko);
+
+function runPlinko(){
+  const bet = parseInt(document.getElementById('plinko-bet').value)||0;
+  const s = api.getSession();
+  if(bet<=0 || bet>s.balance){ toast('Некорректная ставка'); return; }
+  adjustBalance(-bet);
+
+  const btn = document.getElementById('plinko-btn');
+  btn.disabled = true;
+
+  const ball = document.createElement('div');
+  ball.className='plinko-ball';
+  const w = plinkoBoard.clientWidth;
+  let x = w/2, y = 6;
+  ball.style.left=(x-4)+'px'; ball.style.top=y+'px';
+  plinkoBoard.appendChild(ball);
+
+  let slotIndex = Math.floor(SLOT_COUNT/2);
+  let step = 0;
+  const h = 170;
+  const stepH = h/ROWS;
+  const timer = setInterval(()=>{
+    step++;
+    y += stepH;
+    x += (Math.random()<0.5?-1:1) * (w/(ROWS+2))/2;
+    slotIndex += (Math.random()<0.5? -0.5 : 0.5);
+    ball.style.top = y+'px';
+    ball.style.left = (x-4)+'px';
+    if(step>=ROWS){
+      clearInterval(timer);
+      const finalIndex = Math.max(0, Math.min(SLOT_COUNT-1, Math.round(slotIndex)));
+      const slotsEls = plinkoBoard.querySelectorAll('.plinko-slots div');
+      slotsEls.forEach(el=>el.classList.remove('hit'));
+      slotsEls[finalIndex]?.classList.add('hit');
+      const mult = multipliers[finalIndex];
+      const win = Math.round(bet*mult);
+      adjustBalance(win);
+      toast(`Слот x${mult} · ${win>=bet?'+':''}${fmt(win-bet)} лир`);
+      setTimeout(()=>ball.remove(), 600);
+      btn.disabled = false;
+    }
+  }, 140);
+}
+
+/* ========================= PYRAMID ========================= */
+const PYR_ROWS = 6;
+const rowMultipliers = [1.2,1.5,2,2.8,4,6.5];
+let pyrState = null;
+
+function buildPyramid(){
+  const grid = document.getElementById('pyramid-grid');
+  grid.innerHTML='';
+  for(let r=0;r<PYR_ROWS;r++){
+    const rowEl = document.createElement('div');
+    rowEl.className='pyramid-row';
+    rowEl.dataset.row = r;
+    for(let t=0;t<3;t++){
+      const tile = document.createElement('div');
+      tile.className='pyramid-tile locked';
+      tile.textContent = 'x'+rowMultipliers[r];
+      tile.dataset.tile = t;
+      rowEl.appendChild(tile);
+    }
+    grid.appendChild(rowEl);
+  }
+}
+buildPyramid();
+
+document.getElementById('pyramid-start').addEventListener('click', startPyramid);
+document.getElementById('pyramid-cashout').addEventListener('click', cashoutPyramid);
+
+function startPyramid(){
+  const bet = parseInt(document.getElementById('pyramid-bet').value)||0;
+  const s = api.getSession();
+  if(bet<=0 || bet>s.balance){ toast('Некорректная ставка'); return; }
+  adjustBalance(-bet);
+
+  pyrState = { bet, row: 0, alive: true };
+  document.getElementById('pyramid-start').disabled = true;
+  document.getElementById('pyramid-cashout').disabled = false;
+  document.getElementById('pyramid-bet').disabled = true;
+  document.getElementById('pyr-current').textContent = fmt(bet);
+  document.getElementById('pyr-next').textContent = 'x'+rowMultipliers[0];
+
+  buildPyramid();
+  activateRow(0);
+}
+
+function activateRow(r){
+  document.querySelectorAll('.pyramid-row').forEach(el=>{
+    const rowNum = parseInt(el.dataset.row);
+    el.classList.toggle('active', rowNum===r);
+    el.querySelectorAll('.pyramid-tile').forEach(t=>t.classList.toggle('locked', rowNum!==r));
+  });
+  const activeRow = document.querySelector(`.pyramid-row[data-row="${r}"]`);
+  activeRow.querySelectorAll('.pyramid-tile').forEach(tile=>{
+    tile.onclick = ()=>pickTile(r, tile);
+  });
+}
+
+function pickTile(r, tileEl){
+  if(!pyrState || !pyrState.alive) return;
+  const bombIndex = Math.floor(Math.random()*3); // демо-логика — на бэкенде должно решаться сервером
+  const picked = parseInt(tileEl.dataset.tile);
+  const rowEl = tileEl.parentElement;
+  rowEl.classList.remove('active'); rowEl.classList.add('done');
+  rowEl.querySelectorAll('.pyramid-tile').forEach((t,i)=>{
+    t.classList.remove('locked');
+    if(i===bombIndex) t.classList.add('bomb'); 
+  });
+
+  if(picked===bombIndex){
+    tileEl.classList.add('bomb');
+    pyrState.alive = false;
+    toast('Ловушка! Ставка проиграна');
+    endPyramidRound();
+    return;
+  }
+  tileEl.classList.add('safe');
+  const currentWin = pyrState.bet * rowMultipliers[r];
+  document.getElementById('pyr-current').textContent = fmt(currentWin);
+
+  if(r+1 >= PYR_ROWS){
+    toast('Вершина пирамиды! Заберите выигрыш');
+    document.getElementById('pyr-next').textContent = '—';
+    return;
+  }
+  pyrState.row = r+1;
+  document.getElementById('pyr-next').textContent = 'x'+rowMultipliers[r+1];
+  activateRow(r+1);
+}
+
+function cashoutPyramid(){
+  if(!pyrState || !pyrState.alive) return;
+  const mult = pyrState.row>0 ? rowMultipliers[pyrState.row-1] : 0;
+  const win = Math.round(pyrState.bet*mult);
+  if(win>0) adjustBalance(win);
+  toast(win>0 ? `Забрано: +${fmt(win-pyrState.bet)} лир` : 'Заберите выигрыш только после первой ступени');
+  if(win>0) endPyramidRound();
+}
+
+function endPyramidRound(){
+  pyrState = null;
+  document.getElementById('pyramid-start').disabled = false;
+  document.getElementById('pyramid-cashout').disabled = true;
+  document.getElementById('pyramid-bet').disabled = false;
+  document.querySelectorAll('.pyramid-row').forEach(el=>el.classList.remove('active'));
+}
+
+/* ---- demo autofill for quick testing ---- */
+document.getElementById('code-field').value = '482913';
 </script>
-</body>
-</html>
-        renderTable(sampleGamesData);
-    </script>
 </body>
 </html>
