@@ -2,735 +2,7188 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>RombGame — Краш</title>
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+>
+
+<title>RombGame — Crash DEMO</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link
+  href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap"
+  rel="stylesheet"
+>
 
 <style>
-/* ===== STYLE CONFIG ===== */
+
+/* ============================================================
+   ROMBGAME CRASH DEMO
+   VERSION 1.0
+   SAFE DEMO
+   NO REAL MONEY
+   NO REAL BETTING
+   NO REAL PAYOUTS
+   ============================================================ */
+
+
+/* ============================================================
+   01. ROOT
+   ============================================================ */
+
 :root {
-  --bg: #0B091A;
-  --surface: #15122B;
-  --surface-2: #1E1A3A;
-  --border: #2C2754;
-  --text: #F1EFFF;
-  --text-muted: #837FA8;
-  --violet: #7C5CFF;
-  --violet-soft: #4B3FA0;
-  --gold: #F5C94B;
-  --crash: #FF4D6D;
-  --cyan: #38E1C6;
-  --radius: 16px;
-  --font-display: 'Chakra Petch', sans-serif;
-  --font-body: 'Inter', sans-serif;
+
+  --bg:
+    #0B091A;
+
+  --bg-2:
+    #0E0B20;
+
+  --surface:
+    #15122B;
+
+  --surface-2:
+    #1E1A3A;
+
+  --surface-3:
+    #252044;
+
+  --border:
+    #2C2754;
+
+  --border-soft:
+    rgba(255,255,255,0.07);
+
+  --text:
+    #F1EFFF;
+
+  --text-soft:
+    #C8C3E2;
+
+  --text-muted:
+    #837FA8;
+
+  --violet:
+    #7C5CFF;
+
+  --violet-2:
+    #9A7CFF;
+
+  --violet-dark:
+    #4B3FA0;
+
+  --gold:
+    #F5C94B;
+
+  --gold-soft:
+    #FFE59A;
+
+  --crash:
+    #FF4D6D;
+
+  --cyan:
+    #38E1C6;
+
+  --green:
+    #6BFFA0;
+
+  --blue:
+    #5AA7FF;
+
+  --radius:
+    16px;
+
+  --radius-small:
+    10px;
+
+  --font-display:
+    'Chakra Petch', sans-serif;
+
+  --font-body:
+    'Inter', sans-serif;
+
+  --shadow:
+    0 15px 45px rgba(0,0,0,.45);
+
+  --shadow-small:
+    0 8px 25px rgba(0,0,0,.3);
+
 }
 
-* { box-sizing: border-box; }
-html, body {
-  margin: 0; padding: 0; height: 100%;
-  background: radial-gradient(120% 120% at 50% -10%, #1c1842 0%, var(--bg) 60%);
+
+/* ============================================================
+   02. RESET
+   ============================================================ */
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+  background: var(--bg);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+
+  background:
+    radial-gradient(
+      120% 100% at 50% -10%,
+      #211B4C 0%,
+      #120F29 38%,
+      var(--bg) 72%
+    );
+
   color: var(--text);
-  font-family: var(--font-body);
-  -webkit-font-smoothing: antialiased;
-  overscroll-behavior: none;
+
+  font-family:
+    var(--font-body);
+
+  -webkit-font-smoothing:
+    antialiased;
+
+  text-rendering:
+    optimizeLegibility;
+
+  overscroll-behavior:
+    none;
 }
 
-button { font-family: inherit; cursor: pointer; border: none; outline: none; }
-input { font-family: inherit; outline: none; }
+button,
+input {
+  font-family:
+    inherit;
+}
 
-.screen { min-height: 100vh; width: 100%; }
+button {
+  border: 0;
+  outline: 0;
+}
 
-/* ===================== BRAND & BUTTONS ===================== */
-.brand { display: flex; align-items: center; gap: 10px; }
-.brand-gem { width: 28px; height: 28px; flex-shrink: 0; }
-.brand-name { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; letter-spacing: 0.03em; }
-.brand-sm .brand-gem { width: 24px; height: 24px; }
+input {
+  outline: 0;
+}
+
+.hidden {
+  display: none !important;
+}
+
+
+/* ============================================================
+   03. SCROLLBAR
+   ============================================================ */
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background:
+    transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background:
+    var(--border);
+
+  border-radius:
+    999px;
+}
+
+
+/* ============================================================
+   04. COMMON
+   ============================================================ */
+
+.screen {
+  width: 100%;
+  min-height: 100vh;
+}
+
+.container {
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.text-muted {
+  color:
+    var(--text-muted);
+}
+
+.text-gold {
+  color:
+    var(--gold);
+}
+
+.text-violet {
+  color:
+    var(--violet-2);
+}
+
+.text-green {
+  color:
+    var(--green);
+}
+
+.text-crash {
+  color:
+    var(--crash);
+}
+
+
+/* ============================================================
+   05. BRAND
+   ============================================================ */
+
+.brand {
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    10px;
+}
+
+.brand-gem {
+  width:
+    30px;
+
+  height:
+    30px;
+
+  flex:
+    0 0 auto;
+
+  filter:
+    drop-shadow(0 0 12px rgba(124,92,255,.35));
+}
+
+.brand-name {
+  font-family:
+    var(--font-display);
+
+  font-weight:
+    700;
+
+  font-size:
+    1.12rem;
+
+  letter-spacing:
+    .035em;
+}
+
+.brand-sm .brand-gem {
+  width:
+    25px;
+
+  height:
+    25px;
+}
+
+
+/* ============================================================
+   06. BUTTONS
+   ============================================================ */
 
 .btn {
-  border-radius: 12px; padding: 13px 20px;
-  font-weight: 600; font-size: 0.95rem;
-  transition: transform .1s ease, opacity .12s ease, background .2s ease;
+  position:
+    relative;
+
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  min-height:
+    46px;
+
+  padding:
+    12px 18px;
+
+  border-radius:
+    12px;
+
+  font-size:
+    .92rem;
+
+  font-weight:
+    700;
+
+  cursor:
+    pointer;
+
+  transition:
+    transform .12s ease,
+    opacity .15s ease,
+    background .2s ease,
+    border-color .2s ease;
+
+  user-select:
+    none;
 }
-.btn:active { transform: scale(0.97); }
-.btn-block { width: 100%; }
+
+.btn:active {
+  transform:
+    scale(.97);
+}
+
+.btn:disabled {
+  opacity:
+    .42;
+
+  cursor:
+    not-allowed;
+
+  transform:
+    none;
+}
+
+.btn-block {
+  width:
+    100%;
+}
+
 .btn-primary {
-  background: linear-gradient(135deg, #8C62FF, #5B3FE0);
-  color: #fff;
-  box-shadow: 0 6px 20px -6px rgba(124,92,255,0.5);
-}
-.btn-ghost {
-  background: transparent; color: var(--text-muted); border: 1px solid var(--border);
-}
-.btn-ghost:hover { color: var(--text); border-color: var(--violet-soft); }
-.btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none !important; }
+  color:
+    white;
 
-/* ===================== ЭКРАН ВХОДА ===================== */
+  background:
+    linear-gradient(
+      135deg,
+      #8C62FF,
+      #5B3FE0
+    );
+
+  box-shadow:
+    0 8px 25px rgba(124,92,255,.22);
+}
+
+.btn-primary:hover {
+  filter:
+    brightness(1.08);
+}
+
+.btn-secondary {
+  color:
+    var(--text);
+
+  background:
+    var(--surface-2);
+
+  border:
+    1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  border-color:
+    var(--violet-dark);
+}
+
+.btn-danger {
+  color:
+    white;
+
+  background:
+    rgba(255,77,109,.13);
+
+  border:
+    1px solid rgba(255,77,109,.28);
+}
+
+.btn-success {
+  color:
+    #08130D;
+
+  background:
+    linear-gradient(
+      135deg,
+      #8BFFB1,
+      #50E88B
+    );
+}
+
+.btn-icon {
+  width:
+    42px;
+
+  height:
+    42px;
+
+  padding:
+    0;
+
+  border-radius:
+    12px;
+
+  color:
+    var(--text);
+
+  background:
+    var(--surface);
+
+  border:
+    1px solid var(--border);
+}
+
+
+/* ============================================================
+   07. LOGIN
+   ============================================================ */
+
 .login-screen {
-  display: flex; align-items: center; justify-content: center; padding: 20px;
-}
-.login-card {
-  width: 100%; max-width: 380px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 32px 24px; text-align: center;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-}
-.login-card .brand { justify-content: center; margin-bottom: 24px; }
-.login-card h1 { font-family: var(--font-display); font-size: 1.4rem; margin: 0 0 8px; }
-.login-hint { color: var(--text-muted); font-size: 0.85rem; line-height: 1.5; margin: 0 0 20px; }
-.pincode-input {
-  width: 100%; text-align: center;
-  font-family: var(--font-display); font-size: 1.6rem; letter-spacing: 0.3em;
-  background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px;
-  color: var(--text); padding: 12px; margin-bottom: 16px;
-  transition: border-color 0.2s ease;
-}
-.pincode-input:focus { border-color: var(--violet); }
-.login-error { color: var(--crash); font-size: 0.85rem; margin-top: 12px; }
+  display:
+    flex;
 
-/* ===================== TOPBAR ===================== */
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  padding:
+    20px;
+}
+
+.login-wrap {
+  width:
+    100%;
+
+  max-width:
+    390px;
+}
+
+.login-card {
+  width:
+    100%;
+
+  padding:
+    30px 24px;
+
+  background:
+    rgba(21,18,43,.94);
+
+  border:
+    1px solid var(--border);
+
+  border-radius:
+    20px;
+
+  box-shadow:
+    var(--shadow);
+
+  backdrop-filter:
+    blur(15px);
+}
+
+.login-brand {
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  margin-bottom:
+    26px;
+}
+
+.login-title {
+  margin:
+    0 0 8px;
+
+  text-align:
+    center;
+
+  font-family:
+    var(--font-display);
+
+  font-size:
+    1.55rem;
+
+  font-weight:
+    700;
+}
+
+.login-description {
+  margin:
+    0 0 22px;
+
+  text-align:
+    center;
+
+  color:
+    var(--text-muted);
+
+  font-size:
+    .84rem;
+
+  line-height:
+    1.6;
+}
+
+.demo-badge {
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  margin:
+    0 auto 18px;
+
+  padding:
+    5px 10px;
+
+  border-radius:
+    999px;
+
+  color:
+    var(--gold);
+
+  background:
+    rgba(245,201,75,.08);
+
+  border:
+    1px solid rgba(245,201,75,.2);
+
+  font-size:
+    .72rem;
+
+  font-weight:
+    700;
+
+  letter-spacing:
+    .05em;
+
+  text-transform:
+    uppercase;
+}
+
+.demo-badge-wrap {
+  display:
+    flex;
+
+  justify-content:
+    center;
+}
+
+.pincode-input {
+  display:
+    block;
+
+  width:
+    100%;
+
+  height:
+    58px;
+
+  padding:
+    10px 14px;
+
+  margin-bottom:
+    14px;
+
+  text-align:
+    center;
+
+  background:
+    var(--surface-2);
+
+  color:
+    var(--text);
+
+  border:
+    1px solid var(--border);
+
+  border-radius:
+    13px;
+
+  font-family:
+    var(--font-display);
+
+  font-size:
+    1.65rem;
+
+  font-weight:
+    700;
+
+  letter-spacing:
+    .3em;
+
+  transition:
+    border-color .2s ease,
+    box-shadow .2s ease;
+}
+
+.pincode-input:focus {
+  border-color:
+    var(--violet);
+
+  box-shadow:
+    0 0 0 3px rgba(124,92,255,.1);
+}
+
+.login-error {
+  min-height:
+    18px;
+
+  margin:
+    10px 0 0;
+
+  text-align:
+    center;
+
+  color:
+    var(--crash);
+
+  font-size:
+    .8rem;
+}
+
+.login-demo-info {
+  margin-top:
+    18px;
+
+  padding:
+    12px;
+
+  border-radius:
+    11px;
+
+  background:
+    rgba(124,92,255,.06);
+
+  border:
+    1px solid rgba(124,92,255,.12);
+
+  color:
+    var(--text-muted);
+
+  font-size:
+    .75rem;
+
+  line-height:
+    1.5;
+
+  text-align:
+    center;
+}
+
+
+/* ============================================================
+   08. APP
+   ============================================================ */
+
+#app {
+  min-height:
+    100vh;
+}
+
+
+/* ============================================================
+   09. TOPBAR
+   ============================================================ */
+
 .topbar {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 20px; position: relative;
-  border-bottom: 1px solid var(--border);
-  background: rgba(21, 18, 43, 0.8);
-  backdrop-filter: blur(10px);
+  position:
+    sticky;
+
+  top:
+    0;
+
+  z-index:
+    50;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    space-between;
+
+  width:
+    100%;
+
+  padding:
+    13px 18px;
+
+  background:
+    rgba(21,18,43,.82);
+
+  border-bottom:
+    1px solid var(--border);
+
+  backdrop-filter:
+    blur(18px);
 }
+
+.topbar-left {
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  min-width:
+    0;
+}
+
+.topbar-right {
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    8px;
+}
+
 .profile-chip {
-  display: flex; align-items: center; gap: 8px;
-  background: var(--surface); border: 1px solid var(--border); border-radius: 999px;
-  padding: 6px 14px 6px 8px; color: var(--text);
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    8px;
+
+  padding:
+    5px 8px 5px 5px;
+
+  border:
+    1px solid var(--border);
+
+  border-radius:
+    999px;
+
+  color:
+    var(--text);
+
+  background:
+    var(--surface);
+
+  cursor:
+    pointer;
 }
+
 .profile-balance {
-  display: flex; align-items: center; gap: 6px;
-  background: var(--surface-2); border-radius: 999px; padding: 4px 10px;
-  font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; color: var(--gold);
-  transition: transform 0.2s ease;
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    5px;
+
+  min-height:
+    30px;
+
+  padding:
+    4px 10px;
+
+  border-radius:
+    999px;
+
+  color:
+    var(--gold);
+
+  background:
+    var(--surface-2);
+
+  font-family:
+    var(--font-display);
+
+  font-size:
+    .82rem;
+
+  font-weight:
+    700;
 }
-.profile-name { font-size: 0.85rem; color: var(--text-muted); max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.profile-name {
+  max-width:
+    90px;
+
+  overflow:
+    hidden;
+
+  text-overflow:
+    ellipsis;
+
+  white-space:
+    nowrap;
+
+  color:
+    var(--text-muted);
+
+  font-size:
+    .75rem;
+}
+
+
+/* ============================================================
+   10. PROFILE DROPDOWN
+   ============================================================ */
 
 .profile-dropdown {
-  position: absolute; top: 60px; right: 20px; z-index: 20;
-  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
-  padding: 14px; width: 210px;
-  box-shadow: 0 16px 40px rgba(0,0,0,0.6);
-}
-.pd-row { display: flex; justify-content: space-between; font-size: 0.85rem; padding: 6px 0; color: var(--text-muted); }
-.pd-row b { color: var(--text); font-family: var(--font-display); }
+  position:
+    absolute;
 
-/* ===================== МЕНЮ ===================== */
-.menu-view { max-width: 480px; margin: 0 auto; padding: 28px 20px; }
-.menu-title { font-family: var(--font-display); font-size: 1.1rem; color: var(--text-muted); margin: 0 0 16px; }
+  top:
+    62px;
+
+  right:
+    16px;
+
+  width:
+    230px;
+
+  padding:
+    14px;
+
+  background:
+    rgba(21,18,43,.98);
+
+  border:
+    1px solid var(--border);
+
+  border-radius:
+    15px;
+
+  box-shadow:
+    var(--shadow);
+
+  backdrop-filter:
+    blur(18px);
+
+  animation:
+    dropdownIn .15s ease;
+}
+
+@keyframes dropdownIn {
+  from {
+    opacity:
+      0;
+
+    transform:
+      translateY(-6px) scale(.98);
+  }
+
+  to {
+    opacity:
+      1;
+
+    transform:
+      translateY(0) scale(1);
+  }
+}
+
+.profile-head {
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    10px;
+
+  padding-bottom:
+    12px;
+
+  margin-bottom:
+    8px;
+
+  border-bottom:
+    1px solid var(--border);
+}
+
+.avatar {
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  width:
+    38px;
+
+  height:
+    38px;
+
+  border-radius:
+    12px;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--violet),
+      var(--violet-dark)
+    );
+
+  font-family:
+    var(--font-display);
+
+  font-weight:
+    700;
+}
+
+.profile-head-name {
+  min-width:
+    0;
+}
+
+.profile-head-name strong {
+  display:
+    block;
+
+  overflow:
+    hidden;
+
+  text-overflow:
+    ellipsis;
+
+  white-space:
+    nowrap;
+
+  font-size:
+    .86rem;
+}
+
+.profile-head-name span {
+  color:
+    var(--text-muted);
+
+  font-size:
+    .7rem;
+}
+
+.pd-row {
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    space-between;
+
+  padding:
+    7px 0;
+
+  color:
+    var(--text-muted);
+
+  font-size:
+    .78rem;
+}
+
+.pd-row b {
+  color:
+    var(--text);
+
+  font-family:
+    var(--font-display);
+}
+
+
+/* ============================================================
+   11. MAIN MENU
+   ============================================================ */
+
+.menu-view {
+  width:
+    100%;
+
+  max-width:
+    520px;
+
+  margin:
+    0 auto;
+
+  padding:
+    26px 18px 40px;
+}
+
+.menu-header {
+  display:
+    flex;
+
+  align-items:
+    flex-end;
+
+  justify-content:
+    space-between;
+
+  margin-bottom:
+    16px;
+}
+
+.menu-title {
+  margin:
+    0;
+
+  font-family:
+    var(--font-display);
+
+  font-size:
+    1.25rem;
+
+  font-weight:
+    700;
+}
+
+.menu-subtitle {
+  margin:
+    4px 0 0;
+
+  color:
+    var(--text-muted);
+
+  font-size:
+    .77rem;
+}
+
+.demo-info-card {
+  padding:
+    14px 16px;
+
+  margin-bottom:
+    14px;
+
+  border-radius:
+    15px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(124,92,255,.11),
+      rgba(56,225,198,.04)
+    );
+
+  border:
+    1px solid rgba(124,92,255,.18);
+}
+
+.demo-info-title {
+  margin-bottom:
+    5px;
+
+  font-size:
+    .82rem;
+
+  font-weight:
+    700;
+}
+
+.demo-info-text {
+  color:
+    var(--text-muted);
+
+  font-size:
+    .73rem;
+
+  line-height:
+    1.5;
+}
+
 .game-card {
-  width: 100%; display: flex; align-items: center; gap: 16px;
-  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
-  padding: 16px; margin-bottom: 12px; text-align: left; color: inherit;
-  transition: border-color .15s ease, transform .12s ease;
-}
-.game-card:hover { border-color: var(--violet-soft); transform: translateY(-2px); }
-.game-card-icon { font-size: 1.8rem; width: 44px; text-align: center; }
-.game-card-body { flex: 1; }
-.game-card-name { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; }
-.game-card-desc { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+  width:
+    100%;
 
-/* ===================== КРАШ ИГРА ===================== */
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    15px;
+
+  padding:
+    17px;
+
+  margin-bottom:
+    11px;
+
+  color:
+    var(--text);
+
+  text-align:
+    left;
+
+  background:
+    var(--surface);
+
+  border:
+    1px solid var(--border);
+
+  border-radius:
+    16px;
+
+  cursor:
+    pointer;
+
+  transition:
+    transform .15s ease,
+    border-color .15s ease,
+    background .15s ease;
+}
+
+.game-card:hover {
+  transform:
+    translateY(-2px);
+
+  border-color:
+    var(--violet-dark);
+
+  background:
+    #18142F;
+}
+
+.game-card:active {
+  transform:
+    scale(.985);
+}
+
+.game-card-icon {
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  width:
+    48px;
+
+  height:
+    48px;
+
+  flex:
+    0 0 48px;
+
+  border-radius:
+    14px;
+
+  background:
+    var(--surface-2);
+
+  font-size:
+    1.7rem;
+}
+
+.game-card-body {
+  min-width:
+    0;
+
+  flex:
+    1;
+}
+
+.game-card-name {
+  font-family:
+    var(--font-display);
+
+  font-size:
+    .98rem;
+
+  font-weight:
+    700;
+}
+
+.game-card-desc {
+  margin-top:
+    3px;
+
+  color:
+    var(--text-muted);
+
+  font-size:
+    .73rem;
+
+  line-height:
+    1.4;
+}
+
+.game-card-arrow {
+  color:
+    var(--text-muted);
+
+  font-size:
+    1.2rem;
+}
+
+
+/* ============================================================
+   12. STATS CARDS
+   ============================================================ */
+
+.stats-grid {
+  display:
+    grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap:
+    10px;
+
+  margin-top:
+    18px;
+}
+
+.stat-card {
+  padding:
+    14px;
+
+  background:
+    var(--surface);
+
+  border:
+    1px solid var(--border);
+
+  border-radius:
+    14px;
+}
+
+.stat-label {
+  color:
+    var(--text-muted);
+
+  font-size:
+    .68rem;
+}
+
+.stat-value {
+  margin-top:
+    5px;
+
+  font-family:
+    var(--font-display);
+
+  font-size:
+    1.1rem;
+
+  font-weight:
+    700;
+}
+
+
+/* ============================================================
+   13. CRASH VIEW
+   ============================================================ */
+
 .crash-view {
-  max-width: 480px; margin: 0 auto; padding: 14px 16px 24px;
-  display: flex; flex-direction: column; gap: 12px;
-}
-.back-btn { align-self: flex-start; background: none; color: var(--text-muted); font-size: 0.85rem; padding: 4px 0; }
-.back-btn:hover { color: var(--text); }
+  width:
+    100%;
 
-.history-strip { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
-.history-strip::-webkit-scrollbar { display: none; }
-.history-chip {
-  flex-shrink: 0; font-family: var(--font-display); font-weight: 700; font-size: 0.78rem;
-  padding: 5px 10px; border-radius: 999px; background: var(--surface); border: 1px solid var(--border);
+  max-width:
+    520px;
+
+  margin:
+    0 auto;
+
+  padding:
+    12px 14px 30px;
+
+  display:
+    flex;
+
+  flex-direction:
+    column;
+
+  gap:
+    11px;
 }
-.hc-low { color: var(--text-muted); }
-.hc-mid { color: var(--gold); border-color: rgba(245,201,75,0.3); }
-.hc-high { color: var(--violet); border-color: rgba(124,92,255,0.5); }
+
+.crash-top {
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    space-between;
+}
+
+.back-btn {
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  gap:
+    5px;
+
+  padding:
+    5px 0;
+
+  color:
+    var(--text-muted);
+
+  background:
+    transparent;
+
+  font-size:
+    .8rem;
+
+  cursor:
+    pointer;
+}
+
+.back-btn:hover {
+  color:
+    var(--text);
+}
+
+.round-status {
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  gap:
+    6px;
+
+  padding:
+    5px 9px;
+
+  border-radius:
+    999px;
+
+  color:
+    var(--text-muted);
+
+  background:
+    var(--surface);
+
+  border:
+    1px solid var(--border);
+
+  font-size:
+    .68rem;
+}
+
+.status-dot {
+  width:
+    6px;
+
+  height:
+    6px;
+
+  border-radius:
+    50%;
+
+  background:
+    var(--text-muted);
+}
+
+.status-dot.live {
+  background:
+    var(--green);
+
+  box-shadow:
+    0 0 10px rgba(107,255,160,.6);
+}
+
+.status-dot.crashed {
+  background:
+    var(--crash);
+
+  box-shadow:
+    0 0 10px rgba(255,77,109,.6);
+}
+
+
+/* ============================================================
+   14. HISTORY
+   ============================================================ */
+
+.history-wrapper {
+  position:
+    relative;
+}
+
+.history-strip {
+  display:
+    flex;
+
+  gap:
+    6px;
+
+  overflow-x:
+    auto;
+
+  padding:
+    1px 1px 5px;
+
+  scrollbar-width:
+    none;
+}
+
+.history-strip::-webkit-scrollbar {
+  display:
+    none;
+}
+
+.history-chip {
+  flex:
+    0 0 auto;
+
+  padding:
+    6px 10px;
+
+  border-radius:
+    999px;
+
+  background:
+    var(--surface);
+
+  border:
+    1px solid var(--border);
+
+  font-family:
+    var(--font-display);
+
+  font-size:
+    .71rem;
+
+  font-weight:
+    700;
+}
+
+.hc-low {
+  color:
+    var(--text-muted);
+}
+
+.hc-mid {
+  color:
+    var(--gold);
+
+  border-color:
+    rgba(245,201,75,.28);
+}
+
+.hc-high {
+  color:
+    var(--violet-2);
+
+  border-color:
+    rgba(124,92,255,.4);
+}
+
+.hc-super {
+  color:
+    var(--cyan);
+
+  border-color:
+    rgba(56,225,198,.35);
+}
+
+
+/* ============================================================
+   15. GAME STAGE
+   ============================================================ */
 
 .stage {
-  position: relative; height: 260px;
-  background: linear-gradient(180deg, #181438 0%, #0E0C22 100%);
-  border: 1px solid var(--border); border-radius: var(--radius);
-  overflow: hidden;
+  position:
+    relative;
+
+  width:
+    100%;
+
+  height:
+    290px;
+
+  overflow:
+    hidden;
+
+  border-radius:
+    18px;
+
+  border:
+    1px solid var(--border);
+
+  background:
+    linear-gradient(
+      180deg,
+      #181438 0%,
+      #100D26 55%,
+      #0B091A 100%
+    );
+
+  box-shadow:
+    inset 0 0 50px rgba(0,0,0,.18);
 }
-#rocketCanvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+.stage::before {
+  content:
+    "";
+
+  position:
+    absolute;
+
+  inset:
+    0;
+
+  z-index:
+    1;
+
+  pointer-events:
+    none;
+
+  background:
+    radial-gradient(
+      70% 60% at 50% 35%,
+      rgba(124,92,255,.08),
+      transparent 70%
+    );
+}
+
+#rocketCanvas {
+  position:
+    absolute;
+
+  inset:
+    0;
+
+  width:
+    100%;
+
+  height:
+    100%;
+
+  display:
+    block;
+
+  z-index:
+    2;
+}
+
+.stage-grid {
+  position:
+    absolute;
+
+  inset:
+    0;
+
+  z-index:
+    1;
+
+  pointer-events:
+    none;
+
+  opacity:
+    .35;
+
+  background-image:
+    linear-gradient(
+      rgba(255,255,255,.035) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255,255,255,.035) 1px,
+      transparent 1px
+    );
+
+  background-size:
+    50px 50px;
+}
+
 .stage-overlay {
-  position: absolute; inset: 0; display: flex; flex-direction: column;
-  align-items: center; justify-content: center; pointer-events: none;
+  position:
+    absolute;
+
+  inset:
+    0;
+
+  z-index:
+    5;
+
+  display:
+    flex;
+
+  flex-direction:
+    column;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  pointer-events:
+    none;
 }
-.phase-label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+
+.phase-label {
+  margin-bottom:
+    3px;
+
+  color:
+    var(--text-muted);
+
+  font-size:
+    .7rem;
+
+  font-weight:
+    600;
+
+  letter-spacing:
+    .1em;
+
+  text-transform:
+    uppercase;
+}
+
 .multiplier-value {
-  font-family: var(--font-display); font-weight: 700; font-size: 3.2rem;
-  color: var(--text); transition: color .15s ease;
-}
-.multiplier-value.mv-running { color: var(--violet); text-shadow: 0 0 25px rgba(124,92,255,0.4); }
-.multiplier-value.mv-crashed { color: var(--crash); text-shadow: 0 0 25px rgba(255,77,109,0.5); }
-.countdown-value { font-family: var(--font-display); font-size: 1.5rem; color: var(--gold); margin-top: 4px; }
+  font-family:
+    var(--font-display);
 
-/* ПАНЕЛЬ СТАВОК */
-.bet-panel {
-  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
-  padding: 16px; display: flex; flex-direction: column; gap: 12px;
-}
-.bet-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.bet-label { font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 8px; }
-.bet-input-group { display: flex; align-items: center; gap: 6px; flex: 1; justify-content: flex-end; }
-.bet-input {
-  width: 95px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px;
-  color: var(--text); font-family: var(--font-display); font-weight: 700; padding: 8px; text-align: right;
-}
-.bet-input:focus { border-color: var(--violet); }
-.qbtn {
-  background: var(--surface-2); border: 1px solid var(--border); color: var(--text-muted);
-  border-radius: 8px; padding: 8px 10px; font-size: 0.75rem; font-weight: 700;
-}
-.qbtn:hover { color: var(--text); border-color: var(--violet-soft); }
+  font-size:
+    3.25rem;
 
-.switch { position: relative; display: inline-block; width: 34px; height: 18px; }
-.switch input { opacity: 0; width: 0; height: 0; }
-.switch-track {
-  position: absolute; inset: 0; background: var(--surface-2); border: 1px solid var(--border);
-  border-radius: 999px; transition: background .2s ease;
-}
-.switch-track::before {
-  content: ""; position: absolute; width: 12px; height: 12px; left: 2px; top: 2px;
-  background: var(--text-muted); border-radius: 50%; transition: transform .2s ease;
-}
-.switch input:checked + .switch-track { background: var(--violet-soft); border-color: var(--violet); }
-.switch input:checked + .switch-track::before { transform: translateX(16px); background: #fff; }
+  font-weight:
+    700;
 
-.btn-action {
-  background: linear-gradient(135deg, #8C62FF, #5B3FE0); color: #fff;
-  font-size: 1rem; padding: 14px; border-radius: 12px; font-weight: 700;
-}
-.btn-action.state-cashout { background: linear-gradient(135deg, #FFD873, #F5C94B); color: #201700; }
-.btn-action.state-locked { background: var(--surface-2); color: var(--text-muted); }
+  line-height:
+    1;
 
-.bet-error { color: var(--crash); font-size: 0.8rem; text-align: center; margin: 0; }
+  letter-spacing:
+    -.02em;
 
-/* УВЕДОМЛЕНИЕ О ВЫИГРЫШЕ */
-.win-toast {
-  position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-20px);
-  display: flex; align-items: center; gap: 12px;
-  background: var(--surface); border: 1px solid var(--gold);
-  border-radius: 14px; padding: 12px 20px; z-index: 100;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-  opacity: 0; pointer-events: none; transition: all .25s ease;
-}
-.win-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-.win-toast-title { font-family: var(--font-display); font-weight: 700; color: var(--gold); }
-.win-toast-sub { font-size: 0.82rem; color: var(--text-muted); }
+  text-shadow:
+    0 8px 25px rgba(0,0,0,.3);
 
-.balance-pulse { animation: pulseGreen 0.6s ease; }
-@keyframes pulseGreen {
-  0% { transform: scale(1); }
-  50% { color: #6BFFA0; transform: scale(1.15); }
-  100% { transform: scale(1); }
+  transition:
+    color .15s ease;
 }
+
+.mv-idle {
+  color:
+    var(--text);
+}
+
+.mv-running {
+  color:
+    var(--violet-2);
+
+  text-shadow:
+    0 0 28px rgba(124,92,255,.42);
+}
+
+.mv-crashed {
+  color:
+    var(--crash);
+
+  text-shadow:
+    0 0 28px rgba(255,77,109,.45);
+}
+
+.mv-finished {
+  color:
+    var(--green);
+}
+
+.countdown-value {
+  min-height:
+    25px;
+
+  margin-top:
+    7px;
+
+  color:
+    var(--gold);
+
+  font-family:
+    var(--font-display);
+
+  font-size:
+    1.05rem;
+
+  font-weight:
+    700;
+}
+
+
+/* ============================================================
+   16. ROUND INFORMATION
+   ============================================================ */
+
+.round-info {
+  display:
+    grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap:
+    8px;
+
+  margin-top:
+    10px;
+}
+
+.round-info-item {
+  padding:
+    9px;
+
+  text-align:
+    center;
+
+  background:
+    rgba(21,18,43,.7);
+
+  border:
+    1px solid var(--border-soft);
+
+  border-radius:
+    10px;
+}
+
+.round-info-label {
+  color:
+    var(--text-muted);
+
+  font-size:
+    .61rem;
+}
+
+.round-info-value {
+  margin-top:
+    3px;
+
+  color:
+    var(--text);
+
+  font-family:
+    var(--font-display);
+
+  font-size:
+    .78rem;
+
+  font-weight:
+    700;
+}
+
+
+/* ============================================================
+   17. DEMO CONTROL PANEL
+   ============================================================ */
+
+.demo-panel {
+  padding:
+    15px;
+
+  background:
+    var(--surface);
+
+  border:
+    1px solid var(--border);
+
+  border-radius:
+    17px;
+}
+
+.demo-panel-title {
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    space-between;
+
+  margin-bottom:
+    12px;
+}
+
+.demo-panel-title strong {
+  font-family:
+    var(--font-display);
+
+  font-size:
+    .9rem;
+}
+
+.demo-panel-title span {
+  color:
+    var(--text-muted);
+
+  font-size:
+    .65rem;
+}
+
+.control-row {
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    space-between;
+
+  gap:
+    10px;
+
+  margin-bottom:
+    11px;
+}
+
+.control-label {
+  color:
+    var(--text-muted);
+
+  font-size:
+    .76rem;
+}
+
+.virtual-points {
+  min-width:
+    120px;
+
+  padding:
+    9px;
+
+  text-align:
+    right;
+
+  color:
+    var(--gold);
+
+  background:
+    var(--surface-2);
+
+  border:
+    1px solid var(--border);
+
+  border-radius:
+    10px;
+
+  font-family:
+    var(--font-display);
+
+  font-size:
+    .85rem;
+
+  font-weight:
+    700;
+}
+
+.demo-buttons {
+  display:
+    grid;
+
+  grid-template-columns:
+    repeat(4, 1fr);
+
+  gap:
+    7px;
+}
+
+.demo-amount {
+  min-height:
+    38px;
+
+  padding:
+    7px 4px;
+
+  color:
+    var(--text-muted);
+
+  background:
+    var(--surface-2);
+
+  border:
+    1px solid var(--border);
+
+  border-radius:
+    9px;
+
+  font-size:
+    .7rem;
+
+  font-weight:
+    700;
+
+  cursor:
+    pointer;
+}
+
+.demo-amount:hover {
+  color:
+    var(--text);
+
+  border-color:
+    var(--violet-dark);
+}
+
+.demo-amount.active {
+  color:
+    white;
+
+  background:
+    var(--violet-dark);
+
+  border-color:
+    var(--violet);
+}
+
+
+/* ============================================================
+   18. DEMO ACTION
+   ============================================================ */
+
+.demo-action {
+  width:
+    100%;
+
+  min-height:
+    49px;
+
+  margin-top:
+    12px;
+
+  border-radius:
+    12px;
+
+  color:
+    white;
+
+  background:
+    linear-gradient(
+      135deg,
+      #8C62FF,
+      #5B3FE0
+    );
+
+  font-size:
+    .9rem;
+
+  font-weight:
+    700;
+
+  cursor:
+    pointer;
+
+  transition:
+    transform .12s ease,
+    opacity .15s ease;
+}
+
+.demo-action:active {
+  transform:
+    scale(.98);
+}
+
+.demo-action:disabled {
+  opacity:
+    .42;
+
+  cursor:
+    not-allowed;
+}
+
+.demo-action.running {
+  background:
+    linear-gradient(
+      135deg,
+      #50E88B,
+      #38B96C
+    );
+
+  color:
+    #06120A;
+}
+
+.demo-action.waiting {
+  background:
+    linear-gradient(
+      135deg,
+      #8C62FF,
+      #5B3FE0
+    );
+}
+
+.demo-action.locked {
+  color:
+    var(--text-muted);
+
+  background:
+    var(--surface-2);
+}
+
+
+/* ============================================================
+   19. NOTICE
+   ============================================================ */
+
+.demo-notice {
+  padding:
+    11px 12px;
+
+  color:
+    var(--text-muted);
+
+  background:
+    rgba(56,225,198,.04);
+
+  border:
+    1px solid rgba(56,225,198,.1);
+
+  border-radius:
+    11px;
+
+  font-size:
+    .68rem;
+
+  line-height:
+    1.5;
+
+  text-align:
+    center;
+}
+
+
+/* ============================================================
+   20. TOAST
+   ============================================================ */
+
+.toast-container {
+  position:
+    fixed;
+
+  top:
+    18px;
+
+  left:
+    50%;
+
+  z-index:
+    200;
+
+  width:
+    calc(100% - 30px);
+
+  max-width:
+    390px;
+
+  transform:
+    translateX(-50%);
+
+  pointer-events:
+    none;
+}
+
+.toast {
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    11px;
+
+  padding:
+    12px 14px;
+
+  margin-bottom:
+    8px;
+
+  background:
+    rgba(21,18,43,.97);
+
+  border:
+    1px solid var(--border);
+
+  border-radius:
+    13px;
+
+  box-shadow:
+    var(--shadow);
+
+  opacity:
+    0;
+
+  transform:
+    translateY(-15px);
+
+  transition:
+    opacity .22s ease,
+    transform .22s ease;
+}
+
+.toast.show {
+  opacity:
+    1;
+
+  transform:
+    translateY(0);
+}
+
+.toast-icon {
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  width:
+    30px;
+
+  height:
+    30px;
+
+  border-radius:
+    9px;
+
+  background:
+    var(--surface-2);
+
+  font-size:
+    1rem;
+}
+
+.toast-body {
+  min-width:
+    0;
+}
+
+.toast-title {
+  font-size:
+    .78rem;
+
+  font-weight:
+    700;
+}
+
+.toast-message {
+  margin-top:
+    2px;
+
+  color:
+    var(--text-muted);
+
+  font-size:
+    .68rem;
+}
+
+
+/* ============================================================
+   21. MODAL
+   ============================================================ */
+
+.modal-backdrop {
+  position:
+    fixed;
+
+  inset:
+    0;
+
+  z-index:
+    100;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  padding:
+    20px;
+
+  background:
+    rgba(4,3,12,.72);
+
+  backdrop-filter:
+    blur(8px);
+}
+
+.modal {
+  width:
+    100%;
+
+  max-width:
+    390px;
+
+  padding:
+    20px;
+
+  background:
+    var(--surface);
+
+  border:
+    1px solid var(--border);
+
+  border-radius:
+    18px;
+
+  box-shadow:
+    var(--shadow);
+}
+
+.modal-header {
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    space-between;
+
+  margin-bottom:
+    15px;
+}
+
+.modal-title {
+  margin:
+    0;
+
+  font-family:
+    var(--font-display);
+
+  font-size:
+    1rem;
+}
+
+.modal-close {
+  width:
+    34px;
+
+  height:
+    34px;
+
+  border-radius:
+    10px;
+
+  color:
+    var(--text-muted);
+
+  background:
+    var(--surface-2);
+
+  cursor:
+    pointer;
+}
+
+.modal-text {
+  color:
+    var(--text-muted);
+
+  font-size:
+    .75rem;
+
+  line-height:
+    1.6;
+}
+
+
+/* ============================================================
+   22. STATISTICS
+   ============================================================ */
+
+.statistics {
+  margin-top:
+    15px;
+
+  padding:
+    15px;
+
+  background:
+    var(--surface);
+
+  border:
+    1px solid var(--border);
+
+  border-radius:
+    15px;
+}
+
+.statistics-title {
+  margin-bottom:
+    11px;
+
+  font-family:
+    var(--font-display);
+
+  font-size:
+    .88rem;
+}
+
+.statistics-grid {
+  display:
+    grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap:
+    8px;
+}
+
+.statistics-item {
+  padding:
+    10px 5px;
+
+  text-align:
+    center;
+
+  background:
+    var(--surface-2);
+
+  border-radius:
+    10px;
+}
+
+.statistics-item-value {
+  font-family:
+    var(--font-display);
+
+  font-size:
+    .9rem;
+
+  font-weight:
+    700;
+}
+
+.statistics-item-label {
+  margin-top:
+    3px;
+
+  color:
+    var(--text-muted);
+
+  font-size:
+    .58rem;
+}
+
+
+/* ============================================================
+   23. RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 380px) {
+
+  .topbar {
+    padding:
+      12px 12px;
+  }
+
+  .menu-view {
+    padding:
+      22px 12px 35px;
+  }
+
+  .crash-view {
+    padding:
+      10px 10px 25px;
+  }
+
+  .stage {
+    height:
+      265px;
+  }
+
+  .multiplier-value {
+    font-size:
+      2.8rem;
+  }
+
+  .profile-name {
+    display:
+      none;
+  }
+
+  .game-card {
+    padding:
+      14px;
+  }
+
+}
+
+@media (min-width: 700px) {
+
+  .stage {
+    height:
+      330px;
+  }
+
+  .crash-view {
+    padding-top:
+      20px;
+  }
+
+}
+
+
+/* ============================================================
+   24. ANIMATIONS
+   ============================================================ */
+
+@keyframes pulse {
+  0% {
+    transform:
+      scale(1);
+  }
+
+  50% {
+    transform:
+      scale(1.06);
+  }
+
+  100% {
+    transform:
+      scale(1);
+  }
+}
+
+.balance-pulse {
+  animation:
+    pulse .4s ease;
+}
+
+@keyframes rocketGlow {
+
+  0% {
+    opacity:
+      .75;
+  }
+
+  50% {
+    opacity:
+      1;
+  }
+
+  100% {
+    opacity:
+      .75;
+  }
+
+}
+
+.rocket-glow {
+  animation:
+    rocketGlow 1s ease-in-out infinite;
+}
+
+
+/* ============================================================
+   25. ACCESSIBILITY
+   ============================================================ */
+
+button:focus-visible,
+input:focus-visible {
+  outline:
+    2px solid var(--violet);
+
+  outline-offset:
+    2px;
+}
+
+
+/* ============================================================
+   26. FOOTER
+   ============================================================ */
+
+.app-footer {
+  padding:
+    20px 10px 35px;
+
+  text-align:
+    center;
+
+  color:
+    var(--text-muted);
+
+  font-size:
+    .62rem;
+}
+
+.footer-demo {
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  gap:
+    5px;
+
+  margin-bottom:
+    5px;
+
+  color:
+    var(--gold);
+
+  font-weight:
+    700;
+}
+
+
+/* ============================================================
+   END CSS
+   ============================================================ */
+
 </style>
 </head>
+
 <body>
 
-<!-- ЭКРАН ВХОДА -->
-<div id="loginScreen" class="screen login-screen">
-  <div class="login-card">
-    <div class="brand">
-      <svg class="brand-gem" viewBox="0 0 40 40"><path d="M20 2 L36 14 L20 38 L4 14 Z" fill="#7C5CFF"/></svg>
-      <span class="brand-name">RombGame</span>
+
+<!-- ============================================================
+     LOGIN SCREEN
+     ============================================================ -->
+
+<section
+  id="loginScreen"
+  class="screen login-screen"
+>
+
+  <div class="login-wrap">
+
+    <div class="login-card">
+
+      <div class="login-brand">
+
+        <div class="brand">
+
+          <svg
+            class="brand-gem"
+            viewBox="0 0 40 40"
+            aria-hidden="true"
+          >
+            <path
+              d="M20 2 L36 14 L20 38 L4 14 Z"
+              fill="#7C5CFF"
+            />
+
+            <path
+              d="M20 7 L30 15 L20 31 L10 15 Z"
+              fill="#9A7CFF"
+              opacity=".35"
+            />
+          </svg>
+
+          <span class="brand-name">
+            RombGame
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <div class="demo-badge-wrap">
+
+        <div class="demo-badge">
+          DEMO MODE
+        </div>
+
+      </div>
+
+
+      <h1 class="login-title">
+        Вход в аккаунт
+      </h1>
+
+
+      <p class="login-description">
+        Введи 6-значный PIN для входа
+        в демонстрационную версию RombGame.
+      </p>
+
+
+      <form
+        id="loginForm"
+        autocomplete="off"
+      >
+
+        <input
+          id="pincodeInput"
+          class="pincode-input"
+          type="password"
+          inputmode="numeric"
+          maxlength="6"
+          placeholder="• • • • • •"
+          aria-label="PIN-код"
+        >
+
+
+        <button
+          id="loginButton"
+          type="submit"
+          class="btn btn-primary btn-block"
+        >
+          Войти
+        </button>
+
+      </form>
+
+
+      <p
+        id="loginError"
+        class="login-error"
+        aria-live="polite"
+      ></p>
+
+
+      <div class="login-demo-info">
+
+        <strong>
+          DEMO PIN: 123456
+        </strong>
+
+        <br>
+
+        Все очки и результаты существуют
+        только внутри этой страницы.
+
+      </div>
+
     </div>
-    <h1>Вход в аккаунт</h1>
-    <p class="login-hint">Отправьте боту <b>/mypincode</b>, чтобы получить код доступа.</p>
-    <form id="loginForm" autocomplete="off">
-      <input id="pincodeInput" class="pincode-input" inputmode="numeric" maxlength="6" placeholder="• • • • • •">
-      <button type="submit" class="btn btn-primary btn-block">Войти</button>
-    </form>
-    <p id="loginError" class="login-error" hidden></p>
+
   </div>
-</div>
 
-<!-- ОСНОВНОЕ ПРИЛОЖЕНИЕ -->
-<div id="app" class="screen" hidden>
+</section>
+
+
+<!-- ============================================================
+     APP
+     ============================================================ -->
+
+<div
+  id="app"
+  class="screen hidden"
+>
+
+
+  <!-- ==========================================================
+       TOPBAR
+       ========================================================== -->
+
   <header class="topbar">
-    <div class="brand brand-sm">
-      <svg class="brand-gem" viewBox="0 0 40 40"><path d="M20 2 L36 14 L20 38 L4 14 Z" fill="#7C5CFF"/></svg>
-      <span class="brand-name">RombGame</span>
-    </div>
-    <button id="profileChip" class="profile-chip">
-      <span class="profile-balance" id="balanceContainer">
-        <span id="balanceValue">0</span> 💎
-      </span>
-      <span class="profile-name" id="nicknameValue">Игрок</span>
-    </button>
 
-    <div id="profileDropdown" class="profile-dropdown" hidden>
-      <div class="pd-row"><span>Баланс</span><b id="pdBalance">0</b></div>
-      <div class="pd-row"><span>Уровень</span><b id="pdLvl">1</b></div>
-      <button id="logoutBtn" class="btn btn-ghost btn-block" style="margin-top:10px;">Выйти</button>
+
+    <div class="topbar-left">
+
+      <div class="brand brand-sm">
+
+        <svg
+          class="brand-gem"
+          viewBox="0 0 40 40"
+          aria-hidden="true"
+        >
+
+          <path
+            d="M20 2 L36 14 L20 38 L4 14 Z"
+            fill="#7C5CFF"
+          />
+
+          <path
+            d="M20 7 L30 15 L20 31 L10 15 Z"
+            fill="#9A7CFF"
+            opacity=".35"
+          />
+
+        </svg>
+
+        <span class="brand-name">
+          RombGame
+        </span>
+
+      </div>
+
     </div>
+
+
+    <div class="topbar-right">
+
+
+      <button
+        id="profileChip"
+        class="profile-chip"
+        type="button"
+        aria-label="Профиль"
+      >
+
+        <span
+          id="balanceContainer"
+          class="profile-balance"
+        >
+
+          <span id="balanceValue">
+            0
+          </span>
+
+          💎
+
+        </span>
+
+
+        <span
+          id="nicknameValue"
+          class="profile-name"
+        >
+          Игрок
+        </span>
+
+      </button>
+
+
+    </div>
+
+
+    <!-- PROFILE DROPDOWN -->
+
+    <div
+      id="profileDropdown"
+      class="profile-dropdown hidden"
+    >
+
+      <div class="profile-head">
+
+        <div
+          id="avatar"
+          class="avatar"
+        >
+          R
+        </div>
+
+        <div class="profile-head-name">
+
+          <strong id="dropdownNickname">
+            Игрок
+          </strong>
+
+          <span>
+            DEMO аккаунт
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <div class="pd-row">
+
+        <span>
+          Очки
+        </span>
+
+        <b id="pdBalance">
+          0
+        </b>
+
+      </div>
+
+
+      <div class="pd-row">
+
+        <span>
+          Уровень
+        </span>
+
+        <b id="pdLvl">
+          1
+        </b>
+
+      </div>
+
+
+      <div class="pd-row">
+
+        <span>
+          Раундов
+        </span>
+
+        <b id="pdRounds">
+          0
+        </b>
+
+      </div>
+
+
+      <button
+        id="aboutButton"
+        class="btn btn-secondary btn-block"
+        type="button"
+        style="margin-top:10px;"
+      >
+        О DEMO
+      </button>
+
+
+      <button
+        id="logoutButton"
+        class="btn btn-danger btn-block"
+        type="button"
+        style="margin-top:8px;"
+      >
+        Выйти
+      </button>
+
+    </div>
+
   </header>
 
-  <!-- МЕНЮ -->
-  <main id="menuView" class="menu-view">
-    <h2 class="menu-title">Выберите игру</h2>
-    <button id="openCrashBtn" class="game-card">
-      <div class="game-card-icon">🚀</div>
+
+  <!-- ==========================================================
+       MENU
+       ========================================================== -->
+
+  <main
+    id="menuView"
+    class="menu-view"
+  >
+
+    <div class="menu-header">
+
+      <div>
+
+        <h2 class="menu-title">
+          Игры
+        </h2>
+
+        <p class="menu-subtitle">
+          Выбери режим для демонстрации
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <div class="demo-info-card">
+
+      <div class="demo-info-title">
+        ✦ Безопасный DEMO-режим
+      </div>
+
+      <div class="demo-info-text">
+        Здесь используются только виртуальные очки.
+        Они не имеют денежной ценности и не могут
+        быть выведены или обменены.
+      </div>
+
+    </div>
+
+
+    <button
+      id="openCrashButton"
+      class="game-card"
+      type="button"
+    >
+
+      <div class="game-card-icon">
+        🚀
+      </div>
+
       <div class="game-card-body">
-        <div class="game-card-name">Краш</div>
-        <div class="game-card-desc">Успей забрать выигрыш до падения ракеты</div>
-      </div>
-    </button>
-  </main>
 
-  <!-- КРАШ -->
-  <main id="crashView" class="crash-view" hidden>
-    <button id="backToMenuBtn" class="back-btn">← В меню</button>
-    <div class="history-strip" id="historyStrip"></div>
-
-    <div class="stage">
-      <canvas id="rocketCanvas"></canvas>
-      <div class="stage-overlay">
-        <div id="phaseLabel" class="phase-label">Ожидание...</div>
-        <div id="multiplierValue" class="multiplier-value">1.00x</div>
-        <div id="countdownValue" class="countdown-value"></div>
-      </div>
-    </div>
-
-    <div class="bet-panel">
-      <div class="bet-row">
-        <label class="bet-label">Ставка</label>
-        <div class="bet-input-group">
-          <button class="qbtn" data-op="half">½</button>
-          <input id="betAmountInput" type="number" min="100" step="100" value="100" class="bet-input">
-          <button class="qbtn" data-op="double">2×</button>
-          <button class="qbtn" data-op="max">MAX</button>
+        <div class="game-card-name">
+          Crash DEMO
         </div>
+
+        <div class="game-card-desc">
+          Наблюдай за ростом множителя
+          и движением ракеты.
+        </div>
+
       </div>
 
-      <div class="bet-row">
-        <label class="bet-label">
-          <span class="switch">
-            <input type="checkbox" id="autoCashoutToggle">
-            <span class="switch-track"></span>
-          </span>
-          Автозабор
-        </label>
-        <input id="autoCashoutInput" type="number" min="1.01" step="0.01" value="2.00" class="bet-input" disabled>
+      <div class="game-card-arrow">
+        →
       </div>
 
-      <button id="actionBtn" class="btn btn-action" disabled>Подключение...</button>
-      <p id="betError" class="bet-error" hidden></p>
+    </button>
+
+
+    <div class="stats-grid">
+
+      <div class="stat-card">
+
+        <div class="stat-label">
+          Виртуальные очки
+        </div>
+
+        <div
+          id="menuBalance"
+          class="stat-value text-gold"
+        >
+          0
+        </div>
+
+      </div>
+
+
+      <div class="stat-card">
+
+        <div class="stat-label">
+          Завершено раундов
+        </div>
+
+        <div
+          id="menuRounds"
+          class="stat-value"
+        >
+          0
+        </div>
+
+      </div>
+
     </div>
+
+
+    <div class="app-footer">
+
+      <div class="footer-demo">
+        ◆ RombGame DEMO
+      </div>
+
+      Виртуальная демонстрация интерфейса.
+      <br>
+      Без реальных ставок и денежных выплат.
+
+    </div>
+
   </main>
+
+
+  <!-- ==========================================================
+       CRASH
+       ========================================================== -->
+
+  <main
+    id="crashView"
+    class="crash-view hidden"
+  >
+
+
+    <div class="crash-top">
+
+      <button
+        id="backButton"
+        class="back-btn"
+        type="button"
+      >
+        ← В меню
+      </button>
+
+
+      <div class="round-status">
+
+        <span
+          id="statusDot"
+          class="status-dot"
+        ></span>
+
+        <span id="statusText">
+          Ожидание
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <!-- HISTORY -->
+
+    <div class="history-wrapper">
+
+      <div
+        id="historyStrip"
+        class="history-strip"
+      ></div>
+
+    </div>
+
+
+    <!-- GAME STAGE -->
+
+    <section class="stage">
+
+      <div class="stage-grid"></div>
+
+      <canvas
+        id="rocketCanvas"
+      ></canvas>
+
+
+      <div class="stage-overlay">
+
+        <div
+          id="phaseLabel"
+          class="phase-label"
+        >
+          Ожидание
+        </div>
+
+
+        <div
+          id="multiplierValue"
+          class="multiplier-value mv-idle"
+        >
+          1.00x
+        </div>
+
+
+        <div
+          id="countdownValue"
+          class="countdown-value"
+        ></div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ROUND INFO -->
+
+    <div class="round-info">
+
+
+      <div class="round-info-item">
+
+        <div class="round-info-label">
+          ROUND
+        </div>
+
+        <div
+          id="roundIdValue"
+          class="round-info-value"
+        >
+          #0
+        </div>
+
+      </div>
+
+
+      <div class="round-info-item">
+
+        <div class="round-info-label">
+          ПИК
+        </div>
+
+        <div
+          id="roundPeakValue"
+          class="round-info-value"
+        >
+          1.00x
+        </div>
+
+      </div>
+
+
+      <div class="round-info-item">
+
+        <div class="round-info-label">
+          РЕЖИМ
+        </div>
+
+        <div class="round-info-value">
+          DEMO
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- DEMO CONTROL -->
+
+    <section class="demo-panel">
+
+      <div class="demo-panel-title">
+
+        <strong>
+          Виртуальная панель
+        </strong>
+
+        <span>
+          Только DEMO
+        </span>
+
+      </div>
+
+
+      <div class="control-row">
+
+        <span class="control-label">
+          Выбранные очки
+        </span>
+
+        <div
+          id="selectedPoints"
+          class="virtual-points"
+        >
+          100
+        </div>
+
+      </div>
+
+
+      <div class="demo-buttons">
+
+        <button
+          class="demo-amount"
+          data-points="100"
+          type="button"
+        >
+          100
+        </button>
+
+        <button
+          class="demo-amount"
+          data-points="500"
+          type="button"
+        >
+          500
+        </button>
+
+        <button
+          class="demo-amount"
+          data-points="1000"
+          type="button"
+        >
+          1K
+        </button>
+
+        <button
+          class="demo-amount"
+          data-points="5000"
+          type="button"
+        >
+          5K
+        </button>
+
+      </div>
+
+
+      <button
+        id="demoActionButton"
+        class="demo-action waiting"
+        type="button"
+      >
+        Участвовать в DEMO
+      </button>
+
+
+      <div class="demo-notice">
+
+        Виртуальные очки списываются только
+        внутри демонстрации. Денежной ценности
+        они не имеют.
+
+      </div>
+
+    </section>
+
+
+    <!-- STATISTICS -->
+
+    <section class="statistics">
+
+      <div class="statistics-title">
+        Статистика сессии
+      </div>
+
+
+      <div class="statistics-grid">
+
+
+        <div class="statistics-item">
+
+          <div
+            id="statRounds"
+            class="statistics-item-value"
+          >
+            0
+          </div>
+
+          <div class="statistics-item-label">
+            Раунды
+          </div>
+
+        </div>
+
+
+        <div class="statistics-item">
+
+          <div
+            id="statBest"
+            class="statistics-item-value text-violet"
+          >
+            0.00x
+          </div>
+
+          <div class="statistics-item-label">
+            Лучший
+          </div>
+
+        </div>
+
+
+        <div class="statistics-item">
+
+          <div
+            id="statAverage"
+            class="statistics-item-value text-gold"
+          >
+            0.00x
+          </div>
+
+          <div class="statistics-item-label">
+            Средний
+          </div>
+
+        </div>
+
+
+      </div>
+
+    </section>
+
+
+    <div class="app-footer">
+
+      🚀 Crash DEMO
+
+      <br>
+
+      Результаты генерируются локально
+      и предназначены только для демонстрации.
+
+    </div>
+
+  </main>
+
 </div>
 
-<!-- ТОСТ -->
-<div id="winToast" class="win-toast" hidden>
-  <div style="font-size: 1.5rem">💎</div>
-  <div>
-    <div class="win-toast-title">Забрано!</div>
-    <div class="win-toast-sub"><span id="winMult">1.00x</span> | +<span id="winAmount">0</span></div>
+
+<!-- ============================================================
+     TOAST CONTAINER
+     ============================================================ -->
+
+<div
+  id="toastContainer"
+  class="toast-container"
+  aria-live="polite"
+></div>
+
+
+<!-- ============================================================
+     MODAL
+     ============================================================ -->
+
+<div
+  id="modalBackdrop"
+  class="modal-backdrop hidden"
+>
+
+  <div
+    class="modal"
+    role="dialog"
+    aria-modal="true"
+  >
+
+    <div class="modal-header">
+
+      <h3 class="modal-title">
+        RombGame DEMO
+      </h3>
+
+      <button
+        id="modalClose"
+        class="modal-close"
+        type="button"
+      >
+        ✕
+      </button>
+
+    </div>
+
+
+    <div class="modal-text">
+
+      Это демонстрационная версия интерфейса
+      Crash-игры.
+
+      <br>
+      <br>
+
+      Все очки, раунды и результаты создаются
+      непосредственно в браузере.
+
+      <br>
+      <br>
+
+      Здесь отсутствуют реальные денежные ставки,
+      реальные выплаты, пополнение или вывод средств.
+
+    </div>
+
+
+    <button
+      id="modalOk"
+      class="btn btn-primary btn-block"
+      type="button"
+      style="margin-top:16px;"
+    >
+      Понятно
+    </button>
+
   </div>
+
 </div>
+
 
 <script>
+
+/* ============================================================
+   ROMBGAME CRASH DEMO
+   JAVASCRIPT
+   ============================================================ */
+
 (() => {
+
   "use strict";
 
-  const API_BASE_URL = "https://follows-spanking-chicken-shadows.trycloudflare.com";
 
-  function apiUrl(p) { return API_BASE_URL.replace(/\/$/, "") + p; }
-  function apiHeaders(extra = {}) {
-    const headers = { ...extra };
-    const t = localStorage.getItem("romb_session_token");
-    if (t) headers["Authorization"] = `Bearer ${t}`;
-    return headers;
+  /* ==========================================================
+     01. CONFIG
+     ========================================================== */
+
+  const CONFIG = {
+
+    demoPin:
+      "123456",
+
+    defaultNickname:
+      "RombPlayer",
+
+    startingPoints:
+      10000,
+
+    minimumPoints:
+      100,
+
+    storageKey:
+      "rombgame_demo_state_v1",
+
+    sessionKey:
+      "rombgame_demo_session",
+
+    maxHistory:
+      30,
+
+    targetFPS:
+      60,
+
+    waitingSeconds:
+      5,
+
+    minimumCrash:
+      1.01,
+
+    maximumCrash:
+      80,
+
+    rocketPadding:
+      22,
+
+    animationSmoothness:
+      0.18
+
+  };
+
+
+  /* ==========================================================
+     02. DOM
+     ========================================================== */
+
+  const DOM = {
+
+    loginScreen:
+      document.getElementById("loginScreen"),
+
+    loginForm:
+      document.getElementById("loginForm"),
+
+    loginButton:
+      document.getElementById("loginButton"),
+
+    loginError:
+      document.getElementById("loginError"),
+
+    pincodeInput:
+      document.getElementById("pincodeInput"),
+
+    app:
+      document.getElementById("app"),
+
+    profileChip:
+      document.getElementById("profileChip"),
+
+    profileDropdown:
+      document.getElementById("profileDropdown"),
+
+    avatar:
+      document.getElementById("avatar"),
+
+    nicknameValue:
+      document.getElementById("nicknameValue"),
+
+    dropdownNickname:
+      document.getElementById("dropdownNickname"),
+
+    balanceValue:
+      document.getElementById("balanceValue"),
+
+    pdBalance:
+      document.getElementById("pdBalance"),
+
+    pdLvl:
+      document.getElementById("pdLvl"),
+
+    pdRounds:
+      document.getElementById("pdRounds"),
+
+    menuBalance:
+      document.getElementById("menuBalance"),
+
+    menuRounds:
+      document.getElementById("menuRounds"),
+
+    balanceContainer:
+      document.getElementById("balanceContainer"),
+
+    aboutButton:
+      document.getElementById("aboutButton"),
+
+    logoutButton:
+      document.getElementById("logoutButton"),
+
+    openCrashButton:
+      document.getElementById("openCrashButton"),
+
+    backButton:
+      document.getElementById("backButton"),
+
+    menuView:
+      document.getElementById("menuView"),
+
+    crashView:
+      document.getElementById("crashView"),
+
+    canvas:
+      document.getElementById("rocketCanvas"),
+
+    phaseLabel:
+      document.getElementById("phaseLabel"),
+
+    multiplierValue:
+      document.getElementById("multiplierValue"),
+
+    countdownValue:
+      document.getElementById("countdownValue"),
+
+    historyStrip:
+      document.getElementById("historyStrip"),
+
+    statusDot:
+      document.getElementById("statusDot"),
+
+    statusText:
+      document.getElementById("statusText"),
+
+    roundIdValue:
+      document.getElementById("roundIdValue"),
+
+    roundPeakValue:
+      document.getElementById("roundPeakValue"),
+
+    selectedPoints:
+      document.getElementById("selectedPoints"),
+
+    demoActionButton:
+      document.getElementById("demoActionButton"),
+
+    statRounds:
+      document.getElementById("statRounds"),
+
+    statBest:
+      document.getElementById("statBest"),
+
+    statAverage:
+      document.getElementById("statAverage"),
+
+    toastContainer:
+      document.getElementById("toastContainer"),
+
+    modalBackdrop:
+      document.getElementById("modalBackdrop"),
+
+    modalClose:
+      document.getElementById("modalClose"),
+
+    modalOk:
+      document.getElementById("modalOk")
+
+  };
+
+
+  /* ==========================================================
+     03. CANVAS
+     ========================================================== */
+
+  const ctx =
+    DOM.canvas.getContext(
+      "2d",
+      {
+        alpha: true,
+        desynchronized: true
+      }
+    );
+
+
+  /* ==========================================================
+     04. STATE
+     ========================================================== */
+
+  const state = {
+
+    loggedIn:
+      false,
+
+    nickname:
+      CONFIG.defaultNickname,
+
+    points:
+      CONFIG.startingPoints,
+
+    level:
+      1,
+
+    rounds:
+      0,
+
+    currentRound:
+      0,
+
+    phase:
+      "idle",
+
+    multiplier:
+      1,
+
+    displayedMultiplier:
+      1,
+
+    crashPoint:
+      1,
+
+    selectedPoints:
+      100,
+
+    participated:
+      false,
+
+    demoParticipation:
+      false,
+
+    history:
+      [],
+
+    roundHistory:
+      [],
+
+    bestMultiplier:
+      0,
+
+    averageMultiplier:
+      0,
+
+    waitingStarted:
+      0,
+
+    waitingDuration:
+      CONFIG.waitingSeconds * 1000,
+
+    roundStarted:
+      0,
+
+    roundDuration:
+      0,
+
+    lastFrame:
+      0,
+
+    animationId:
+      0,
+
+    lastRenderedMultiplier:
+      1,
+
+    canvasWidth:
+      0,
+
+    canvasHeight:
+      0,
+
+    devicePixelRatio:
+      1,
+
+    curve:
+      [],
+
+    particles:
+      [],
+
+    stars:
+      [],
+
+    rocketX:
+      0,
+
+    rocketY:
+      0,
+
+    lastTimestamp:
+      0,
+
+    elapsed:
+      0,
+
+    pendingToast:
+      false
+
+  };
+
+
+  /* ==========================================================
+     05. UTILS
+     ========================================================== */
+
+  function clamp(
+    value,
+    min,
+    max
+  ) {
+
+    return Math.max(
+      min,
+      Math.min(max, value)
+    );
+
   }
 
-  // DOM Elements
-  const loginScreen = document.getElementById("loginScreen");
-  const appScreen = document.getElementById("app");
-  const pincodeInput = document.getElementById("pincodeInput");
-  const loginError = document.getElementById("loginError");
-  const balanceValue = document.getElementById("balanceValue");
-  const balanceContainer = document.getElementById("balanceContainer");
-  const nicknameValue = document.getElementById("nicknameValue");
-  const profileChip = document.getElementById("profileChip");
-  const profileDropdown = document.getElementById("profileDropdown");
 
-  const menuView = document.getElementById("menuView");
-  const crashView = document.getElementById("crashView");
-  const rocketCanvas = document.getElementById("rocketCanvas");
-  const rctx = rocketCanvas.getContext("2d");
+  function random(
+    min,
+    max
+  ) {
 
-  const betAmountInput = document.getElementById("betAmountInput");
-  const autoCashoutToggle = document.getElementById("autoCashoutToggle");
-  const autoCashoutInput = document.getElementById("autoCashoutInput");
-  const actionBtn = document.getElementById("actionBtn");
-  const betError = document.getElementById("betError");
+    return (
+      Math.random() *
+      (max - min)
+    ) + min;
 
-  // State
-  let profile = null;
-  let ws = null;
-  let currentState = null;
-  let myBetPlaced = false;
-  let myBetActive = false;
-  let lastSeenRoundId = null;
-  let curvePoints = [];
-  let isRequestPending = false;
-
-  function fmt(n) { return Math.round(n || 0).toLocaleString("ru-RU"); }
-
-  // --- ВХОД И ПРОФИЛЬ ---
-  pincodeInput.addEventListener("input", () => {
-    pincodeInput.value = pincodeInput.value.replace(/\D/g, "").slice(0, 6);
-  });
-
-  document.getElementById("loginForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    loginError.hidden = true;
-    const pincode = pincodeInput.value.trim();
-    if (pincode.length !== 6) return showError("Введите 6 цифр кода");
-
-    try {
-      const res = await fetch(apiUrl("/api/login"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pincode })
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.detail || "Ошибка входа");
-      
-      if (data.token) localStorage.setItem("romb_session_token", data.token);
-      await fetchProfile();
-      showApp();
-    } catch (err) {
-      showError(err.message);
-    }
-  });
-
-  function showError(msg) {
-    loginError.textContent = msg;
-    loginError.hidden = false;
   }
 
-  async function fetchProfile() {
+
+  function randomInt(
+    min,
+    max
+  ) {
+
+    return Math.floor(
+      random(min, max + 1)
+    );
+
+  }
+
+
+  function formatNumber(
+    value
+  ) {
+
+    return Math.round(
+      Number(value) || 0
+    ).toLocaleString("ru-RU");
+
+  }
+
+
+  function formatMultiplier(
+    value
+  ) {
+
+    const num =
+      Number(value) || 0;
+
+    return (
+      num.toFixed(2) +
+      "x"
+    );
+
+  }
+
+
+  function now() {
+
+    return Date.now();
+
+  }
+
+
+  function safeJSONParse(
+    value,
+    fallback
+  ) {
+
     try {
-      const res = await fetch(apiUrl("/api/profile"), { headers: apiHeaders() });
-      if (!res.ok) throw new Error();
-      profile = await res.json();
-      renderProfile();
+
+      return JSON.parse(value);
+
     } catch {
-      localStorage.removeItem("romb_session_token");
-      loginScreen.hidden = false;
-      appScreen.hidden = true;
+
+      return fallback;
+
     }
+
   }
 
-  function renderProfile(animate = false) {
-    if (!profile) return;
-    nicknameValue.textContent = profile.nickname;
-    document.getElementById("pdLvl").textContent = profile.lvl;
-    document.getElementById("pdBalance").textContent = fmt(profile.balance);
-    
-    if (animate) {
-      balanceContainer.classList.remove("balance-pulse");
-      void balanceContainer.offsetWidth;
-      balanceContainer.classList.add("balance-pulse");
-    }
-    balanceValue.textContent = fmt(profile.balance);
-  }
 
-  function showApp() {
-    loginScreen.hidden = true;
-    appScreen.hidden = false;
-    connectWS();
-  }
+  /* ==========================================================
+     06. STORAGE
+     ========================================================== */
 
-  document.getElementById("logoutBtn").addEventListener("click", () => {
-    localStorage.removeItem("romb_session_token");
-    location.reload();
-  });
+  function saveState() {
 
-  profileChip.addEventListener("click", () => {
-    profileDropdown.hidden = !profileDropdown.hidden;
-  });
+    const data = {
 
-  // --- НАВИГАЦИЯ ---
-  document.getElementById("openCrashBtn").addEventListener("click", () => {
-    menuView.hidden = true; crashView.hidden = false;
-    resizeCanvas();
-  });
-  document.getElementById("backToMenuBtn").addEventListener("click", () => {
-    crashView.hidden = true; menuView.hidden = false;
-  });
+      nickname:
+        state.nickname,
 
-  // --- СТАВКИ И ИНТЕРФЕЙС ---
-  document.querySelectorAll(".qbtn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const cur = parseInt(betAmountInput.value || "0", 10);
-      const bal = profile ? profile.balance : 0;
-      if (btn.dataset.op === "half") betAmountInput.value = Math.max(100, Math.floor(cur / 2));
-      if (btn.dataset.op === "double") betAmountInput.value = Math.min(bal, (cur || 100) * 2);
-      if (btn.dataset.op === "max") betAmountInput.value = bal;
-    });
-  });
+      points:
+        state.points,
 
-  autoCashoutToggle.addEventListener("change", () => {
-    autoCashoutInput.disabled = !autoCashoutToggle.checked;
-  });
+      level:
+        state.level,
 
-  // --- WEBSOCKET И ИГРОВАЯ ЛОГИКА ---
-  function connectWS() {
-    const wsBase = API_BASE_URL.replace(/^http/, "ws").replace(/\/$/, "");
-    ws = new WebSocket(`${wsBase}/ws/crash`);
-    
-    ws.onmessage = (evt) => {
-      const state = JSON.parse(evt.data);
-      handleState(state);
+      rounds:
+        state.rounds,
+
+      history:
+        state.history.slice(
+          0,
+          CONFIG.maxHistory
+        ),
+
+      roundHistory:
+        state.roundHistory.slice(
+          0,
+          CONFIG.maxHistory
+        ),
+
+      bestMultiplier:
+        state.bestMultiplier,
+
+      averageMultiplier:
+        state.averageMultiplier
+
     };
-    ws.onclose = () => setTimeout(connectWS, 2000);
-  }
 
-  function handleState(state) {
-    currentState = state;
 
-    if (state.round_id !== lastSeenRoundId) {
-      lastSeenRoundId = state.round_id;
-      myBetPlaced = false;
-      myBetActive = false;
-      curvePoints = [];
-      betError.hidden = true;
+    try {
+
+      localStorage.setItem(
+        CONFIG.storageKey,
+        JSON.stringify(data)
+      );
+
+    } catch {
+
+      /* Storage may be disabled. */
+
     }
 
-    // Автоматическая проверка: если сервер сообщает, что автозабор сработал
-    if (state.user_cashout && myBetActive) {
-      myBetActive = false;
-      fetchProfile();
-      showWinToast(state.user_cashout.multiplier, state.user_cashout.win);
+  }
+
+
+  function loadState() {
+
+    try {
+
+      const raw =
+        localStorage.getItem(
+          CONFIG.storageKey
+        );
+
+      if (!raw) {
+
+        return;
+
+      }
+
+
+      const data =
+        safeJSONParse(
+          raw,
+          null
+        );
+
+      if (!data) {
+
+        return;
+
+      }
+
+
+      state.nickname =
+        typeof data.nickname === "string"
+          ? data.nickname
+          : CONFIG.defaultNickname;
+
+
+      state.points =
+        Number.isFinite(data.points)
+          ? Math.max(0, data.points)
+          : CONFIG.startingPoints;
+
+
+      state.level =
+        Number.isFinite(data.level)
+          ? Math.max(1, data.level)
+          : 1;
+
+
+      state.rounds =
+        Number.isFinite(data.rounds)
+          ? Math.max(0, data.rounds)
+          : 0;
+
+
+      state.history =
+        Array.isArray(data.history)
+          ? data.history
+              .filter(Number.isFinite)
+              .slice(0, CONFIG.maxHistory)
+          : [];
+
+
+      state.roundHistory =
+        Array.isArray(data.roundHistory)
+          ? data.roundHistory
+              .filter(Number.isFinite)
+              .slice(0, CONFIG.maxHistory)
+          : [];
+
+
+      state.bestMultiplier =
+        Number.isFinite(data.bestMultiplier)
+          ? data.bestMultiplier
+          : 0;
+
+
+      state.averageMultiplier =
+        Number.isFinite(data.averageMultiplier)
+          ? data.averageMultiplier
+          : 0;
+
+    } catch {
+
+      /* Ignore corrupted local data. */
+
     }
 
-    renderHistory(state.history || []);
-    renderPhase(state);
-    drawRocket(state);
   }
 
-  function renderHistory(history) {
-    const strip = document.getElementById("historyStrip");
-    strip.innerHTML = "";
-    history.forEach(val => {
-      const chip = document.createElement("div");
-      const cls = val >= 10 ? "hc-high" : val >= 2 ? "hc-mid" : "hc-low";
-      chip.className = `history-chip ${cls}`;
-      chip.textContent = `${val.toFixed(2)}x`;
-      strip.appendChild(chip);
-    });
-  }
 
-  function renderPhase(state) {
-    const phaseLabel = document.getElementById("phaseLabel");
-    const multVal = document.getElementById("multiplierValue");
-    const countVal = document.getElementById("countdownValue");
+  /* ==========================================================
+     07. SESSION
+     ========================================================== */
 
-    multVal.classList.remove("mv-running", "mv-crashed");
+  function hasSession() {
 
-    if (state.phase === "waiting") {
-      phaseLabel.textContent = "Приём ставок";
-      multVal.textContent = "1.00x";
-      countVal.textContent = Math.max(0, Math.ceil(state.phase_ends_in || 0)) + "s";
-      updateActionButton("waiting");
-    } else if (state.phase === "running") {
-      phaseLabel.textContent = "Полёт";
-      multVal.classList.add("mv-running");
-      multVal.textContent = `${state.multiplier.toFixed(2)}x`;
-      countVal.textContent = "";
-      updateActionButton("running", state.multiplier);
-    } else if (state.phase === "crashed") {
-      phaseLabel.textContent = "Краш!";
-      multVal.classList.add("mv-crashed");
-      multVal.textContent = `${(state.crash_point || 1.0).toFixed(2)}x`;
-      countVal.textContent = "";
-      
-      if (myBetActive) {
-        myBetActive = false;
-        betError.textContent = "Ставка сгорела!";
-        betError.hidden = false;
-        fetchProfile();
-      }
-      updateActionButton("crashed");
+    try {
+
+      return (
+        localStorage.getItem(
+          CONFIG.sessionKey
+        ) === "1"
+      );
+
+    } catch {
+
+      return false;
+
     }
+
   }
 
-  function updateActionButton(phase, mult = 1) {
-    actionBtn.classList.remove("state-cashout", "state-locked");
 
-    if (phase === "waiting") {
-      if (myBetPlaced) {
-        actionBtn.textContent = "Ставка сделана ✓";
-        actionBtn.classList.add("state-locked");
-        actionBtn.disabled = true;
-      } else {
-        actionBtn.textContent = "Поставить";
-        actionBtn.disabled = isRequestPending;
+  function createSession() {
+
+    try {
+
+      localStorage.setItem(
+        CONFIG.sessionKey,
+        "1"
+      );
+
+    } catch {}
+
+  }
+
+
+  function clearSession() {
+
+    try {
+
+      localStorage.removeItem(
+        CONFIG.sessionKey
+      );
+
+    } catch {}
+
+  }
+
+
+  /* ==========================================================
+     08. PROFILE
+     ========================================================== */
+
+  function renderProfile(
+    animate = false
+  ) {
+
+    const name =
+      state.nickname ||
+      CONFIG.defaultNickname;
+
+
+    DOM.nicknameValue.textContent =
+      name;
+
+    DOM.dropdownNickname.textContent =
+      name;
+
+
+    const first =
+      name
+        .trim()
+        .charAt(0)
+        .toUpperCase() ||
+      "R";
+
+
+    DOM.avatar.textContent =
+      first;
+
+
+    DOM.balanceValue.textContent =
+      formatNumber(
+        state.points
+      );
+
+
+    DOM.pdBalance.textContent =
+      formatNumber(
+        state.points
+      );
+
+
+    DOM.pdLvl.textContent =
+      state.level;
+
+
+    DOM.pdRounds.textContent =
+      state.rounds;
+
+
+    DOM.menuBalance.textContent =
+      formatNumber(
+        state.points
+      );
+
+
+    DOM.menuRounds.textContent =
+      state.rounds;
+
+
+    DOM.selectedPoints.textContent =
+      formatNumber(
+        state.selectedPoints
+      );
+
+
+    if (animate) {
+
+      DOM.balanceContainer.classList.remove(
+        "balance-pulse"
+      );
+
+      void DOM.balanceContainer.offsetWidth;
+
+      DOM.balanceContainer.classList.add(
+        "balance-pulse"
+      );
+
+    }
+
+  }
+
+
+  function updateLevel() {
+
+    const newLevel =
+      Math.max(
+        1,
+        Math.floor(
+          state.rounds / 10
+        ) + 1
+      );
+
+
+    if (
+      newLevel >
+      state.level
+    ) {
+
+      state.level =
+        newLevel;
+
+
+      showToast(
+        "⭐",
+        "Новый уровень",
+        `Уровень ${state.level}`
+      );
+
+    }
+
+  }
+
+
+  /* ==========================================================
+     09. LOGIN
+     ========================================================== */
+
+  function showLoginError(
+    message
+  ) {
+
+    DOM.loginError.textContent =
+      message;
+
+  }
+
+
+  function clearLoginError() {
+
+    DOM.loginError.textContent =
+      "";
+
+  }
+
+
+  DOM.pincodeInput.addEventListener(
+    "input",
+    () => {
+
+      DOM.pincodeInput.value =
+        DOM.pincodeInput.value
+          .replace(/\D/g, "")
+          .slice(0, 6);
+
+      clearLoginError();
+
+    }
+  );
+
+
+  DOM.loginForm.addEventListener(
+    "submit",
+    event => {
+
+      event.preventDefault();
+
+
+      const pin =
+        DOM.pincodeInput.value
+          .trim();
+
+
+      if (
+        pin.length !== 6
+      ) {
+
+        showLoginError(
+          "Введите 6 цифр."
+        );
+
+        return;
+
       }
-    } else if (phase === "running") {
-      if (myBetActive) {
-        const bet = parseInt(betAmountInput.value || "0", 10);
-        actionBtn.textContent = `Забрать ${fmt(bet * mult)}`;
-        actionBtn.classList.add("state-cashout");
-        actionBtn.disabled = isRequestPending;
-      } else {
-        actionBtn.textContent = myBetPlaced ? "Забрано" : "Идёт раунд";
-        actionBtn.classList.add("state-locked");
-        actionBtn.disabled = true;
+
+
+      if (
+        pin !==
+        CONFIG.demoPin
+      ) {
+
+        showLoginError(
+          "Неверный DEMO PIN."
+        );
+
+        DOM.pincodeInput.value =
+          "";
+
+        DOM.pincodeInput.focus();
+
+        return;
+
       }
+
+
+      clearLoginError();
+
+      createSession();
+
+      state.loggedIn =
+        true;
+
+
+      enterApplication();
+
+
+      showToast(
+        "✓",
+        "Добро пожаловать",
+        "Вы вошли в RombGame DEMO"
+      );
+
+    }
+  );
+
+
+  /* ==========================================================
+     10. APPLICATION
+     ========================================================== */
+
+  function enterApplication() {
+
+    DOM.loginScreen.classList.add(
+      "hidden"
+    );
+
+    DOM.app.classList.remove(
+      "hidden"
+    );
+
+
+    renderProfile();
+
+    showMenu();
+
+    resizeCanvas();
+
+  }
+
+
+  function leaveApplication() {
+
+    state.loggedIn =
+      false;
+
+    clearSession();
+
+    DOM.app.classList.add(
+      "hidden"
+    );
+
+    DOM.loginScreen.classList.remove(
+      "hidden"
+    );
+
+    DOM.pincodeInput.value =
+      "";
+
+    DOM.pincodeInput.focus();
+
+    closeProfile();
+
+    stopGame();
+
+  }
+
+
+  function showMenu() {
+
+    DOM.menuView.classList.remove(
+      "hidden"
+    );
+
+    DOM.crashView.classList.add(
+      "hidden"
+    );
+
+    closeProfile();
+
+    stopGame();
+
+  }
+
+
+  function showCrash() {
+
+    DOM.menuView.classList.add(
+      "hidden"
+    );
+
+    DOM.crashView.classList.remove(
+      "hidden"
+    );
+
+    closeProfile();
+
+    resizeCanvas();
+
+    startGame();
+
+  }
+
+
+  /* ==========================================================
+     11. PROFILE EVENTS
+     ========================================================== */
+
+  function openProfile() {
+
+    DOM.profileDropdown.classList.remove(
+      "hidden"
+    );
+
+  }
+
+
+  function closeProfile() {
+
+    DOM.profileDropdown.classList.add(
+      "hidden"
+    );
+
+  }
+
+
+  DOM.profileChip.addEventListener(
+    "click",
+    event => {
+
+      event.stopPropagation();
+
+      DOM.profileDropdown.classList.toggle(
+        "hidden"
+      );
+
+    }
+  );
+
+
+  document.addEventListener(
+    "click",
+    event => {
+
+      if (
+        !DOM.profileDropdown.contains(
+          event.target
+        ) &&
+        event.target !== DOM.profileChip &&
+        !DOM.profileChip.contains(
+          event.target
+        )
+      ) {
+
+        closeProfile();
+
+      }
+
+    }
+  );
+
+
+  DOM.logoutButton.addEventListener(
+    "click",
+    () => {
+
+      saveState();
+
+      leaveApplication();
+
+    }
+  );
+
+
+  /* ==========================================================
+     12. NAVIGATION EVENTS
+     ========================================================== */
+
+  DOM.openCrashButton.addEventListener(
+    "click",
+    () => {
+
+      showCrash();
+
+    }
+  );
+
+
+  DOM.backButton.addEventListener(
+    "click",
+    () => {
+
+      showMenu();
+
+    }
+  );
+
+
+  /* ==========================================================
+     13. MODAL
+     ========================================================== */
+
+  function openModal() {
+
+    DOM.modalBackdrop.classList.remove(
+      "hidden"
+    );
+
+  }
+
+
+  function closeModal() {
+
+    DOM.modalBackdrop.classList.add(
+      "hidden"
+    );
+
+  }
+
+
+  DOM.aboutButton.addEventListener(
+    "click",
+    openModal
+  );
+
+
+  DOM.modalClose.addEventListener(
+    "click",
+    closeModal
+  );
+
+
+  DOM.modalOk.addEventListener(
+    "click",
+    closeModal
+  );
+
+
+  DOM.modalBackdrop.addEventListener(
+    "click",
+    event => {
+
+      if (
+        event.target ===
+        DOM.modalBackdrop
+      ) {
+
+        closeModal();
+
+      }
+
+    }
+  );
+
+
+  /* ==========================================================
+     14. POINT SELECTION
+     ========================================================== */
+
+  const pointButtons =
+    Array.from(
+      document.querySelectorAll(
+        ".demo-amount"
+      )
+    );
+
+
+  function setSelectedPoints(
+    points
+  ) {
+
+    const value =
+      Math.max(
+        CONFIG.minimumPoints,
+        Math.floor(
+          Number(points) || 0
+        )
+      );
+
+
+    state.selectedPoints =
+      Math.min(
+        value,
+        Math.max(
+          CONFIG.minimumPoints,
+          state.points
+        )
+      );
+
+
+    pointButtons.forEach(
+      button => {
+
+        const buttonPoints =
+          Number(
+            button.dataset.points
+          );
+
+
+        button.classList.toggle(
+          "active",
+          buttonPoints ===
+          state.selectedPoints
+        );
+
+      }
+    );
+
+
+    renderProfile();
+
+  }
+
+
+  pointButtons.forEach(
+    button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          const points =
+            Number(
+              button.dataset.points
+            );
+
+
+          setSelectedPoints(
+            points
+          );
+
+        }
+      );
+
+    }
+  );
+
+
+  /* ==========================================================
+     15. CRASH RANDOMIZER
+     ========================================================== */
+
+  function generateCrashPoint() {
+
+    const r =
+      Math.random();
+
+
+    let value;
+
+
+    /*
+      Несколько диапазонов для
+      более естественной DEMO-анимации.
+    */
+
+    if (
+      r < 0.52
+    ) {
+
+      value =
+        random(
+          1.01,
+          1.85
+        );
+
+    } else if (
+      r < 0.78
+    ) {
+
+      value =
+        random(
+          1.85,
+          3.5
+        );
+
+    } else if (
+      r < 0.93
+    ) {
+
+      value =
+        random(
+          3.5,
+          7
+        );
+
+    } else if (
+      r < 0.985
+    ) {
+
+      value =
+        random(
+          7,
+          15
+        );
+
     } else {
-      actionBtn.textContent = "Ожидание раунда";
-      actionBtn.classList.add("state-locked");
-      actionBtn.disabled = true;
+
+      value =
+        random(
+          15,
+          45
+        );
+
     }
+
+
+    return clamp(
+      Number(
+        value.toFixed(2)
+      ),
+      CONFIG.minimumCrash,
+      CONFIG.maximumCrash
+    );
+
   }
 
-  // --- ДЕЙСТВИЯ: СТАВКА / ЗАБОР ---
-  actionBtn.addEventListener("click", async () => {
-    if (!currentState || isRequestPending) return;
-    betError.hidden = true;
 
-    if (currentState.phase === "waiting" && !myBetPlaced) {
-      const amount = parseInt(betAmountInput.value || "0", 10);
-      if (isNaN(amount) || amount < 100) return showErrorBet("Мин. ставка: 100");
+  /* ==========================================================
+     16. GAME START
+     ========================================================== */
 
-      const payload = { amount };
-      if (autoCashoutToggle.checked) {
-        payload.auto_cashout = parseFloat(autoCashoutInput.value || "0");
-      }
+  function startGame() {
 
-      isRequestPending = true;
-      actionBtn.disabled = true;
+    if (
+      state.phase !==
+      "idle"
+    ) {
 
-      try {
-        const res = await fetch(apiUrl("/api/crash/bet"), {
-          method: "POST",
-          headers: apiHeaders({ "Content-Type": "application/json" }),
-          body: JSON.stringify(payload)
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.detail || "Ошибка");
-
-        profile.balance = data.balance;
-        renderProfile();
-        myBetPlaced = true;
-        myBetActive = true;
-        updateActionButton("waiting");
-      } catch (err) {
-        showErrorBet(err.message);
-      } finally {
-        isRequestPending = false;
-      }
-
-    } else if (currentState.phase === "running" && myBetActive) {
-      isRequestPending = true;
-      actionBtn.disabled = true;
-
-      try {
-        const res = await fetch(apiUrl("/api/crash/cashout"), { method: "POST", headers: apiHeaders() });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.detail || "Не удалось забрать");
-
-        myBetActive = false;
-        profile.balance = data.balance;
-        renderProfile(true);
-        updateActionButton("running", currentState.multiplier);
-        showWinToast(data.multiplier, data.win);
-      } catch (err) {
-        showErrorBet(err.message);
-      } finally {
-        isRequestPending = false;
-      }
-    }
-  });
-
-  function showErrorBet(msg) {
-    betError.textContent = msg;
-    betError.hidden = false;
-  }
-
-  function showWinToast(mult, win) {
-    document.getElementById("winMult").textContent = `${mult.toFixed(2)}x`;
-    document.getElementById("winAmount").textContent = fmt(win);
-    const toast = document.getElementById("winToast");
-    toast.hidden = false;
-    requestAnimationFrame(() => toast.classList.add("show"));
-    setTimeout(() => {
-      toast.classList.remove("show");
-      setTimeout(() => { toast.hidden = true; }, 300);
-    }, 2500);
-  }
-
-  // --- CANVAS РИСОВАНИЕ ---
-  function resizeCanvas() {
-    const rect = rocketCanvas.parentElement.getBoundingClientRect();
-    rocketCanvas.width = rect.width;
-    rocketCanvas.height = rect.height;
-  }
-  window.addEventListener("resize", resizeCanvas);
-
-  function drawRocket(state) {
-    if (crashView.hidden) return;
-    const w = rocketCanvas.width;
-    const h = rocketCanvas.height;
-    rctx.clearRect(0, 0, w, h);
-
-    if (state.phase === "waiting") {
-      curvePoints = [];
       return;
+
     }
 
-    const mult = state.phase === "crashed" ? state.crash_point : state.multiplier;
-    curvePoints.push(mult);
-    if (curvePoints.length > 150) curvePoints.shift();
 
-    const maxM = Math.max(2, mult * 1.1);
-    const pad = 20;
+    state.currentRound +=
+      1;
 
-    rctx.beginPath();
-    curvePoints.forEach((m, i) => {
-      const x = pad + (i / Math.max(1, curvePoints.length - 1)) * (w - pad * 2);
-      const y = h - pad - (Math.min(m, maxM) / maxM) * (h - pad * 2);
-      if (i === 0) rctx.moveTo(x, y);
-      else rctx.lineTo(x, y);
-    });
+    state.phase =
+      "waiting";
 
-    rctx.strokeStyle = state.phase === "crashed" ? "#FF4D6D" : "#7C5CFF";
-    rctx.lineWidth = 3;
-    rctx.stroke();
+    state.multiplier =
+      1;
 
-    // Точка ракеты
-    if (curvePoints.length > 0) {
-      const lastM = curvePoints[curvePoints.length - 1];
-      const x = pad + (w - pad * 2);
-      const y = h - pad - (Math.min(lastM, maxM) / maxM) * (h - pad * 2);
+    state.displayedMultiplier =
+      1;
 
-      rctx.beginPath();
-      rctx.arc(x, y, 6, 0, Math.PI * 2);
-      rctx.fillStyle = state.phase === "crashed" ? "#FF4D6D" : "#F5C94B";
-      rctx.fill();
+    state.crashPoint =
+      generateCrashPoint();
+
+    state.curve =
+      [];
+
+    state.particles =
+      [];
+
+    state.waitingStarted =
+      now();
+
+    state.roundStarted =
+      0;
+
+    state.elapsed =
+      0;
+
+    state.participated =
+      false;
+
+    state.demoParticipation =
+      false;
+
+
+    DOM.roundIdValue.textContent =
+      "#" +
+      state.currentRound;
+
+
+    DOM.roundPeakValue.textContent =
+      "1.00x";
+
+
+    updatePhaseUI();
+
+    createStars();
+
+    startAnimationLoop();
+
+  }
+
+
+  /* ==========================================================
+     17. GAME STOP
+     ========================================================== */
+
+  function stopGame() {
+
+    state.phase =
+      "idle";
+
+    cancelAnimationFrame(
+      state.animationId
+    );
+
+    state.animationId =
+      0;
+
+  }
+
+
+  /* ==========================================================
+     18. ANIMATION LOOP
+     ========================================================== */
+
+  function startAnimationLoop() {
+
+    if (
+      state.animationId
+    ) {
+
+      return;
+
     }
+
+
+    state.lastTimestamp =
+      performance.now();
+
+
+    state.animationId =
+      requestAnimationFrame(
+        gameLoop
+      );
+
   }
 
-  // Запуск при старте
-  if (localStorage.getItem("romb_session_token")) {
-    fetchProfile().then(() => {
-      if (profile) showApp();
-    });
+
+  function gameLoop(
+    timestamp
+  ) {
+
+    state.animationId =
+      requestAnimationFrame(
+        gameLoop
+      );
+
+
+    const previous =
+      state.lastTimestamp ||
+      timestamp;
+
+
+    let delta =
+      timestamp -
+      previous;
+
+
+    /*
+      Ограничиваем delta,
+      чтобы после сворачивания
+      вкладки не было огромного
+      скачка множителя.
+    */
+
+    delta =
+      clamp(
+        delta,
+        0,
+        50
+      );
+
+
+    state.lastTimestamp =
+      timestamp;
+
+
+    updateGame(
+      delta
+    );
+
+
+    renderGame();
+
   }
+
+
+  /* ==========================================================
+     19. GAME UPDATE
+     ========================================================== */
+
+  function updateGame(
+    delta
+  ) {
+
+    if (
+      state.phase ===
+      "waiting"
+    ) {
+
+      updateWaiting();
+
+    }
+
+
+    else if (
+      state.phase ===
+      "running"
+    ) {
+
+      updateRunning(
+        delta
+      );
+
+    }
+
+
+    updateParticles(
+      delta
+    );
+
+  }
+
+
+  /* ==========================================================
+     20. WAITING
+     ========================================================== */
+
+  function updateWaiting() {
+
+    const elapsed =
+      now() -
+      state.waitingStarted;
+
+
+    const remaining =
+      Math.max(
+        0,
+        state.waitingDuration -
+        elapsed
+      );
+
+
+    const seconds =
+      Math.ceil(
+        remaining / 1000
+      );
+
+
+    DOM.countdownValue.textContent =
+      seconds > 0
+        ? seconds + "s"
+        : "";
+
+
+    if (
+      remaining <=
+      0
+    ) {
+
+      beginRunning();
+
+    }
+
+  }
+
+
+  /* ==========================================================
+     21. BEGIN RUNNING
+     ========================================================== */
+
+  function beginRunning() {
+
+    if (
+      state.phase !==
+      "waiting"
+    ) {
+
+      return;
+
+    }
+
+
+    state.phase =
+      "running";
+
+    state.roundStarted =
+      now();
+
+    state.elapsed =
+      0;
+
+    state.multiplier =
+      1;
+
+    state.displayedMultiplier =
+      1;
+
+    state.curve =
+      [];
+
+
+    updatePhaseUI();
+
+
+    showToast(
+      "🚀",
+      "Раунд начался",
+      "Наблюдайте за множителем"
+    );
+
+  }
+
+
+  /* ==========================================================
+     22. RUNNING
+     ========================================================== */
+
+  function updateRunning(
+    delta
+  ) {
+
+    state.elapsed =
+      now() -
+      state.roundStarted;
+
+
+    const seconds =
+      state.elapsed / 1000;
+
+
+    /*
+      Экспоненциальный рост.
+      Расчёт происходит независимо
+      от FPS интерфейса.
+    */
+
+    const growth =
+      Math.exp(
+        seconds * 0.115
+      );
+
+
+    state.multiplier =
+      Math.max(
+        1,
+        growth
+      );
+
+
+    /*
+      Плавное отображение.
+    */
+
+    state.displayedMultiplier +=
+      (
+        state.multiplier -
+        state.displayedMultiplier
+      ) *
+      CONFIG.animationSmoothness;
+
+
+    state.curve.push(
+      state.displayedMultiplier
+    );
+
+
+    if (
+      state.curve.length >
+      260
+    ) {
+
+      state.curve.shift();
+
+    }
+
+
+    DOM.roundPeakValue.textContent =
+      formatMultiplier(
+        state.displayedMultiplier
+      );
+
+
+    if (
+      state.displayedMultiplier >=
+      state.crashPoint
+    ) {
+
+      crashRound();
+
+    }
+
+
+    updateRocketParticles(
+      delta
+    );
+
+  }
+
+
+  /* ==========================================================
+     23. CRASH
+     ========================================================== */
+
+  function crashRound() {
+
+    if (
+      state.phase !==
+      "running"
+    ) {
+
+      return;
+
+    }
+
+
+    state.phase =
+      "crashed";
+
+    state.multiplier =
+      state.crashPoint;
+
+    state.displayedMultiplier =
+      state.crashPoint;
+
+
+    state.history.unshift(
+      state.crashPoint
+    );
+
+
+    state.history =
+      state.history.slice(
+        0,
+        CONFIG.maxHistory
+      );
+
+
+    state.roundHistory.unshift(
+      state.crashPoint
+    );
+
+
+    state.roundHistory =
+      state.roundHistory.slice(
+        0,
+        CONFIG.maxHistory
+      );
+
+
+    state.rounds +=
+      1;
+
+
+    updateStatistics();
+
+    updateLevel();
+
+    saveState();
+
+    renderHistory();
+
+    renderProfile(true);
+
+    updatePhaseUI();
+
+
+    createCrashParticles();
+
+
+    setTimeout(
+      () => {
+
+        if (
+          state.phase ===
+          "crashed"
+        ) {
+
+          prepareNextRound();
+
+        }
+
+      },
+      1800
+    );
+
+  }
+
+
+  /* ==========================================================
+     24. NEXT ROUND
+     ========================================================== */
+
+  function prepareNextRound() {
+
+    state.phase =
+      "waiting";
+
+    state.multiplier =
+      1;
+
+    state.displayedMultiplier =
+      1;
+
+    state.crashPoint =
+      generateCrashPoint();
+
+    state.curve =
+      [];
+
+    state.particles =
+      [];
+
+    state.waitingStarted =
+      now();
+
+    state.roundStarted =
+      0;
+
+    state.participated =
+      false;
+
+    state.demoParticipation =
+      false;
+
+    state.currentRound +=
+      1;
+
+
+    DOM.roundIdValue.textContent =
+      "#" +
+      state.currentRound;
+
+
+    DOM.roundPeakValue.textContent =
+      "1.00x";
+
+
+    updatePhaseUI();
+
+  }
+
+
+  /* ==========================================================
+     25. PARTICIPATION DEMO
+     ========================================================== */
+
+  DOM.demoActionButton.addEventListener(
+    "click",
+    () => {
+
+      if (
+        state.phase !==
+        "waiting"
+      ) {
+
+        return;
+
+      }
+
+
+      if (
+        state.demoParticipation
+      ) {
+
+        return;
+
+      }
+
+
+      const points =
+        state.selectedPoints;
+
+
+      if (
+        points >
+        state.points
+      ) {
+
+        showToast(
+          "!",
+          "Недостаточно очков",
+          "Выберите меньше виртуальных очков"
+        );
+
+        return;
+
+      }
+
+
+      /*
+        DEMO-логика:
+        выбранные очки уменьшаются,
+        а после завершения раунда
+        возвращаются в виртуальный
+        баланс вместе с демонстрационным
+        результатом.
+      */
+
+      state.points -=
+        points;
+
+
+      state.demoParticipation =
+        true;
+
+      state.participated =
+        true;
+
+
+      renderProfile(true);
+
+      updateActionButton();
+
+    }
+  );
+
+
+  /* ==========================================================
+     26. DEMO PARTICIPATION RESULT
+     ========================================================== */
+
+  function resolveDemoParticipation() {
+
+    /*
+      Никаких денежных выплат.
+      Здесь только возврат виртуальных
+      очков для демонстрации интерфейса.
+    */
+
+    if (
+      !state.participated
+    ) {
+
+      return;
+
+    }
+
+
+    const selected =
+      state.selectedPoints;
+
+
+    const multiplier =
+      state.crashPoint;
+
+
+    /*
+      Для демонстрации:
+      если раунд выше 1.5x,
+      показываем виртуальный бонус.
+    */
+
+    let virtualReturn =
+      selected;
+
+
+    if (
+      multiplier >=
+      1.5
+    ) {
+
+      virtualReturn =
+        Math.round(
+          selected *
+          Math.min(
+            multiplier,
+            5
+          )
+        );
+
+    }
+
+
+    state.points +=
+      virtualReturn;
+
+
+    state.participated =
+      false;
+
+    state.demoParticipation =
+      false;
+
+
+    renderProfile(true);
+
+
+    if (
+      multiplier >=
+      1.5
+    ) {
+
+      showToast(
+        "💎",
+        "DEMO результат",
+        `+${formatNumber(virtualReturn)} виртуальных очков`
+      );
+
+    } else {
+
+      showToast(
+        "◆",
+        "Раунд завершён",
+        "Виртуальные очки возвращены"
+      );
+
+    }
+
+
+    saveState();
+
+  }
+
+
+  /* ==========================================================
+     27. ACTION UI
+     ========================================================== */
+
+  function updateActionButton() {
+
+    const button =
+      DOM.demoActionButton;
+
+
+    button.classList.remove(
+      "waiting",
+      "running",
+      "locked"
+    );
+
+
+    if (
+      state.phase ===
+      "waiting"
+    ) {
+
+      if (
+        state.demoParticipation
+      ) {
+
+        button.textContent =
+          "Участие подтверждено ✓";
+
+        button.classList.add(
+          "locked"
+        );
+
+        button.disabled =
+          true;
+
+      } else {
+
+        button.textContent =
+          "Участвовать в DEMO";
+
+        button.classList.add(
+          "waiting"
+        );
+
+        button.disabled =
+          state.points <
+          CONFIG.minimumPoints;
+
+      }
+
+    }
+
+
+    else if (
+      state.phase ===
+      "running"
+    ) {
+
+      button.textContent =
+        state.demoParticipation
+          ? "Раунд идёт..."
+          : "Раунд идёт";
+
+
+      button.classList.add(
+        "locked"
+      );
+
+      button.disabled =
+        true;
+
+    }
+
+
+    else if (
+      state.phase ===
+      "crashed"
+    ) {
+
+      button.textContent =
+        "Следующий раунд...";
+
+      button.classList.add(
+        "locked"
+      );
+
+      button.disabled =
+        true;
+
+    }
+
+
+    else {
+
+      button.textContent =
+        "Участвовать в DEMO";
+
+      button.classList.add(
+        "waiting"
+      );
+
+      button.disabled =
+        false;
+
+    }
+
+  }
+
+
+  /* ==========================================================
+     28. PHASE UI
+     ========================================================== */
+
+  function updatePhaseUI() {
+
+    const multiplier =
+      DOM.multiplierValue;
+
+
+    multiplier.classList.remove(
+      "mv-idle",
+      "mv-running",
+      "mv-crashed",
+      "mv-finished"
+    );
+
+
+    if (
+      state.phase ===
+      "waiting"
+    ) {
+
+      DOM.phaseLabel.textContent =
+        "Приём DEMO";
+
+      DOM.countdownValue.textContent =
+        "";
+
+      multiplier.textContent =
+        "1.00x";
+
+      multiplier.classList.add(
+        "mv-idle"
+      );
+
+
+      DOM.statusDot.classList.remove(
+        "live",
+        "crashed"
+      );
+
+
+      DOM.statusText.textContent =
+        "Ожидание";
+
+    }
+
+
+    else if (
+      state.phase ===
+      "running"
+    ) {
+
+      DOM.phaseLabel.textContent =
+        "Полёт";
+
+      DOM.countdownValue.textContent =
+        "";
+
+      multiplier.textContent =
+        formatMultiplier(
+          state.displayedMultiplier
+        );
+
+      multiplier.classList.add(
+        "mv-running"
+      );
+
+
+      DOM.statusDot.classList.add(
+        "live"
+      );
+
+      DOM.statusDot.classList.remove(
+        "crashed"
+      );
+
+
+      DOM.statusText.textContent =
+        "Идёт раунд";
+
+    }
+
+
+    else if (
+      state.phase ===
+      "crashed"
+    ) {
+
+      DOM.phaseLabel.textContent =
+        "Краш";
+
+      DOM.countdownValue.textContent =
+        "";
+
+      multiplier.textContent =
+        formatMultiplier(
+          state.crashPoint
+        );
+
+      multiplier.classList.add(
+        "mv-crashed"
+      );
+
+
+      DOM.statusDot.classList.remove(
+        "live"
+      );
+
+      DOM.statusDot.classList.add(
+        "crashed"
+      );
+
+
+      DOM.statusText.textContent =
+        "Раунд завершён";
+
+
+      resolveDemoParticipation();
+
+    }
+
+
+    else {
+
+      DOM.phaseLabel.textContent =
+        "Ожидание";
+
+      multiplier.textContent =
+        "1.00x";
+
+      multiplier.classList.add(
+        "mv-idle"
+      );
+
+    }
+
+
+    updateActionButton();
+
+  }
+
+
+  /* ==========================================================
+     29. HISTORY
+     ========================================================== */
+
+  function renderHistory() {
+
+    DOM.historyStrip.innerHTML =
+      "";
+
+
+    if (
+      state.history.length ===
+      0
+    ) {
+
+      const empty =
+        document.createElement(
+          "div"
+        );
+
+
+      empty.className =
+        "history-chip hc-low";
+
+
+      empty.textContent =
+        "История появится после первого раунда";
+
+
+      DOM.historyStrip.appendChild(
+        empty
+      );
+
+
+      return;
+
+    }
+
+
+    const fragment =
+      document.createDocumentFragment();
+
+
+    state.history.forEach(
+      value => {
+
+        const chip =
+          document.createElement(
+            "div"
+          );
+
+
+        let className =
+          "hc-low";
+
+
+        if (
+          value >=
+          10
+        ) {
+
+          className =
+            "hc-super";
+
+        }
+
+        else if (
+          value >=
+          2
+        ) {
+
+          className =
+            "hc-high";
+
+        }
+
+        else if (
+          value >=
+          1.5
+        ) {
+
+          className =
+            "hc-mid";
+
+        }
+
+
+        chip.className =
+          "history-chip " +
+          className;
+
+
+        chip.textContent =
+          formatMultiplier(
+            value
+          );
+
+
+        fragment.appendChild(
+          chip
+        );
+
+      }
+    );
+
+
+    DOM.historyStrip.appendChild(
+      fragment
+    );
+
+  }
+
+
+  /* ==========================================================
+     30. STATISTICS
+     ========================================================== */
+
+  function updateStatistics() {
+
+    if (
+      state.roundHistory.length ===
+      0
+    ) {
+
+      state.bestMultiplier =
+        0;
+
+      state.averageMultiplier =
+        0;
+
+    } else {
+
+      state.bestMultiplier =
+        Math.max(
+          ...state.roundHistory
+        );
+
+
+      const total =
+        state.roundHistory.reduce(
+          (
+            sum,
+            value
+          ) =>
+            sum + value,
+          0
+        );
+
+
+      state.averageMultiplier =
+        total /
+        state.roundHistory.length;
+
+    }
+
+
+    DOM.statRounds.textContent =
+      state.rounds;
+
+
+    DOM.statBest.textContent =
+      formatMultiplier(
+        state.bestMultiplier
+      );
+
+
+    DOM.statAverage.textContent =
+      formatMultiplier(
+        state.averageMultiplier
+      );
+
+  }
+
+
+  /* ==========================================================
+     31. CANVAS RESIZE
+     ========================================================== */
+
+  function resizeCanvas() {
+
+    const rect =
+      DOM.canvas.parentElement
+        .getBoundingClientRect();
+
+
+    if (
+      rect.width <= 0 ||
+      rect.height <= 0
+    ) {
+
+      return;
+
+    }
+
+
+    const dpr =
+      Math.min(
+        window.devicePixelRatio ||
+        1,
+        2
+      );
+
+
+    state.devicePixelRatio =
+      dpr;
+
+
+    state.canvasWidth =
+      rect.width;
+
+
+    state.canvasHeight =
+      rect.height;
+
+
+    DOM.canvas.width =
+      Math.round(
+        rect.width * dpr
+      );
+
+
+    DOM.canvas.height =
+      Math.round(
+        rect.height * dpr
+      );
+
+
+    DOM.canvas.style.width =
+      rect.width + "px";
+
+
+    DOM.canvas.style.height =
+      rect.height + "px";
+
+
+    ctx.setTransform(
+      dpr,
+      0,
+      0,
+      dpr,
+      0,
+      0
+    );
+
+
+    createStars();
+
+  }
+
+
+  let resizeTimer =
+    0;
+
+
+  window.addEventListener(
+    "resize",
+    () => {
+
+      clearTimeout(
+        resizeTimer
+      );
+
+
+      resizeTimer =
+        setTimeout(
+          () => {
+
+            resizeCanvas();
+
+          },
+          100
+        );
+
+    }
+  );
+
+
+  /* ==========================================================
+     32. STARS
+     ========================================================== */
+
+  function createStars() {
+
+    state.stars =
+      [];
+
+
+    const width =
+      state.canvasWidth;
+
+
+    const height =
+      state.canvasHeight;
+
+
+    if (
+      width <= 0 ||
+      height <= 0
+    ) {
+
+      return;
+
+    }
+
+
+    const count =
+      Math.floor(
+        width * height / 9000
+      );
+
+
+    for (
+      let i = 0;
+      i < count;
+      i++
+    ) {
+
+      state.stars.push({
+
+        x:
+          random(
+            0,
+            width
+          ),
+
+        y:
+          random(
+            0,
+            height
+          ),
+
+        size:
+          random(
+            .4,
+            1.5
+          ),
+
+        alpha:
+          random(
+            .15,
+            .55
+          ),
+
+        speed:
+          random(
+            .1,
+            .4
+          )
+
+      });
+
+    }
+
+  }
+
+
+  /* ==========================================================
+     33. DRAW BACKGROUND
+     ========================================================== */
+
+  function drawBackground() {
+
+    const width =
+      state.canvasWidth;
+
+
+    const height =
+      state.canvasHeight;
+
+
+    ctx.clearRect(
+      0,
+      0,
+      width,
+      height
+    );
+
+
+    const gradient =
+      ctx.createLinearGradient(
+        0,
+        0,
+        0,
+        height
+      );
+
+
+    gradient.addColorStop(
+      0,
+      "#181438"
+    );
+
+
+    gradient.addColorStop(
+      .6,
+      "#100D26"
+    );
+
+
+    gradient.addColorStop(
+      1,
+      "#0B091A"
+    );
+
+
+    ctx.fillStyle =
+      gradient;
+
+
+    ctx.fillRect(
+      0,
+      0,
+      width,
+      height
+    );
+
+  }
+
+
+  /* ==========================================================
+     34. DRAW STARS
+     ========================================================== */
+
+  function drawStars() {
+
+    const width =
+      state.canvasWidth;
+
+
+    const height =
+      state.canvasHeight;
+
+
+    for (
+      let i = 0;
+      i < state.stars.length;
+      i++
+    ) {
+
+      const star =
+        state.stars[i];
+
+
+      star.x -=
+        star.speed;
+
+
+      if (
+        star.x < -5
+      ) {
+
+        star.x =
+          width + 5;
+
+      }
+
+
+      const pulse =
+        (
+          Math.sin(
+            performance.now() * .001 +
+            i
+          ) + 1
+        ) / 2;
+
+
+      ctx.globalAlpha =
+        star.alpha *
+        (.65 + pulse * .35);
+
+
+      ctx.fillStyle =
+        "#FFFFFF";
+
+
+      ctx.beginPath();
+
+
+      ctx.arc(
+        star.x,
+        star.y,
+        star.size,
+        0,
+        Math.PI * 2
+      );
+
+
+      ctx.fill();
+
+    }
+
+
+    ctx.globalAlpha =
+      1;
+
+  }
+
+
+  /* ==========================================================
+     35. CURVE
+     ========================================================== */
+
+  function calculateCurvePosition(
+    multiplier,
+    index,
+    length
+  ) {
+
+    const width =
+      state.canvasWidth;
+
+
+    const height =
+      state.canvasHeight;
+
+
+    const pad =
+      CONFIG.rocketPadding;
+
+
+    const maxMultiplier =
+      Math.max(
+        2,
+        state.displayedMultiplier * 1.15,
+        state.crashPoint * 1.1
+      );
+
+
+    const x =
+      pad +
+      (
+        index /
+        Math.max(
+          1,
+          length - 1
+        )
+      ) *
+      (
+        width -
+        pad * 2
+      );
+
+
+    const normalized =
+      clamp(
+        multiplier /
+        maxMultiplier,
+        0,
+        1
+      );
+
+
+    const y =
+      height -
+      pad -
+      normalized *
+      (
+        height -
+        pad * 2
+      );
+
+
+    return {
+      x,
+      y
+    };
+
+  }
+
+
+  /* ==========================================================
+     36. DRAW CURVE
+     ========================================================== */
+
+  function drawCurve() {
+
+    if (
+      state.curve.length <
+      2
+    ) {
+
+      return;
+
+    }
+
+
+    const length =
+      state.curve.length;
+
+
+    ctx.beginPath();
+
+
+    for (
+      let i = 0;
+      i < length;
+      i++
+    ) {
+
+      const value =
+        state.curve[i];
+
+
+      const point =
+        calculateCurvePosition(
+          value,
+          i,
+          length
+        );
+
+
+      if (
+        i === 0
+      ) {
+
+        ctx.moveTo(
+          point.x,
+          point.y
+        );
+
+      } else {
+
+        ctx.lineTo(
+          point.x,
+          point.y
+        );
+
+      }
+
+    }
+
+
+    ctx.lineWidth =
+      3;
+
+
+    ctx.lineJoin =
+      "round";
+
+
+    ctx.lineCap =
+      "round";
+
+
+    ctx.strokeStyle =
+      state.phase === "crashed"
+        ? "#FF4D6D"
+        : "#7C5CFF";
+
+
+    ctx.shadowColor =
+      state.phase === "crashed"
+        ? "rgba(255,77,109,.35)"
+        : "rgba(124,92,255,.35)";
+
+
+    ctx.shadowBlur =
+      12;
+
+
+    ctx.stroke();
+
+
+    ctx.shadowBlur =
+      0;
+
+  }
+
+
+  /* ==========================================================
+     37. DRAW AREA
+     ========================================================== */
+
+  function drawCurveFill() {
+
+    if (
+      state.curve.length <
+      2
+    ) {
+
+      return;
+
+    }
+
+
+    const length =
+      state.curve.length;
+
+
+    const points =
+      [];
+
+
+    for (
+      let i = 0;
+      i < length;
+      i++
+    ) {
+
+      points.push(
+        calculateCurvePosition(
+          state.curve[i],
+          i,
+          length
+        )
+      );
+
+    }
+
+
+    const last =
+      points[points.length - 1];
+
+
+    const gradient =
+      ctx.createLinearGradient(
+        0,
+        0,
+        0,
+        state.canvasHeight
+      );
+
+
+    gradient.addColorStop(
+      0,
+      state.phase === "crashed"
+        ? "rgba(255,77,109,.18)"
+        : "rgba(124,92,255,.18)"
+    );
+
+
+    gradient.addColorStop(
+      1,
+      "rgba(124,92,255,0)"
+    );
+
+
+    ctx.beginPath();
+
+
+    ctx.moveTo(
+      points[0].x,
+      state.canvasHeight -
+      CONFIG.rocketPadding
+    );
+
+
+    points.forEach(
+      point => {
+
+        ctx.lineTo(
+          point.x,
+          point.y
+        );
+
+      }
+    );
+
+
+    ctx.lineTo(
+      last.x,
+      state.canvasHeight -
+      CONFIG.rocketPadding
+    );
+
+
+    ctx.closePath();
+
+
+    ctx.fillStyle =
+      gradient;
+
+
+    ctx.fill();
+
+  }
+
+
+  /* ==========================================================
+     38. ROCKET POSITION
+     ========================================================== */
+
+  function getRocketPosition() {
+
+    if (
+      state.curve.length ===
+      0
+    ) {
+
+      return {
+
+        x:
+          state.canvasWidth * .18,
+
+        y:
+          state.canvasHeight * .75
+
+      };
+
+    }
+
+
+    const index =
+      state.curve.length - 1;
+
+
+    return calculateCurvePosition(
+      state.curve[index],
+      index,
+      state.curve.length
+    );
+
+  }
+
+
+  /* ==========================================================
+     39. DRAW ROCKET
+     ========================================================== */
+
+  function drawRocket() {
+
+    const position =
+      getRocketPosition();
+
+
+    state.rocketX =
+      position.x;
+
+
+    state.rocketY =
+      position.y;
+
+
+    if (
+      state.phase ===
+      "waiting"
+    ) {
+
+      return;
+
+    }
+
+
+    const x =
+      position.x;
+
+
+    const y =
+      position.y;
+
+
+    ctx.save();
+
+
+    ctx.translate(
+      x,
+      y
+    );
+
+
+    const angle =
+      -0.22;
+
+
+    ctx.rotate(
+      angle
+    );
+
+
+    /*
+      Glow
+    */
+
+    ctx.shadowColor =
+      state.phase === "crashed"
+        ? "rgba(255,77,109,.6)"
+        : "rgba(245,201,75,.6)";
+
+
+    ctx.shadowBlur =
+      18;
+
+
+    /*
+      Flame
+    */
+
+    if (
+      state.phase ===
+      "running"
+    ) {
+
+      const flame =
+        13 +
+        Math.sin(
+          performance.now() * .018
+        ) *
+        4;
+
+
+      ctx.beginPath();
+
+      ctx.moveTo(
+        -13,
+        4
+      );
+
+      ctx.lineTo(
+        -13 - flame,
+        0
+      );
+
+      ctx.lineTo(
+        -13,
+        -4
+      );
+
+      ctx.closePath();
+
+
+      ctx.fillStyle =
+        "#F5C94B";
+
+
+      ctx.fill();
+
+    }
+
+
+    /*
+      Rocket body
+    */
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      17,
+      0
+    );
+
+    ctx.lineTo(
+      -7,
+      -7
+    );
+
+    ctx.lineTo(
+      -11,
+      0
+    );
+
+    ctx.lineTo(
+      -7,
+      7
+    );
+
+    ctx.closePath();
+
+
+    ctx.fillStyle =
+      "#F1EFFF";
+
+
+    ctx.fill();
+
+
+    /*
+      Window
+    */
+
+    ctx.beginPath();
+
+    ctx.arc(
+      5,
+      0,
+      3,
+      0,
+      Math.PI * 2
+    );
+
+
+    ctx.fillStyle =
+      "#7C5CFF";
+
+
+    ctx.fill();
+
+
+    ctx.restore();
+
+  }
+
+
+  /* ==========================================================
+     40. PARTICLES
+     ========================================================== */
+
+  function createCrashParticles() {
+
+    const count =
+      40;
+
+
+    for (
+      let i = 0;
+      i < count;
+      i++
+    ) {
+
+      const angle =
+        random(
+          0,
+          Math.PI * 2
+        );
+
+
+      const speed =
+        random(
+          1,
+          5
+        );
+
+
+      state.particles.push({
+
+        x:
+          state.rocketX,
+
+        y:
+          state.rocketY,
+
+        vx:
+          Math.cos(angle) *
+          speed,
+
+        vy:
+          Math.sin(angle) *
+          speed,
+
+        life:
+          random(
+            400,
+            1000
+          ),
+
+        maxLife:
+          1000,
+
+        size:
+          random(
+            1,
+            3
+          )
+
+      });
+
+    }
+
+  }
+
+
+  function updateRocketParticles(
+    delta
+  ) {
+
+    if (
+      state.phase !==
+      "running"
+    ) {
+
+      return;
+
+    }
+
+
+    if (
+      Math.random() <
+      .18
+    ) {
+
+      state.particles.push({
+
+        x:
+          state.rocketX,
+
+        y:
+          state.rocketY,
+
+        vx:
+          random(
+            -1.5,
+            -0.2
+          ),
+
+        vy:
+          random(
+            .3,
+            1.2
+          ),
+
+        life:
+          random(
+            200,
+            500
+          ),
+
+        maxLife:
+          500,
+
+        size:
+          random(
+            1,
+            2.5
+          )
+
+      });
+
+    }
+
+  }
+
+
+  function updateParticles(
+    delta
+  ) {
+
+    if (
+      state.particles.length ===
+      0
+    ) {
+
+      return;
+
+    }
+
+
+    const seconds =
+      delta / 1000;
+
+
+    for (
+      let i =
+        state.particles.length - 1;
+      i >= 0;
+      i--
+    ) {
+
+      const particle =
+        state.particles[i];
+
+
+      particle.x +=
+        particle.vx *
+        60 *
+        seconds;
+
+
+      particle.y +=
+        particle.vy *
+        60 *
+        seconds;
+
+
+      particle.vy +=
+        .035 *
+        60 *
+        seconds;
+
+
+      particle.life -=
+        delta;
+
+
+      if (
+        particle.life <=
+        0
+      ) {
+
+        state.particles.splice(
+          i,
+          1
+        );
+
+      }
+
+    }
+
+
+    if (
+      state.particles.length >
+      120
+    ) {
+
+      state.particles.splice(
+        0,
+        state.particles.length -
+        120
+      );
+
+    }
+
+  }
+
+
+  function drawParticles() {
+
+    for (
+      let i = 0;
+      i < state.particles.length;
+      i++
+    ) {
+
+      const particle =
+        state.particles[i];
+
+
+      const alpha =
+        clamp(
+          particle.life /
+          particle.maxLife,
+          0,
+          1
+        );
+
+
+      ctx.globalAlpha =
+        alpha;
+
+
+      ctx.fillStyle =
+        state.phase === "crashed"
+          ? "#FF4D6D"
+          : "#F5C94B";
+
+
+      ctx.beginPath();
+
+
+      ctx.arc(
+        particle.x,
+        particle.y,
+        particle.size,
+        0,
+        Math.PI * 2
+      );
+
+
+      ctx.fill();
+
+    }
+
+
+    ctx.globalAlpha =
+      1;
+
+  }
+
+
+  /* ==========================================================
+     41. DRAW ROCKET TRAIL
+     ========================================================== */
+
+  function drawRocketTrail() {
+
+    if (
+      state.phase !==
+      "running"
+    ) {
+
+      return;
+
+    }
+
+
+    const x =
+      state.rocketX;
+
+
+    const y =
+      state.rocketY;
+
+
+    const gradient =
+      ctx.createRadialGradient(
+        x,
+        y,
+        0,
+        x,
+        y,
+        55
+      );
+
+
+    gradient.addColorStop(
+      0,
+      "rgba(245,201,75,.28)"
+    );
+
+
+    gradient.addColorStop(
+      1,
+      "rgba(245,201,75,0)"
+    );
+
+
+    ctx.fillStyle =
+      gradient;
+
+
+    ctx.beginPath();
+
+
+    ctx.arc(
+      x,
+      y,
+      55,
+      0,
+      Math.PI * 2
+    );
+
+
+    ctx.fill();
+
+  }
+
+
+  /* ==========================================================
+     42. RENDER GAME
+     ========================================================== */
+
+  function renderGame() {
+
+    if (
+      DOM.crashView.classList.contains(
+        "hidden"
+      )
+    ) {
+
+      return;
+
+    }
+
+
+    drawBackground();
+
+    drawStars();
+
+    drawCurveFill();
+
+    drawCurve();
+
+    drawRocketTrail();
+
+    drawParticles();
+
+    drawRocket();
+
+  }
+
+
+  /* ==========================================================
+     43. TOAST
+     ========================================================== */
+
+  function showToast(
+    icon,
+    title,
+    message
+  ) {
+
+    const toast =
+      document.createElement(
+        "div"
+      );
+
+
+    toast.className =
+      "toast";
+
+
+    toast.innerHTML = `
+
+      <div class="toast-icon">
+        ${icon}
+      </div>
+
+      <div class="toast-body">
+
+        <div class="toast-title">
+          ${escapeHTML(title)}
+        </div>
+
+        <div class="toast-message">
+          ${escapeHTML(message)}
+        </div>
+
+      </div>
+
+    `;
+
+
+    DOM.toastContainer.appendChild(
+      toast
+    );
+
+
+    requestAnimationFrame(
+      () => {
+
+        toast.classList.add(
+          "show"
+        );
+
+      }
+    );
+
+
+    setTimeout(
+      () => {
+
+        toast.classList.remove(
+          "show"
+        );
+
+
+        setTimeout(
+          () => {
+
+            toast.remove();
+
+          },
+          250
+        );
+
+      },
+      2500
+    );
+
+  }
+
+
+  /* ==========================================================
+     44. ESCAPE HTML
+     ========================================================== */
+
+  function escapeHTML(
+    value
+  ) {
+
+    return String(value)
+      .replace(
+        /&/g,
+        "&amp;"
+      )
+      .replace(
+        /</g,
+        "&lt;"
+      )
+      .replace(
+        />/g,
+        "&gt;"
+      )
+      .replace(
+        /"/g,
+        "&quot;"
+      )
+      .replace(
+        /'/g,
+        "&#039;"
+      );
+
+  }
+
+
+  /* ==========================================================
+     45. KEYBOARD
+     ========================================================== */
+
+  document.addEventListener(
+    "keydown",
+    event => {
+
+      if (
+        event.key ===
+        "Escape"
+      ) {
+
+        closeModal();
+
+        closeProfile();
+
+      }
+
+
+      if (
+        event.key ===
+        "Enter" &&
+        !state.loggedIn &&
+        document.activeElement ===
+        DOM.pincodeInput
+      ) {
+
+        DOM.loginForm.requestSubmit();
+
+      }
+
+    }
+  );
+
+
+  /* ==========================================================
+     46. VISIBILITY
+     ========================================================== */
+
+  document.addEventListener(
+    "visibilitychange",
+    () => {
+
+      /*
+        При скрытии страницы Canvas не
+        пытается догонять пропущенные кадры.
+      */
+
+      if (
+        document.hidden
+      ) {
+
+        state.lastTimestamp =
+          performance.now();
+
+      }
+
+    }
+  );
+
+
+  /* ==========================================================
+     47. INITIALIZE
+     ========================================================== */
+
+  function initialize() {
+
+    loadState();
+
+    renderProfile();
+
+    renderHistory();
+
+    updateStatistics();
+
+    setSelectedPoints(
+      state.selectedPoints
+    );
+
+
+    resizeCanvas();
+
+
+    if (
+      hasSession()
+    ) {
+
+      state.loggedIn =
+        true;
+
+      enterApplication();
+
+    } else {
+
+      DOM.loginScreen.classList.remove(
+        "hidden"
+      );
+
+      DOM.app.classList.add(
+        "hidden"
+      );
+
+      setTimeout(
+        () => {
+
+          DOM.pincodeInput.focus();
+
+        },
+        100
+      );
+
+    }
+
+  }
+
+
+  /* ==========================================================
+     48. PAGE CLEANUP
+     ========================================================== */
+
+  window.addEventListener(
+    "beforeunload",
+    () => {
+
+      saveState();
+
+      cancelAnimationFrame(
+        state.animationId
+      );
+
+    }
+  );
+
+
+  /* ==========================================================
+     49. START
+     ========================================================== */
+
+  initialize();
+
+
 })();
+
 </script>
+
 </body>
 </html>
