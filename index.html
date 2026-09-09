@@ -302,20 +302,6 @@ input{font-family:inherit;}
 .app-screen.entering{animation:appEnter .55s cubic-bezier(.2,.8,.2,1)}
 @keyframes appEnter{from{opacity:0;transform:translateY(18px) scale(.985)}to{opacity:1;transform:none}}
 
-
-/* ===== PERFORMANCE ===== */
-.login-card,.game-card,.bet-panel,.stage,.profile-chip{
-  contain: layout paint;
-}
-@media (prefers-reduced-motion: reduce){
-  *,*::before,*::after{
-    animation-duration:.01ms !important;
-    animation-iteration-count:1 !important;
-    transition-duration:.01ms !important;
-    scroll-behavior:auto !important;
-  }
-}
-
 </style>
 </head>
 <body>
@@ -357,7 +343,7 @@ input{font-family:inherit;}
   </div>
 </div>
 
-<div id="loginSuccessOverlay" class="login-success-overlay" hidden aria-hidden="true">
+<div id="loginSuccessOverlay" class="login-success-overlay" hidden>
   <div class="login-success-box">
     <div class="login-success-gem">💎</div>
     <div class="login-success-title">Вход выполнен</div>
@@ -576,12 +562,22 @@ input{font-family:inherit;}
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ pincode }),
       });
+
+      const loginData = await res.json().catch(() => null);
+
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.detail || "Неверный пинкод");
+        throw new Error(
+          loginData?.detail ||
+          loginData?.message ||
+          `Ошибка входа (${res.status})`
+        );
       }
-      const loginData = await res.clone().json().catch(() => null);
-      if (loginData?.token) localStorage.setItem("romb_session_token", loginData.token);
+
+      if (!loginData?.token) {
+        throw new Error("Сервер не вернул токен авторизации");
+      }
+
+      localStorage.setItem("romb_session_token", loginData.token);
       await fetchProfile();
       loginSuccessOverlay.hidden = false;
       requestAnimationFrame(() => loginSuccessOverlay.classList.add("show"));
@@ -601,8 +597,14 @@ input{font-family:inherit;}
   });
 
   logoutBtn.addEventListener("click", async () => {
-    await fetch(apiUrl("/api/logout"), { method: "POST", headers: apiHeaders() });
+    try {
+      await fetch(apiUrl("/api/logout"), { method: "POST", headers: apiHeaders() });
+    } catch {}
     if (ws) ws.close();
+    if (wsReconnectTimer) {
+      clearTimeout(wsReconnectTimer);
+      wsReconnectTimer = null;
+    }
     localStorage.removeItem("romb_session_token");
     location.reload();
   });
@@ -639,16 +641,25 @@ input{font-family:inherit;}
   }
 
   async function bootApp() {
-    try {
-      await fetchProfile();
-    } catch {
-      loginScreen.hidden = false;
-      appScreen.hidden = true;
-      return;
+    const token = localStorage.getItem("romb_session_token");
+
+    // Проверяем сохранённую сессию. Если она устарела/недействительна —
+    // очищаем её и показываем обычный вход по пинкоду.
+    if (token) {
+      try {
+        await fetchProfile();
+        loginScreen.hidden = true;
+        appScreen.hidden = false;
+        connectWS();
+        return;
+      } catch {
+        localStorage.removeItem("romb_session_token");
+      }
     }
-    loginScreen.hidden = true;
-    appScreen.hidden = false;
-    connectWS();
+
+    loginScreen.hidden = false;
+    appScreen.hidden = true;
+    pincodeInput.focus();
   }
 
   // ===================== НАВИГАЦИЯ =====================
@@ -677,125 +688,91 @@ input{font-family:inherit;}
     autoCashoutInput.disabled = !autoCashoutToggle.checked;
   });
 
-  // ===================== WEBSOCKET / СИНХРОНИЗАЦИЯ =====================
-  let reconnectTimer = null;
-  let wsGeneration = 0;
-  let historyRoundRendered = null;
-
+  // ===================== WEBSOCKET =====================
+  let wsReconnectTimer = null;
   function connectWS() {
     if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) {
       return;
     }
 
-    const generation = ++wsGeneration;
-    const wsBase = API_BASE_URL
-      .replace(/^http:/, "ws:")
-      .replace(/^https:/, "wss:")
-      .replace(/\/$/, "");
-
+    const wsBase = API_BASE_URL.replace(/^http:/, "ws:").replace(/^https:/, "wss:").replace(/\/$/, "");
     try {
       ws = new WebSocket(`${wsBase}/ws/crash`);
-      ws.onopen = () => {
-        if (generation !== wsGeneration) return;
-        clearTimeout(reconnectTimer);
-      };
-
-      ws.onmessage = (evt) => {
-        if (generation !== wsGeneration) return;
-        try {
-          const state = JSON.parse(evt.data);
-          handleState(state);
-        } catch (err) {
-          console.warn("Некорректное состояние WebSocket:", err);
-        }
-      };
-
-      ws.onerror = () => {
-        // onclose выполнит реконнект
-      };
-
-      ws.onclose = () => {
-        if (generation !== wsGeneration) return;
-        ws = null;
-        clearTimeout(reconnectTimer);
-        if (!appScreen.hidden) {
-          reconnectTimer = setTimeout(connectWS, 1800);
-        }
-      };
-    } catch (err) {
+    } catch {
       ws = null;
-      clearTimeout(reconnectTimer);
-      reconnectTimer = setTimeout(connectWS, 1800);
+      return;
     }
+
+    ws.onmessage = (evt) => {
+      try {
+        const state = JSON.parse(evt.data);
+        handleState(state);
+      } catch {
+        // Игнорируем повреждённое WS-сообщение, не ломая интерфейс.
+      }
+    };
+
+    ws.onclose = () => {
+      ws = null;
+      if (!appScreen.hidden && !wsReconnectTimer) {
+        wsReconnectTimer = setTimeout(() => {
+          wsReconnectTimer = null;
+          connectWS();
+        }, 1500);
+      }
+    };
+
+    ws.onerror = () => {
+      // onclose выполнит переподключение.
+    };
   }
 
   function handleState(state) {
-    if (!state || typeof state !== "object") return;
-
-    const prevState = currentState;
-    const prevPhase = prevState ? prevState.phase : null;
-    const newRound = state.round_id !== lastSeenRoundId;
-
+    const prevPhase = currentState ? currentState.phase : null;
     currentState = state;
 
-    if (newRound) {
+    if (state.round_id !== lastSeenRoundId) {
       lastSeenRoundId = state.round_id;
       myBetPlaced = false;
       myBetActive = false;
-      curvePoints.length = 0;
+      curvePoints = [];
       betError.hidden = true;
-
-      // DOM истории пересобираем только один раз на раунд.
-      renderHistory(state.history);
     }
 
+    renderHistory(state.history);
     renderPhase(state, prevPhase);
-    markRocketDirty();
+    scheduleRocketDraw(state);
 
-    // Баланс не нужно запрашивать на каждый WS-пакет.
-    // Серверный профиль сверяется раз в 10 секунд отдельным таймером.
+    // Периодически сверяем баланс с сервером, чтобы UI не расходился с БД.
+    const now = Date.now();
+    if (now - lastProfileSync > 2500) {
+      lastProfileSync = now;
+      fetchProfile().catch(() => {});
+    }
   }
 
   function renderHistory(history) {
-    if (!Array.isArray(history)) return;
-    const fragment = document.createDocumentFragment();
-
+    historyStrip.innerHTML = "";
     history.forEach((val) => {
       const chip = document.createElement("div");
       let cls = "hc-low";
       if (val >= 10) cls = "hc-high";
       else if (val >= 2) cls = "hc-mid";
-
       chip.className = `history-chip ${cls}`;
-      chip.textContent = `${Number(val).toFixed(2)}x`;
-      fragment.appendChild(chip);
+      chip.textContent = `${val.toFixed(2)}x`;
+      historyStrip.appendChild(chip);
     });
-
-    historyStrip.replaceChildren(fragment);
   }
 
   let countdownTimer = null;
   function startSmoothCountdown(endsIn) {
-    clearTimeout(countdownTimer);
-
+    clearInterval(countdownTimer);
     const endAt = performance.now() + Math.max(0, Number(endsIn) || 0) * 1000;
-    let lastShown = -1;
-
     const tick = () => {
       const left = Math.max(0, endAt - performance.now());
-      const seconds = Math.ceil(left / 1000);
-
-      // Не трогаем DOM 20 раз в секунду — только при изменении числа.
-      if (seconds !== lastShown) {
-        lastShown = seconds;
-        countdownValue.textContent = seconds;
-      }
-
-      if (left > 0 && currentState?.phase === "waiting") {
-        countdownTimer = setTimeout(tick, 100);
-      }
+      countdownValue.textContent = Math.ceil(left / 1000);
+      if (left > 0 && currentState?.phase === "waiting") countdownTimer = setTimeout(tick, 50);
     };
-
     tick();
   }
 
@@ -808,29 +785,23 @@ input{font-family:inherit;}
       startSmoothCountdown(state.phase_ends_in);
       updateActionButton("waiting");
     } else if (state.phase === "running") {
-      clearTimeout(countdownTimer);
-      countdownTimer = null;
+      clearInterval(countdownTimer);
       phaseLabel.textContent = "Полёт";
       multiplierValue.classList.add("mv-running");
-
-      const mult = Number(state.multiplier) || 1;
-      multiplierValue.textContent = `${mult.toFixed(2)}x`;
+      multiplierValue.textContent = `${state.multiplier.toFixed(2)}x`;
       countdownValue.textContent = "";
-      updateActionButton("running", mult);
+      updateActionButton("running", state.multiplier);
     } else if (state.phase === "crashed") {
-      clearTimeout(countdownTimer);
-      countdownTimer = null;
+      clearInterval(countdownTimer);
       phaseLabel.textContent = "Крах!";
       multiplierValue.classList.add("mv-crashed");
-
-      const crash = Number(state.crash_point) || 1;
-      multiplierValue.textContent = `${crash.toFixed(2)}x`;
+      multiplierValue.textContent = `${state.crash_point.toFixed(2)}x`;
       countdownValue.textContent = "";
       updateActionButton("crashed");
 
       if (prevPhase === "running" && myBetActive) {
         myBetActive = false;
-        showBetLostFeedback(crash);
+        showBetLostFeedback(state.crash_point);
       }
     }
   }
@@ -838,7 +809,7 @@ input{font-family:inherit;}
   function showBetLostFeedback(crashPoint) {
     betError.hidden = false;
     betError.textContent = `Крах на ${crashPoint.toFixed(2)}x — ставка сгорела`;
-    fetchProfile().catch(() => {});
+    fetchProfile();
   }
 
   function updateActionButton(phase, multiplier) {
@@ -856,7 +827,7 @@ input{font-family:inherit;}
     } else if (phase === "running") {
       if (myBetActive) {
         const bet = parseInt(betAmountInput.value || "0", 10);
-        const potential = Math.floor(bet * (Number(multiplier) || 1));
+        const potential = Math.floor(bet * multiplier);
         actionBtn.textContent = `Забрать ${fmt(potential)}`;
         actionBtn.classList.add("state-cashout");
         actionBtn.disabled = false;
@@ -872,67 +843,47 @@ input{font-family:inherit;}
     }
   }
 
-  let actionBusy = false;
-
   actionBtn.addEventListener("click", async () => {
-    if (actionBusy || !currentState) return;
-
+    if (!currentState) return;
     betError.hidden = true;
-    actionBusy = true;
-    actionBtn.disabled = true;
 
-    try {
-      if (currentState.phase === "waiting" && !myBetPlaced) {
-        const amount = parseInt(betAmountInput.value || "0", 10);
-
-        if (!Number.isFinite(amount) || amount < 100) {
-          throw new Error("Минимальная ставка — 100 ромб");
-        }
-
-        const body = { amount };
-        if (autoCashoutToggle.checked) {
-          const autoCashout = parseFloat(autoCashoutInput.value || "0");
-          if (!Number.isFinite(autoCashout) || autoCashout < 1.01) {
-            throw new Error("Автозабор должен быть не меньше 1.01x");
-          }
-          body.auto_cashout = autoCashout;
-        }
-
+    if (currentState.phase === "waiting" && !myBetPlaced) {
+      const amount = parseInt(betAmountInput.value || "0", 10);
+      const body = { amount };
+      if (autoCashoutToggle.checked) {
+        body.auto_cashout = parseFloat(autoCashoutInput.value || "0");
+      }
+      try {
         const res = await fetch(apiUrl("/api/crash/bet"), {
           method: "POST",
           headers: apiHeaders({ "Content-Type": "application/json" }),
           body: JSON.stringify(body),
         });
-
-        const data = await res.json().catch(() => ({}));
+        const data = await res.json();
         if (!res.ok) throw new Error(data.detail || "Ошибка ставки");
-
         profile.balance = data.balance;
         renderProfile();
         myBetPlaced = true;
         myBetActive = true;
-      } else if (currentState.phase === "running" && myBetActive) {
-        const res = await fetch(apiUrl("/api/crash/cashout"), {
-          method: "POST",
-          headers: apiHeaders(),
-        });
-
-        const data = await res.json().catch(() => ({}));
+        updateActionButton("waiting");
+      } catch (err) {
+        betError.textContent = err.message;
+        betError.hidden = false;
+      }
+    } else if (currentState.phase === "running" && myBetActive) {
+      try {
+        const res = await fetch(apiUrl("/api/crash/cashout"), { method: "POST", headers: apiHeaders() });
+        const data = await res.json();
         if (!res.ok) throw new Error(data.detail || "Ошибка забора");
-
         myBetActive = false;
         profile.balance = data.balance;
         renderProfile(true);
-        showWinToast(Number(data.multiplier) || 1, Number(data.win) || 0);
+        updateActionButton("running", currentState.multiplier);
+        showWinToast(data.multiplier, data.win);
         launchConfetti();
-      }
-    } catch (err) {
-      betError.textContent = err?.message || "Произошла ошибка";
-      betError.hidden = false;
-    } finally {
-      actionBusy = false;
-      if (currentState) {
-        updateActionButton(currentState.phase, currentState.multiplier);
+      } catch (err) {
+        betError.textContent = err.message;
+        betError.hidden = false;
       }
     }
   });
@@ -998,117 +949,65 @@ input{font-family:inherit;}
   }
 
   // ===================== АНИМАЦИЯ РАКЕТЫ =====================
-  let canvasWidth = 0;
-  let canvasHeight = 0;
-  let rocketDirty = true;
-  let rocketRAF = null;
-  let lastDrawAt = 0;
-  let lastDrawRound = null;
-  let lastDrawPhase = null;
-  let lastDrawMultiplier = null;
-
   function resizeCanvas() {
     const rect = rocketCanvas.parentElement.getBoundingClientRect();
-    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-
-    canvasWidth = Math.max(1, Math.floor(rect.width));
-    canvasHeight = Math.max(1, Math.floor(rect.height));
-
-    rocketCanvas.width = Math.floor(canvasWidth * dpr);
-    rocketCanvas.height = Math.floor(canvasHeight * dpr);
-    rocketCanvas.style.width = `${canvasWidth}px`;
-    rocketCanvas.style.height = `${canvasHeight}px`;
-
-    rctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    rocketDirty = true;
-    requestRocketFrame();
+    rocketCanvas.width = rect.width * devicePixelRatio;
+    rocketCanvas.height = rect.height * devicePixelRatio;
+    rocketCanvas.style.width = rect.width + "px";
+    rocketCanvas.style.height = rect.height + "px";
+    rctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
   }
+  window.addEventListener("resize", () => { if (!crashView.hidden) resizeCanvas(); });
 
-  function markRocketDirty() {
-    rocketDirty = true;
-    requestRocketFrame();
-  }
-
-  function requestRocketFrame() {
-    if (rocketRAF || crashView.hidden || !currentState) return;
-    rocketRAF = requestAnimationFrame(rocketFrame);
-  }
-
-  function rocketFrame(timestamp) {
-    rocketRAF = null;
-
-    if (crashView.hidden || !currentState) return;
-
-    // 30 FPS достаточно для такой игры и заметно дешевле постоянных 60 FPS.
-    if (timestamp - lastDrawAt < 33 && currentState.phase === "running") {
-      requestRocketFrame();
-      return;
-    }
-
-    if (rocketDirty || currentState.phase === "running") {
-      drawRocket(currentState);
-      lastDrawAt = timestamp;
-      rocketDirty = false;
-    }
+  function scheduleRocketDraw(state) {
+    if (drawPending) return;
+    drawPending = true;
+    requestAnimationFrame(() => {
+      drawPending = false;
+      if (!crashView.hidden && currentState) drawRocket(currentState);
+    });
   }
 
   function drawRocket(state) {
-    const w = canvasWidth || rocketCanvas.clientWidth;
-    const h = canvasHeight || rocketCanvas.clientHeight;
-
-    if (!w || !h) return;
-
+    const w = rocketCanvas.clientWidth;
+    const h = rocketCanvas.clientHeight;
     rctx.clearRect(0, 0, w, h);
 
     if (state.phase === "waiting") {
-      curvePoints.length = 0;
+      curvePoints = [];
       return;
     }
 
-    const mult = Number(state.phase === "crashed" ? state.crash_point : state.multiplier) || 1;
-
-    // Добавляем точку только если пришло новое значение, а не на каждый кадр.
-    if (
-      state.round_id !== lastDrawRound ||
-      state.phase !== lastDrawPhase ||
-      mult !== lastDrawMultiplier
-    ) {
-      curvePoints.push(mult);
-      if (curvePoints.length > 180) curvePoints.shift();
-
-      lastDrawRound = state.round_id;
-      lastDrawPhase = state.phase;
-      lastDrawMultiplier = mult;
-    }
+    const mult = state.phase === "crashed" ? state.crash_point : state.multiplier;
+    curvePoints.push(mult);
+    if (curvePoints.length > 400) curvePoints.shift();
 
     const maxMult = Math.max(2, mult * 1.15);
     const padding = 24;
-    const innerW = w - padding * 2;
-    const innerH = h - padding * 2;
-    const denom = Math.max(1, curvePoints.length - 1);
+    const toXY = (i, m) => {
+      const x = padding + (i / Math.max(1, curvePoints.length - 1)) * (w - padding * 2) * 0.85;
+      const y = h - padding - (Math.min(m, maxMult) / maxMult) * (h - padding * 2);
+      return [x, y];
+    };
 
+    // трасса
     rctx.beginPath();
-
-    for (let i = 0; i < curvePoints.length; i++) {
-      const m = curvePoints[i];
-      const x = padding + (i / denom) * innerW * 0.85;
-      const y = h - padding - (Math.min(m, maxMult) / maxMult) * innerH;
-
+    curvePoints.forEach((m, i) => {
+      const [x, y] = toXY(i, m);
       if (i === 0) rctx.moveTo(x, y);
       else rctx.lineTo(x, y);
-    }
-
+    });
     const grad = rctx.createLinearGradient(0, 0, w, 0);
     grad.addColorStop(0, "#38E1C6");
     grad.addColorStop(1, state.phase === "crashed" ? "#FF4D6D" : "#7C5CFF");
-
     rctx.strokeStyle = grad;
     rctx.lineWidth = 3;
     rctx.lineJoin = "round";
     rctx.stroke();
 
+    // заливка под трассой
     if (curvePoints.length > 1) {
-      const lastX = padding + innerW * 0.85;
+      const [lastX] = toXY(curvePoints.length - 1, curvePoints[curvePoints.length - 1]);
       rctx.lineTo(lastX, h - padding);
       rctx.lineTo(padding, h - padding);
       rctx.closePath();
@@ -1116,63 +1015,41 @@ input{font-family:inherit;}
       rctx.fill();
     }
 
+    // ракета/точка на конце
     if (curvePoints.length > 0) {
-      const lastIndex = curvePoints.length - 1;
-      const x = padding + (lastIndex / denom) * innerW * 0.85;
-      const y = h - padding - (Math.min(mult, maxMult) / maxMult) * innerH;
-      const pointColor = state.phase === "crashed" ? "#FF4D6D" : "#F5C94B";
-
+      const [x, y] = toXY(curvePoints.length - 1, curvePoints[curvePoints.length - 1]);
       rctx.beginPath();
-      rctx.arc(x, y, 5, 0, Math.PI * 2);
-      rctx.fillStyle = pointColor;
+      rctx.arc(x, y, 6, 0, Math.PI * 2);
+      rctx.fillStyle = state.phase === "crashed" ? "#FF4D6D" : "#F5C94B";
+      rctx.shadowColor = state.phase === "crashed" ? "#FF4D6D" : "#F5C94B";
+      rctx.shadowBlur = 16;
       rctx.fill();
+      rctx.shadowBlur = 0;
 
       if (state.phase === "running") {
         rctx.font = "20px sans-serif";
         rctx.textAlign = "center";
         rctx.textBaseline = "middle";
-        rctx.fillText("🚀", x, y - 14);
+        rctx.save();
+        rctx.translate(x, y - 14);
+        rctx.rotate(-0.5);
+        rctx.fillText("🚀", 0, 0);
+        rctx.restore();
       }
     }
   }
+
+
+  let visualRAF = null;
+  function visualLoop() {
+    if (!crashView.hidden && currentState?.phase === "running") {
+      scheduleRocketDraw(currentState);
+    }
+    visualRAF = requestAnimationFrame(visualLoop);
+  }
+  visualRAF = requestAnimationFrame(visualLoop);
 
   // ===================== СТАРТ =====================
-  let profileSyncTimer = null;
-
-  function startProfileSync() {
-    clearInterval(profileSyncTimer);
-    profileSyncTimer = setInterval(() => {
-      if (!appScreen.hidden && localStorage.getItem("romb_session_token")) {
-        fetchProfile().catch(() => {});
-      }
-    }, 10000);
-  }
-
-  document.addEventListener("visibilitychange", () => {
-    if (document.hidden) {
-      clearTimeout(reconnectTimer);
-      if (ws) {
-        wsGeneration++;
-        ws.close();
-        ws = null;
-      }
-      if (rocketRAF) {
-        cancelAnimationFrame(rocketRAF);
-        rocketRAF = null;
-      }
-    } else if (!appScreen.hidden && localStorage.getItem("romb_session_token")) {
-      connectWS();
-      markRocketDirty();
-      fetchProfile().catch(() => {});
-    }
-  });
-
-  window.addEventListener("resize", () => {
-    if (!crashView.hidden) resizeCanvas();
-    resizeConfetti();
-  });
-
-  startProfileSync();
   bootApp();
 })();
 
