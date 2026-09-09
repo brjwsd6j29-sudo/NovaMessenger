@@ -447,6 +447,24 @@ input{font-family:inherit;}
 (() => {
   "use strict";
 
+  // =====================================================
+  // GITHUB PAGES / REMOTE BACKEND
+  // =====================================================
+  // Replace this with the public HTTPS URL of your backend.
+  // Example: https://xxxxx.trycloudflare.com
+  const API_BASE_URL = "https://follows-spanking-chicken-shadows.trycloudflare.com";
+
+  function apiUrl(path) {
+    return API_BASE_URL.replace(/\/$/, "") + path;
+  }
+
+  function apiHeaders(extra = {}) {
+    const headers = { ...extra };
+    const token = localStorage.getItem("romb_session_token");
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+    return headers;
+  }
+
   // ===================== ЭЛЕМЕНТЫ =====================
   const loginScreen = document.getElementById("loginScreen");
   const appScreen = document.getElementById("app");
@@ -515,7 +533,7 @@ input{font-family:inherit;}
       return;
     }
     try {
-      const res = await fetch("/api/login", {
+      const res = await fetch(apiUrl("/api/login"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ pincode }),
@@ -524,6 +542,8 @@ input{font-family:inherit;}
         const data = await res.json().catch(() => ({}));
         throw new Error(data.detail || "Неверный пинкод");
       }
+      const loginData = await res.clone().json().catch(() => null);
+      if (loginData?.token) localStorage.setItem("romb_session_token", loginData.token);
       await bootApp();
     } catch (err) {
       loginError.textContent = err.message;
@@ -532,8 +552,9 @@ input{font-family:inherit;}
   });
 
   logoutBtn.addEventListener("click", async () => {
-    await fetch("/api/logout", { method: "POST" });
+    await fetch(apiUrl("/api/logout"), { method: "POST", headers: apiHeaders() });
     if (ws) ws.close();
+    localStorage.removeItem("romb_session_token");
     location.reload();
   });
 
@@ -548,7 +569,7 @@ input{font-family:inherit;}
 
   // ===================== ЗАГРУЗКА ПРОФИЛЯ =====================
   async function fetchProfile() {
-    const res = await fetch("/api/profile");
+    const res = await fetch(apiUrl("/api/profile"), { headers: apiHeaders() });
     if (!res.ok) throw new Error("unauth");
     profile = await res.json();
     renderProfile();
@@ -609,8 +630,8 @@ input{font-family:inherit;}
 
   // ===================== WEBSOCKET =====================
   function connectWS() {
-    const proto = location.protocol === "https:" ? "wss:" : "ws:";
-    ws = new WebSocket(`${proto}//${location.host}/ws/crash`);
+    const wsBase = API_BASE_URL.replace(/^http:/, "ws:").replace(/^https:/, "wss:").replace(/\/$/, "");
+    ws = new WebSocket(`${wsBase}/ws/crash`);
     ws.onmessage = (evt) => {
       const state = JSON.parse(evt.data);
       handleState(state);
@@ -726,9 +747,9 @@ input{font-family:inherit;}
         body.auto_cashout = parseFloat(autoCashoutInput.value || "0");
       }
       try {
-        const res = await fetch("/api/crash/bet", {
+        const res = await fetch(apiUrl("/api/crash/bet"), {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: apiHeaders({ "Content-Type": "application/json" }),
           body: JSON.stringify(body),
         });
         const data = await res.json();
@@ -744,7 +765,7 @@ input{font-family:inherit;}
       }
     } else if (currentState.phase === "running" && myBetActive) {
       try {
-        const res = await fetch("/api/crash/cashout", { method: "POST" });
+        const res = await fetch(apiUrl("/api/crash/cashout"), { method: "POST", headers: apiHeaders() });
         const data = await res.json();
         if (!res.ok) throw new Error(data.detail || "Ошибка забора");
         myBetActive = false;
