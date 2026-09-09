@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>RombGame — Крэш</title>
+<title>RombGame — Краш</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -289,6 +289,19 @@ input{font-family:inherit;}
   .stage{height:260px;}
 }
 
+
+/* ===== ПЛАВНЫЙ ВХОД ===== */
+.login-success-overlay{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at center,#29215f 0%,#100e27 65%);opacity:0;pointer-events:none;transition:opacity .35s ease}
+.login-success-overlay.show{opacity:1;pointer-events:auto}
+.login-success-box{text-align:center;transform:translateY(18px) scale(.94);transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+.login-success-overlay.show .login-success-box{transform:translateY(0) scale(1)}
+.login-success-gem{font-size:58px;filter:drop-shadow(0 0 24px rgba(124,92,255,.7));animation:successFloat 1.2s ease-in-out infinite alternate}
+.login-success-title{font-family:var(--font-display);font-size:1.45rem;font-weight:700;margin-top:12px}
+.login-success-sub{color:var(--text-muted);margin-top:6px;font-size:.88rem}
+@keyframes successFloat{to{transform:translateY(-7px) scale(1.04)}}
+.app-screen.entering{animation:appEnter .55s cubic-bezier(.2,.8,.2,1)}
+@keyframes appEnter{from{opacity:0;transform:translateY(18px) scale(.985)}to{opacity:1;transform:none}}
+
 </style>
 </head>
 <body>
@@ -327,6 +340,14 @@ input{font-family:inherit;}
     </form>
 
     <p id="loginError" class="login-error" hidden></p>
+  </div>
+</div>
+
+<div id="loginSuccessOverlay" class="login-success-overlay" hidden>
+  <div class="login-success-box">
+    <div class="login-success-gem">💎</div>
+    <div class="login-success-title">Вход выполнен</div>
+    <div class="login-success-sub">Добро пожаловать в RombGame</div>
   </div>
 </div>
 
@@ -372,7 +393,7 @@ input{font-family:inherit;}
     <button id="openCrashBtn" class="game-card">
       <div class="game-card-icon">🚀</div>
       <div class="game-card-body">
-        <div class="game-card-name">Крэш</div>
+        <div class="game-card-name">Краш</div>
         <div class="game-card-desc">Забери выигрыш до того, как ракета улетит</div>
       </div>
       <div class="game-card-arrow">→</div>
@@ -471,6 +492,7 @@ input{font-family:inherit;}
   const loginForm = document.getElementById("loginForm");
   const pincodeInput = document.getElementById("pincodeInput");
   const loginError = document.getElementById("loginError");
+  const loginSuccessOverlay = document.getElementById("loginSuccessOverlay");
 
   const profileChip = document.getElementById("profileChip");
   const profileDropdown = document.getElementById("profileDropdown");
@@ -513,6 +535,8 @@ input{font-family:inherit;}
   let myBetActive = false;      // ставка ещё не забрана
   let lastSeenRoundId = null;
   let curvePoints = [];
+  let drawPending = false;
+  let lastProfileSync = 0;
 
   function fmt(n) {
     return Math.round(n).toLocaleString("ru-RU").replace(/,/g, " ");
@@ -544,7 +568,18 @@ input{font-family:inherit;}
       }
       const loginData = await res.clone().json().catch(() => null);
       if (loginData?.token) localStorage.setItem("romb_session_token", loginData.token);
-      await bootApp();
+      await fetchProfile();
+      loginSuccessOverlay.hidden = false;
+      requestAnimationFrame(() => loginSuccessOverlay.classList.add("show"));
+      await new Promise(resolve => setTimeout(resolve, 650));
+      loginSuccessOverlay.classList.remove("show");
+      appScreen.hidden = false;
+      appScreen.classList.remove("entering");
+      void appScreen.offsetWidth;
+      appScreen.classList.add("entering");
+      loginScreen.hidden = true;
+      setTimeout(() => { loginSuccessOverlay.hidden = true; }, 400);
+      connectWS();
     } catch (err) {
       loginError.textContent = err.message;
       loginError.hidden = false;
@@ -655,7 +690,14 @@ input{font-family:inherit;}
 
     renderHistory(state.history);
     renderPhase(state, prevPhase);
-    drawRocket(state);
+    scheduleRocketDraw(state);
+
+    // Периодически сверяем баланс с сервером, чтобы UI не расходился с БД.
+    const now = Date.now();
+    if (now - lastProfileSync > 2500) {
+      lastProfileSync = now;
+      fetchProfile().catch(() => {});
+    }
   }
 
   function renderHistory(history) {
@@ -671,21 +713,35 @@ input{font-family:inherit;}
     });
   }
 
+  let countdownTimer = null;
+  function startSmoothCountdown(endsIn) {
+    clearInterval(countdownTimer);
+    const endAt = performance.now() + Math.max(0, Number(endsIn) || 0) * 1000;
+    const tick = () => {
+      const left = Math.max(0, endAt - performance.now());
+      countdownValue.textContent = Math.ceil(left / 1000);
+      if (left > 0 && currentState?.phase === "waiting") countdownTimer = setTimeout(tick, 50);
+    };
+    tick();
+  }
+
   function renderPhase(state, prevPhase) {
     multiplierValue.classList.remove("mv-running", "mv-crashed");
 
     if (state.phase === "waiting") {
       phaseLabel.textContent = "Ставки принимаются";
       multiplierValue.textContent = "1.00x";
-      countdownValue.textContent = Math.max(0, Math.ceil(state.phase_ends_in));
+      startSmoothCountdown(state.phase_ends_in);
       updateActionButton("waiting");
     } else if (state.phase === "running") {
+      clearInterval(countdownTimer);
       phaseLabel.textContent = "Полёт";
       multiplierValue.classList.add("mv-running");
       multiplierValue.textContent = `${state.multiplier.toFixed(2)}x`;
       countdownValue.textContent = "";
       updateActionButton("running", state.multiplier);
     } else if (state.phase === "crashed") {
+      clearInterval(countdownTimer);
       phaseLabel.textContent = "Крах!";
       multiplierValue.classList.add("mv-crashed");
       multiplierValue.textContent = `${state.crash_point.toFixed(2)}x`;
@@ -852,6 +908,15 @@ input{font-family:inherit;}
   }
   window.addEventListener("resize", () => { if (!crashView.hidden) resizeCanvas(); });
 
+  function scheduleRocketDraw(state) {
+    if (drawPending) return;
+    drawPending = true;
+    requestAnimationFrame(() => {
+      drawPending = false;
+      if (!crashView.hidden && currentState) drawRocket(currentState);
+    });
+  }
+
   function drawRocket(state) {
     const w = rocketCanvas.clientWidth;
     const h = rocketCanvas.clientHeight;
@@ -923,7 +988,20 @@ input{font-family:inherit;}
     }
   }
 
+
+  let visualRAF = null;
+  function visualLoop() {
+    if (!crashView.hidden && currentState?.phase === "running") {
+      scheduleRocketDraw(currentState);
+    }
+    visualRAF = requestAnimationFrame(visualLoop);
+  }
+  visualRAF = requestAnimationFrame(visualLoop);
+
   // ===================== СТАРТ =====================
+  setInterval(() => {
+    if (!appScreen.hidden && localStorage.getItem("romb_session_token")) fetchProfile().catch(() => {});
+  }, 3000);
   bootApp();
 })();
 
