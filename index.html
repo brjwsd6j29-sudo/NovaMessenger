@@ -9,345 +9,294 @@
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-:root{
-  --bg: #100E27;
-  --surface: #1B1938;
-  --surface-2: #242150;
-  --border: #322D63;
+/* ===== STYLE CONFIG ===== */
+:root {
+  --bg: #0B091A;
+  --surface: #15122B;
+  --surface-2: #1E1A3A;
+  --border: #2C2754;
   --text: #F1EFFF;
-  --text-muted: #8B87B8;
+  --text-muted: #837FA8;
   --violet: #7C5CFF;
   --violet-soft: #4B3FA0;
   --gold: #F5C94B;
   --crash: #FF4D6D;
-  --green: #6BFFA0;
-  --radius: 18px;
+  --cyan: #38E1C6;
+  --radius: 16px;
   --font-display: 'Chakra Petch', sans-serif;
   --font-body: 'Inter', sans-serif;
 }
 
-*{box-sizing:border-box;}
-/* 🔧 КЛЮЧЕВОЙ ФИКС: hidden теперь всегда работает, даже при display:flex */
-[hidden]{display:none !important;}
-
-html,body{
-  margin:0; padding:0; height:100%;
-  background: radial-gradient(120% 120% at 50% -10%, #211d4a 0%, var(--bg) 55%);
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0; height: 100%;
+  background: radial-gradient(120% 120% at 50% -10%, #1c1842 0%, var(--bg) 60%);
   color: var(--text);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   overscroll-behavior: none;
 }
 
-button{font-family:inherit; cursor:pointer; touch-action:manipulation;}
-input{font-family:inherit;}
+button { font-family: inherit; cursor: pointer; border: none; outline: none; }
+input { font-family: inherit; outline: none; }
 
-.screen{min-height:100vh; width:100%;}
+.screen { min-height: 100vh; width: 100%; }
 
-.brand{display:flex; align-items:center; gap:10px;}
-.brand-gem{width:28px; height:28px; flex-shrink:0;}
-.brand-name{font-family:var(--font-display); font-weight:600; font-size:1.05rem; letter-spacing:0.02em;}
-.brand-sm .brand-gem{width:24px; height:24px;}
+/* ===================== BRAND & BUTTONS ===================== */
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand-gem { width: 28px; height: 28px; flex-shrink: 0; }
+.brand-name { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; letter-spacing: 0.03em; }
+.brand-sm .brand-gem { width: 24px; height: 24px; }
 
-.btn{
-  border:none; border-radius:12px; padding:13px 20px;
-  font-weight:600; font-size:0.95rem;
-  transition: transform .12s ease, opacity .12s ease, background .2s ease;
+.btn {
+  border-radius: 12px; padding: 13px 20px;
+  font-weight: 600; font-size: 0.95rem;
+  transition: transform .1s ease, opacity .12s ease, background .2s ease;
 }
-.btn:active{transform: scale(0.97);}
-.btn-block{width:100%;}
-.btn-primary{
-  background: linear-gradient(135deg, #9B7CFF, #6B4CE0);
-  color:#fff;
-  box-shadow: 0 8px 24px -8px rgba(124,92,255,0.6);
+.btn:active { transform: scale(0.97); }
+.btn-block { width: 100%; }
+.btn-primary {
+  background: linear-gradient(135deg, #8C62FF, #5B3FE0);
+  color: #fff;
+  box-shadow: 0 6px 20px -6px rgba(124,92,255,0.5);
 }
-.btn-primary:hover{opacity:0.92;}
-.btn-ghost{background:transparent; color:var(--text-muted); border:1px solid var(--border);}
-.btn-ghost:hover{color:var(--text); border-color:var(--violet-soft);}
-.btn:disabled{opacity:0.45; cursor:not-allowed; transform:none;}
+.btn-ghost {
+  background: transparent; color: var(--text-muted); border: 1px solid var(--border);
+}
+.btn-ghost:hover { color: var(--text); border-color: var(--violet-soft); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none !important; }
 
-/* ===================== ВХОД ===================== */
-.login-screen{display:flex; align-items:center; justify-content:center; padding:24px;}
-.login-card{
-  width:100%; max-width:380px;
-  background:var(--surface); border:1px solid var(--border);
-  border-radius:var(--radius); padding:32px 28px; text-align:center;
+/* ===================== ЭКРАН ВХОДА ===================== */
+.login-screen {
+  display: flex; align-items: center; justify-content: center; padding: 20px;
 }
-.login-card .brand{justify-content:center; margin-bottom:28px;}
-.login-card h1{font-family:var(--font-display); font-size:1.4rem; margin:0 0 8px;}
-.login-hint{color:var(--text-muted); font-size:0.88rem; line-height:1.5; margin:0 0 24px;}
-.pincode-input{
-  width:100%; text-align:center;
-  font-family:var(--font-display); font-size:1.6rem; letter-spacing:0.35em;
-  background:var(--surface-2); border:1px solid var(--border); border-radius:12px;
-  color:var(--text); padding:14px 10px 14px 18px; margin-bottom:16px; outline:none;
+.login-card {
+  width: 100%; max-width: 380px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px 24px; text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
-.pincode-input:focus{border-color:var(--violet);}
-.login-error{color:var(--crash); font-size:0.85rem; margin-top:14px;}
-
-/* плавный вход */
-.login-success-overlay{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at center,#29215f 0%,#100e27 65%);opacity:0;pointer-events:none;transition:opacity .35s ease}
-.login-success-overlay.show{opacity:1;pointer-events:auto}
-.login-success-box{text-align:center;transform:translateY(18px) scale(.94);transition:transform .45s cubic-bezier(.2,.8,.2,1)}
-.login-success-overlay.show .login-success-box{transform:translateY(0) scale(1)}
-.login-success-gem{font-size:58px;filter:drop-shadow(0 0 24px rgba(124,92,255,.7));animation:successFloat 1.2s ease-in-out infinite alternate}
-.login-success-title{font-family:var(--font-display);font-size:1.45rem;font-weight:700;margin-top:12px}
-.login-success-sub{color:var(--text-muted);margin-top:6px;font-size:.88rem}
-@keyframes successFloat{to{transform:translateY(-7px) scale(1.04)}}
-.app-screen.entering{animation:appEnter .55s cubic-bezier(.2,.8,.2,1)}
-@keyframes appEnter{from{opacity:0;transform:translateY(18px) scale(.985)}to{opacity:1;transform:none}}
+.login-card .brand { justify-content: center; margin-bottom: 24px; }
+.login-card h1 { font-family: var(--font-display); font-size: 1.4rem; margin: 0 0 8px; }
+.login-hint { color: var(--text-muted); font-size: 0.85rem; line-height: 1.5; margin: 0 0 20px; }
+.pincode-input {
+  width: 100%; text-align: center;
+  font-family: var(--font-display); font-size: 1.6rem; letter-spacing: 0.3em;
+  background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px;
+  color: var(--text); padding: 12px; margin-bottom: 16px;
+  transition: border-color 0.2s ease;
+}
+.pincode-input:focus { border-color: var(--violet); }
+.login-error { color: var(--crash); font-size: 0.85rem; margin-top: 12px; }
 
 /* ===================== TOPBAR ===================== */
-.topbar{
-  display:flex; align-items:center; justify-content:space-between;
-  padding:16px 20px; position:relative; border-bottom:1px solid var(--border);
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px; position: relative;
+  border-bottom: 1px solid var(--border);
+  background: rgba(21, 18, 43, 0.8);
+  backdrop-filter: blur(10px);
 }
-.profile-chip{
-  display:flex; align-items:center; gap:10px;
-  background:var(--surface); border:1px solid var(--border); border-radius:999px;
-  padding:7px 14px 7px 8px; color:var(--text);
+.profile-chip {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 999px;
+  padding: 6px 14px 6px 8px; color: var(--text);
 }
-.profile-balance{
-  display:flex; align-items:center; gap:5px;
-  background:var(--surface-2); border-radius:999px; padding:5px 10px;
-  font-family:var(--font-display); font-weight:600; font-size:0.92rem; color:var(--gold);
+.profile-balance {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--surface-2); border-radius: 999px; padding: 4px 10px;
+  font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; color: var(--gold);
+  transition: transform 0.2s ease;
 }
-.profile-name{font-size:0.85rem; color:var(--text-muted); max-width:90px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-.chevron{color:var(--text-muted);}
+.profile-name { font-size: 0.85rem; color: var(--text-muted); max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-.profile-dropdown{
-  position:absolute; top:64px; right:20px; z-index:20;
-  background:var(--surface); border:1px solid var(--border); border-radius:14px;
-  padding:14px; width:200px; box-shadow:0 16px 40px -12px rgba(0,0,0,0.6);
+.profile-dropdown {
+  position: absolute; top: 60px; right: 20px; z-index: 20;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  padding: 14px; width: 210px;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.6);
 }
-.pd-row{display:flex; justify-content:space-between; font-size:0.85rem; padding:6px 2px; color:var(--text-muted);}
-.pd-row b{color:var(--text); font-family:var(--font-display);}
-#logoutBtn{margin-top:10px; padding:9px;}
+.pd-row { display: flex; justify-content: space-between; font-size: 0.85rem; padding: 6px 0; color: var(--text-muted); }
+.pd-row b { color: var(--text); font-family: var(--font-display); }
 
 /* ===================== МЕНЮ ===================== */
-.menu-view{max-width:480px; margin:0 auto; padding:32px 20px;}
-.menu-title{font-family:var(--font-display); font-size:1.2rem; font-weight:600; margin:0 0 18px; color:var(--text-muted);}
-.game-card{
-  width:100%; display:flex; align-items:center; gap:16px;
-  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
-  padding:18px; margin-bottom:12px; text-align:left; color:inherit;
-  transition:border-color .15s ease, transform .12s ease;
+.menu-view { max-width: 480px; margin: 0 auto; padding: 28px 20px; }
+.menu-title { font-family: var(--font-display); font-size: 1.1rem; color: var(--text-muted); margin: 0 0 16px; }
+.game-card {
+  width: 100%; display: flex; align-items: center; gap: 16px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 16px; margin-bottom: 12px; text-align: left; color: inherit;
+  transition: border-color .15s ease, transform .12s ease;
 }
-.game-card:not(.game-card-soon):hover{border-color:var(--violet-soft); transform:translateY(-2px);}
-.game-card-soon{opacity:0.5; cursor:default;}
-.game-card-icon{font-size:1.8rem; width:48px; text-align:center;}
-.game-card-body{flex:1;}
-.game-card-name{font-family:var(--font-display); font-weight:600; font-size:1.05rem;}
-.game-card-desc{font-size:0.82rem; color:var(--text-muted); margin-top:2px;}
-.game-card-arrow{color:var(--violet); font-size:1.2rem;}
+.game-card:hover { border-color: var(--violet-soft); transform: translateY(-2px); }
+.game-card-icon { font-size: 1.8rem; width: 44px; text-align: center; }
+.game-card-body { flex: 1; }
+.game-card-name { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; }
+.game-card-desc { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
 
-/* ===================== КРЭШ ===================== */
-.crash-view{max-width:480px; margin:0 auto; padding:16px 16px 24px; display:flex; flex-direction:column; gap:14px;}
-.back-btn{align-self:flex-start; background:none; border:none; color:var(--text-muted); font-size:0.88rem; padding:4px 0;}
-.back-btn:hover{color:var(--text);}
+/* ===================== КРАШ ИГРА ===================== */
+.crash-view {
+  max-width: 480px; margin: 0 auto; padding: 14px 16px 24px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.back-btn { align-self: flex-start; background: none; color: var(--text-muted); font-size: 0.85rem; padding: 4px 0; }
+.back-btn:hover { color: var(--text); }
 
-.history-strip{display:flex; gap:8px; overflow-x:auto; padding-bottom:2px; scrollbar-width:none;}
-.history-strip::-webkit-scrollbar{display:none;}
-.history-chip{
-  flex-shrink:0; font-family:var(--font-display); font-weight:600; font-size:0.8rem;
-  padding:6px 11px; border-radius:999px; background:var(--surface); border:1px solid var(--border);
+.history-strip { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+.history-strip::-webkit-scrollbar { display: none; }
+.history-chip {
+  flex-shrink: 0; font-family: var(--font-display); font-weight: 700; font-size: 0.78rem;
+  padding: 5px 10px; border-radius: 999px; background: var(--surface); border: 1px solid var(--border);
 }
-.hc-low{color:var(--text-muted);}
-.hc-mid{color:var(--gold); border-color:rgba(245,201,75,0.35);}
-.hc-high{color:var(--violet); border-color:rgba(124,92,255,0.5); box-shadow:0 0 14px -4px rgba(124,92,255,0.6);}
+.hc-low { color: var(--text-muted); }
+.hc-mid { color: var(--gold); border-color: rgba(245,201,75,0.3); }
+.hc-high { color: var(--violet); border-color: rgba(124,92,255,0.5); }
 
-.stage{
-  position:relative; height:300px;
-  background:linear-gradient(180deg,#191650 0%,#100E27 100%);
-  border:1px solid var(--border); border-radius:var(--radius); overflow:hidden;
+.stage {
+  position: relative; height: 260px;
+  background: linear-gradient(180deg, #181438 0%, #0E0C22 100%);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  overflow: hidden;
 }
-#rocketCanvas{position:absolute; inset:0; width:100%; height:100%;}
-.stage-overlay{
-  position:absolute; inset:0; display:flex; flex-direction:column;
-  align-items:center; justify-content:center; text-align:center; pointer-events:none;
+#rocketCanvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.stage-overlay {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; pointer-events: none;
 }
-.phase-label{font-size:0.82rem; color:var(--text-muted); letter-spacing:0.02em; margin-bottom:6px;}
-.multiplier-value{
-  font-family:var(--font-display); font-weight:700; font-size:3.2rem;
-  color:var(--text); text-shadow:0 0 30px rgba(124,92,255,0.35);
-  transition:color .2s ease;
+.phase-label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+.multiplier-value {
+  font-family: var(--font-display); font-weight: 700; font-size: 3.2rem;
+  color: var(--text); transition: color .15s ease;
 }
-.multiplier-value.mv-running{color:var(--violet);}
-.multiplier-value.mv-crashed{color:var(--crash); text-shadow:0 0 30px rgba(255,77,109,0.5);}
-.countdown-value{font-family:var(--font-display); font-size:1.6rem; color:var(--gold); margin-top:6px;}
+.multiplier-value.mv-running { color: var(--violet); text-shadow: 0 0 25px rgba(124,92,255,0.4); }
+.multiplier-value.mv-crashed { color: var(--crash); text-shadow: 0 0 25px rgba(255,77,109,0.5); }
+.countdown-value { font-family: var(--font-display); font-size: 1.5rem; color: var(--gold); margin-top: 4px; }
 
-.bet-panel{
-  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
-  padding:18px; display:flex; flex-direction:column; gap:14px;
+/* ПАНЕЛЬ СТАВОК */
+.bet-panel {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 16px; display: flex; flex-direction: column; gap: 12px;
 }
-.bet-row{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;}
-.bet-label{font-size:0.85rem; color:var(--text-muted); display:flex; align-items:center; gap:8px;}
-.bet-input-group{display:flex; align-items:center; gap:6px; flex:1; justify-content:flex-end;}
-.bet-input{
-  width:100px; background:var(--surface-2); border:1px solid var(--border); border-radius:10px;
-  color:var(--text); font-family:var(--font-display); font-weight:600; padding:9px 10px; text-align:right; outline:none;
+.bet-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.bet-label { font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 8px; }
+.bet-input-group { display: flex; align-items: center; gap: 6px; flex: 1; justify-content: flex-end; }
+.bet-input {
+  width: 95px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px;
+  color: var(--text); font-family: var(--font-display); font-weight: 700; padding: 8px; text-align: right;
 }
-.bet-input:focus{border-color:var(--violet);}
-.bet-input:disabled{opacity:0.4;}
-.qbtn{
-  background:var(--surface-2); border:1px solid var(--border); color:var(--text-muted);
-  border-radius:8px; padding:8px 10px; font-size:0.78rem; font-weight:600;
+.bet-input:focus { border-color: var(--violet); }
+.qbtn {
+  background: var(--surface-2); border: 1px solid var(--border); color: var(--text-muted);
+  border-radius: 8px; padding: 8px 10px; font-size: 0.75rem; font-weight: 700;
 }
-.qbtn:hover{color:var(--text); border-color:var(--violet-soft);}
+.qbtn:hover { color: var(--text); border-color: var(--violet-soft); }
 
-.switch{position:relative; display:inline-block; width:34px; height:19px;}
-.switch input{opacity:0; width:0; height:0;}
-.switch-track{
-  position:absolute; inset:0; background:var(--surface-2); border:1px solid var(--border);
-  border-radius:999px; transition:background .2s ease;
+.switch { position: relative; display: inline-block; width: 34px; height: 18px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.switch-track {
+  position: absolute; inset: 0; background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: 999px; transition: background .2s ease;
 }
-.switch-track::before{
-  content:""; position:absolute; width:13px; height:13px; left:2px; top:2px;
-  background:var(--text-muted); border-radius:50%; transition:transform .2s ease, background .2s ease;
+.switch-track::before {
+  content: ""; position: absolute; width: 12px; height: 12px; left: 2px; top: 2px;
+  background: var(--text-muted); border-radius: 50%; transition: transform .2s ease;
 }
-.switch input:checked + .switch-track{background:var(--violet-soft); border-color:var(--violet);}
-.switch input:checked + .switch-track::before{transform:translateX(15px); background:#fff;}
+.switch input:checked + .switch-track { background: var(--violet-soft); border-color: var(--violet); }
+.switch input:checked + .switch-track::before { transform: translateX(16px); background: #fff; }
 
-.btn-action{background:linear-gradient(135deg,#9B7CFF,#6B4CE0); color:#fff; font-size:1rem; padding:15px;}
-.btn-action.state-cashout{background:linear-gradient(135deg,#FFD873,#F5C94B); color:#2a2005;}
-.btn-action.state-locked{background:var(--surface-2); color:var(--text-muted);}
-
-.bet-error{color:var(--crash); font-size:0.82rem; text-align:center; margin:0;}
-
-/* ===================== ТОСТ ===================== */
-.win-toast{
-  position:fixed; top:22px; left:50%; transform:translateX(-50%) translateY(-16px);
-  display:flex; align-items:center; gap:12px;
-  background:linear-gradient(135deg,#201c4a,#171341);
-  border:1px solid rgba(245,201,75,0.5); border-radius:16px; padding:14px 20px; z-index:100;
-  box-shadow:0 20px 50px -14px rgba(0,0,0,0.7);
-  opacity:0; transition:opacity .25s ease, transform .25s ease;
-  pointer-events:none;
+.btn-action {
+  background: linear-gradient(135deg, #8C62FF, #5B3FE0); color: #fff;
+  font-size: 1rem; padding: 14px; border-radius: 12px; font-weight: 700;
 }
-.win-toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
-.win-toast-icon{font-size:1.6rem;}
-.win-toast-title{font-family:var(--font-display); font-weight:700; color:var(--gold);}
-.win-toast-sub{font-size:0.85rem; color:var(--text-muted); margin-top:2px;}
-.win-toast-glow{position:absolute; inset:-2px; border-radius:18px; z-index:-1; background:radial-gradient(circle,rgba(245,201,75,0.35),transparent 70%); filter:blur(10px);}
+.btn-action.state-cashout { background: linear-gradient(135deg, #FFD873, #F5C94B); color: #201700; }
+.btn-action.state-locked { background: var(--surface-2); color: var(--text-muted); }
 
-#confettiCanvas{position:fixed; inset:0; pointer-events:none; z-index:99;}
+.bet-error { color: var(--crash); font-size: 0.8rem; text-align: center; margin: 0; }
 
-/* ===================== АНИМАЦИЯ БАЛАНСА ===================== */
-.balance-pulse{animation:pulseGreen 0.7s ease;}
-@keyframes pulseGreen{
-  0%{color:var(--gold);}
-  30%{color:var(--green); transform:scale(1.12);}
-  100%{color:var(--gold); transform:scale(1);}
+/* УВЕДОМЛЕНИЕ О ВЫИГРЫШЕ */
+.win-toast {
+  position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-20px);
+  display: flex; align-items: center; gap: 12px;
+  background: var(--surface); border: 1px solid var(--gold);
+  border-radius: 14px; padding: 12px 20px; z-index: 100;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+  opacity: 0; pointer-events: none; transition: all .25s ease;
 }
-.profile-balance span{display:inline-block;}
+.win-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.win-toast-title { font-family: var(--font-display); font-weight: 700; color: var(--gold); }
+.win-toast-sub { font-size: 0.82rem; color: var(--text-muted); }
 
-@media (max-width:480px){
-  .multiplier-value{font-size:2.6rem;}
-  .stage{height:260px;}
+.balance-pulse { animation: pulseGreen 0.6s ease; }
+@keyframes pulseGreen {
+  0% { transform: scale(1); }
+  50% { color: #6BFFA0; transform: scale(1.15); }
+  100% { transform: scale(1); }
 }
 </style>
 </head>
 <body>
 
-<!-- ===================== ЭКРАН ВХОДА ===================== -->
+<!-- ЭКРАН ВХОДА -->
 <div id="loginScreen" class="screen login-screen">
   <div class="login-card">
     <div class="brand">
-      <svg class="brand-gem" viewBox="0 0 40 40" fill="none">
-        <path d="M20 2 L36 14 L20 38 L4 14 Z" fill="url(#gemGrad)"/>
-        <path d="M20 2 L36 14 L20 20 Z" fill="#fff" opacity="0.18"/>
-        <defs>
-          <linearGradient id="gemGrad" x1="4" y1="2" x2="36" y2="38" gradientUnits="userSpaceOnUse">
-            <stop stop-color="#9B7CFF"/><stop offset="1" stop-color="#5B3FE0"/>
-          </linearGradient>
-        </defs>
-      </svg>
+      <svg class="brand-gem" viewBox="0 0 40 40"><path d="M20 2 L36 14 L20 38 L4 14 Z" fill="#7C5CFF"/></svg>
       <span class="brand-name">RombGame</span>
     </div>
-
     <h1>Вход в аккаунт</h1>
-    <p class="login-hint">Напишите боту <b>/mypincode</b> в личные сообщения — он пришлёт код входа.</p>
-
+    <p class="login-hint">Отправьте боту <b>/mypincode</b>, чтобы получить код доступа.</p>
     <form id="loginForm" autocomplete="off">
-      <input id="pincodeInput" class="pincode-input" inputmode="numeric" maxlength="6" placeholder="• • • • • •" autocomplete="off">
-      <button type="submit" id="loginBtn" class="btn btn-primary btn-block">Войти</button>
+      <input id="pincodeInput" class="pincode-input" inputmode="numeric" maxlength="6" placeholder="• • • • • •">
+      <button type="submit" class="btn btn-primary btn-block">Войти</button>
     </form>
-
     <p id="loginError" class="login-error" hidden></p>
   </div>
 </div>
 
-<div id="loginSuccessOverlay" class="login-success-overlay" hidden>
-  <div class="login-success-box">
-    <div class="login-success-gem">💎</div>
-    <div class="login-success-title">Вход выполнен</div>
-    <div class="login-success-sub">Добро пожаловать в RombGame</div>
-  </div>
-</div>
-
-<!-- ===================== ПРИЛОЖЕНИЕ ===================== -->
-<div id="app" class="screen app-screen" hidden>
-
+<!-- ОСНОВНОЕ ПРИЛОЖЕНИЕ -->
+<div id="app" class="screen" hidden>
   <header class="topbar">
     <div class="brand brand-sm">
-      <svg class="brand-gem" viewBox="0 0 40 40" fill="none">
-        <path d="M20 2 L36 14 L20 38 L4 14 Z" fill="url(#gemGrad2)"/>
-        <defs>
-          <linearGradient id="gemGrad2" x1="4" y1="2" x2="36" y2="38" gradientUnits="userSpaceOnUse">
-            <stop stop-color="#9B7CFF"/><stop offset="1" stop-color="#5B3FE0"/>
-          </linearGradient>
-        </defs>
-      </svg>
+      <svg class="brand-gem" viewBox="0 0 40 40"><path d="M20 2 L36 14 L20 38 L4 14 Z" fill="#7C5CFF"/></svg>
       <span class="brand-name">RombGame</span>
     </div>
-
     <button id="profileChip" class="profile-chip">
-      <span class="profile-balance">
-        <svg width="14" height="14" viewBox="0 0 40 40"><path d="M20 2 L36 14 L20 38 L4 14 Z" fill="#F5C94B"/></svg>
-        <span id="balanceValue">0</span>
+      <span class="profile-balance" id="balanceContainer">
+        <span id="balanceValue">0</span> 💎
       </span>
       <span class="profile-name" id="nicknameValue">Игрок</span>
-      <svg class="chevron" width="10" height="10" viewBox="0 0 10 10"><path d="M1 3 L5 7 L9 3" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
     </button>
 
     <div id="profileDropdown" class="profile-dropdown" hidden>
       <div class="pd-row"><span>Баланс</span><b id="pdBalance">0</b></div>
-      <div class="pd-row"><span>Банк</span><b id="pdBank">0</b></div>
       <div class="pd-row"><span>Уровень</span><b id="pdLvl">1</b></div>
-      <button id="logoutBtn" class="btn btn-ghost btn-block">Выйти</button>
+      <button id="logoutBtn" class="btn btn-ghost btn-block" style="margin-top:10px;">Выйти</button>
     </div>
   </header>
 
-  <!-- ---------- МЕНЮ ---------- -->
+  <!-- МЕНЮ -->
   <main id="menuView" class="menu-view">
     <h2 class="menu-title">Выберите игру</h2>
     <button id="openCrashBtn" class="game-card">
       <div class="game-card-icon">🚀</div>
       <div class="game-card-body">
         <div class="game-card-name">Краш</div>
-        <div class="game-card-desc">Забери выигрыш до того, как ракета улетит</div>
+        <div class="game-card-desc">Успей забрать выигрыш до падения ракеты</div>
       </div>
-      <div class="game-card-arrow">→</div>
     </button>
-    <div class="game-card game-card-soon">
-      <div class="game-card-icon">✨</div>
-      <div class="game-card-body">
-        <div class="game-card-name">Скоро новые игры</div>
-        <div class="game-card-desc">Следите за обновлениями в боте</div>
-      </div>
-    </div>
   </main>
 
-  <!-- ---------- КРЭШ ---------- -->
+  <!-- КРАШ -->
   <main id="crashView" class="crash-view" hidden>
-    <button id="backToMenuBtn" class="back-btn">← Меню</button>
-
+    <button id="backToMenuBtn" class="back-btn">← В меню</button>
     <div class="history-strip" id="historyStrip"></div>
 
     <div class="stage">
       <canvas id="rocketCanvas"></canvas>
       <div class="stage-overlay">
-        <div id="phaseLabel" class="phase-label">Ставки принимаются</div>
+        <div id="phaseLabel" class="phase-label">Ожидание...</div>
         <div id="multiplierValue" class="multiplier-value">1.00x</div>
         <div id="countdownValue" class="countdown-value"></div>
       </div>
@@ -375,692 +324,412 @@ input{font-family:inherit;}
         <input id="autoCashoutInput" type="number" min="1.01" step="0.01" value="2.00" class="bet-input" disabled>
       </div>
 
-      <button id="actionBtn" class="btn btn-action" disabled>Дождитесь раунда</button>
+      <button id="actionBtn" class="btn btn-action" disabled>Подключение...</button>
       <p id="betError" class="bet-error" hidden></p>
     </div>
   </main>
 </div>
 
-<!-- ---------- ТОСТ ---------- -->
+<!-- ТОСТ -->
 <div id="winToast" class="win-toast" hidden>
-  <div class="win-toast-glow"></div>
-  <div class="win-toast-icon">💎</div>
-  <div class="win-toast-text">
-    <div class="win-toast-title">Успешно забрали!</div>
-    <div class="win-toast-sub"><span id="winMult">1.00x</span> · +<span id="winAmount">0</span> ромб</div>
+  <div style="font-size: 1.5rem">💎</div>
+  <div>
+    <div class="win-toast-title">Забрано!</div>
+    <div class="win-toast-sub"><span id="winMult">1.00x</span> | +<span id="winAmount">0</span></div>
   </div>
 </div>
-
-<canvas id="confettiCanvas"></canvas>
 
 <script>
 (() => {
   "use strict";
 
-  // =====================================================
-  // BACKEND
-  // =====================================================
   const API_BASE_URL = "https://follows-spanking-chicken-shadows.trycloudflare.com";
 
-  const apiUrl = (path) => API_BASE_URL.replace(/\/$/, "") + path;
+  function apiUrl(p) { return API_BASE_URL.replace(/\/$/, "") + p; }
   function apiHeaders(extra = {}) {
-    const h = { ...extra };
+    const headers = { ...extra };
     const t = localStorage.getItem("romb_session_token");
-    if (t) h["Authorization"] = `Bearer ${t}`;
-    return h;
+    if (t) headers["Authorization"] = `Bearer ${t}`;
+    return headers;
   }
 
-  // ===================== ЭЛЕМЕНТЫ =====================
-  const $ = (id) => document.getElementById(id);
-  const loginScreen = $("loginScreen"), appScreen = $("app");
-  const loginForm = $("loginForm"), pincodeInput = $("pincodeInput");
-  const loginError = $("loginError"), loginBtn = $("loginBtn");
-  const loginSuccessOverlay = $("loginSuccessOverlay");
+  // DOM Elements
+  const loginScreen = document.getElementById("loginScreen");
+  const appScreen = document.getElementById("app");
+  const pincodeInput = document.getElementById("pincodeInput");
+  const loginError = document.getElementById("loginError");
+  const balanceValue = document.getElementById("balanceValue");
+  const balanceContainer = document.getElementById("balanceContainer");
+  const nicknameValue = document.getElementById("nicknameValue");
+  const profileChip = document.getElementById("profileChip");
+  const profileDropdown = document.getElementById("profileDropdown");
 
-  const profileChip = $("profileChip"), profileDropdown = $("profileDropdown");
-  const balanceValue = $("balanceValue"), nicknameValue = $("nicknameValue");
-  const pdBalance = $("pdBalance"), pdBank = $("pdBank"), pdLvl = $("pdLvl");
-  const logoutBtn = $("logoutBtn");
+  const menuView = document.getElementById("menuView");
+  const crashView = document.getElementById("crashView");
+  const rocketCanvas = document.getElementById("rocketCanvas");
+  const rctx = rocketCanvas.getContext("2d");
 
-  const menuView = $("menuView"), crashView = $("crashView");
-  const openCrashBtn = $("openCrashBtn"), backToMenuBtn = $("backToMenuBtn");
+  const betAmountInput = document.getElementById("betAmountInput");
+  const autoCashoutToggle = document.getElementById("autoCashoutToggle");
+  const autoCashoutInput = document.getElementById("autoCashoutInput");
+  const actionBtn = document.getElementById("actionBtn");
+  const betError = document.getElementById("betError");
 
-  const historyStrip = $("historyStrip"), phaseLabel = $("phaseLabel");
-  const multiplierValue = $("multiplierValue"), countdownValue = $("countdownValue");
-  const rocketCanvas = $("rocketCanvas"), rctx = rocketCanvas.getContext("2d");
-
-  const betAmountInput = $("betAmountInput");
-  const autoCashoutToggle = $("autoCashoutToggle");
-  const autoCashoutInput = $("autoCashoutInput");
-  const actionBtn = $("actionBtn"), betError = $("betError");
-
-  const winToast = $("winToast"), winMult = $("winMult"), winAmount = $("winAmount");
-  const confettiCanvas = $("confettiCanvas"), cctx = confettiCanvas.getContext("2d");
-
-  const fmt = (n) => Math.round(n).toLocaleString("ru-RU").replace(/,/g, " ");
-
-  // ===================== СОСТОЯНИЕ =====================
+  // State
   let profile = null;
-  let ws = null, wsRetry = 0;
+  let ws = null;
   let currentState = null;
-  let lastPhase = null;
+  let myBetPlaced = false;
+  let myBetActive = false;
   let lastSeenRoundId = null;
+  let curvePoints = [];
+  let isRequestPending = false;
 
-  // моя ставка
-  let myBetPlaced = false;   // ставка сделана в раунде
-  let myBetActive = false;   // ещё не забрана
-  let myBetAmount = 0;
-  let betInFlight = false;
-  let autoTriggered = false; // автозабор уже сработал в этом раунде
+  function fmt(n) { return Math.round(n || 0).toLocaleString("ru-RU"); }
 
-  // локальная экстраполяция множителя (плавность между WS-пакетами)
-  let multBase = 1, multTime = 0, multRate = 0.09;
-
-  function localMultiplier() {
-    if (!currentState || currentState.phase !== "running") return 1;
-    const dt = Math.max(0, (performance.now() - multTime) / 1000);
-    return Math.max(1, multBase * Math.exp(multRate * dt));
-  }
-
-  function noteServerMult(m) {
-    const now = performance.now();
-    if (multTime && m > multBase) {
-      const dt = (now - multTime) / 1000;
-      if (dt > 0.05) multRate = Math.min(1.5, Math.max(0.02, Math.log(m / multBase) / dt));
-    }
-    multBase = m;
-    multTime = now;
-  }
-
-  // ===================== БАЛАНС С АНИМАЦИЕЙ =====================
-  let balanceAnimId = null;
-  function setBalance(newVal, animate = false) {
-    const old = profile ? profile.balance : newVal;
-    profile = profile || {};
-    profile.balance = newVal;
-
-    if (balanceAnimId) cancelAnimationFrame(balanceAnimId);
-
-    if (!animate || old === newVal) {
-      balanceValue.textContent = fmt(newVal);
-      pdBalance.textContent = fmt(newVal);
-      return;
-    }
-    const start = performance.now(), dur = 550;
-    const step = (ts) => {
-      const p = Math.min(1, (ts - start) / dur);
-      const eased = 1 - Math.pow(1 - p, 3);
-      const v = old + (newVal - old) * eased;
-      balanceValue.textContent = fmt(v);
-      pdBalance.textContent = fmt(v);
-      if (p < 1) balanceAnimId = requestAnimationFrame(step);
-      else balanceAnimId = null;
-    };
-    balanceAnimId = requestAnimationFrame(step);
-    // пульс
-    const chip = balanceValue.parentElement;
-    chip.classList.remove("balance-pulse");
-    void chip.offsetWidth;
-    chip.classList.add("balance-pulse");
-  }
-
-  function renderProfileStatic() {
-    if (!profile) return;
-    nicknameValue.textContent = profile.nickname;
-    pdBank.textContent = fmt(profile.bank);
-    pdLvl.textContent = profile.lvl;
-    balanceValue.textContent = fmt(profile.balance);
-    pdBalance.textContent = fmt(profile.balance);
-  }
-
-  let lastSync = 0;
-  async function fetchProfile() {
-    const res = await fetch(apiUrl("/api/profile"), { headers: apiHeaders() });
-    if (!res.ok) throw new Error("unauth");
-    const fresh = await res.json();
-    const changed = profile && fresh.balance !== profile.balance;
-    profile = fresh;
-    renderProfileStatic();
-    if (changed) { /* баланс обновлён сервером (автозабор на бэке и т.п.) */ }
-  }
-  function syncProfileSoon() {
-    const now = Date.now();
-    if (now - lastSync < 800) return;
-    lastSync = now;
-    fetchProfile().catch(() => {});
-  }
-
-  // ===================== ЛОГИН =====================
+  // --- ВХОД И ПРОФИЛЬ ---
   pincodeInput.addEventListener("input", () => {
     pincodeInput.value = pincodeInput.value.replace(/\D/g, "").slice(0, 6);
   });
 
-  loginForm.addEventListener("submit", async (e) => {
+  document.getElementById("loginForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     loginError.hidden = true;
     const pincode = pincodeInput.value.trim();
-    if (pincode.length !== 6) {
-      loginError.textContent = "Введите 6-значный пинкод из бота";
-      loginError.hidden = false;
-      return;
-    }
-    loginBtn.disabled = true;
-    loginBtn.textContent = "Входим...";
+    if (pincode.length !== 6) return showError("Введите 6 цифр кода");
+
     try {
       const res = await fetch(apiUrl("/api/login"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pincode }),
+        body: JSON.stringify({ pincode })
       });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.detail || "Неверный пинкод");
-      }
-      const loginData = await res.json().catch(() => null);
-      if (loginData?.token) localStorage.setItem("romb_session_token", loginData.token);
-
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || "Ошибка входа");
+      
+      if (data.token) localStorage.setItem("romb_session_token", data.token);
       await fetchProfile();
-
-      loginSuccessOverlay.hidden = false;
-      requestAnimationFrame(() => loginSuccessOverlay.classList.add("show"));
-      await new Promise(r => setTimeout(r, 650));
-      loginSuccessOverlay.classList.remove("show");
-
-      appScreen.hidden = false;
-      appScreen.classList.remove("entering");
-      void appScreen.offsetWidth;
-      appScreen.classList.add("entering");
-      loginScreen.hidden = true;
-      setTimeout(() => { loginSuccessOverlay.hidden = true; }, 400);
-
-      connectWS();
+      showApp();
     } catch (err) {
-      loginError.textContent = err.message;
-      loginError.hidden = false;
-    } finally {
-      loginBtn.disabled = false;
-      loginBtn.textContent = "Войти";
+      showError(err.message);
     }
   });
 
-  logoutBtn.addEventListener("click", async () => {
-    try { await fetch(apiUrl("/api/logout"), { method: "POST", headers: apiHeaders() }); } catch {}
-    if (ws) { try { ws.onclose = null; ws.close(); } catch {} }
+  function showError(msg) {
+    loginError.textContent = msg;
+    loginError.hidden = false;
+  }
+
+  async function fetchProfile() {
+    try {
+      const res = await fetch(apiUrl("/api/profile"), { headers: apiHeaders() });
+      if (!res.ok) throw new Error();
+      profile = await res.json();
+      renderProfile();
+    } catch {
+      localStorage.removeItem("romb_session_token");
+      loginScreen.hidden = false;
+      appScreen.hidden = true;
+    }
+  }
+
+  function renderProfile(animate = false) {
+    if (!profile) return;
+    nicknameValue.textContent = profile.nickname;
+    document.getElementById("pdLvl").textContent = profile.lvl;
+    document.getElementById("pdBalance").textContent = fmt(profile.balance);
+    
+    if (animate) {
+      balanceContainer.classList.remove("balance-pulse");
+      void balanceContainer.offsetWidth;
+      balanceContainer.classList.add("balance-pulse");
+    }
+    balanceValue.textContent = fmt(profile.balance);
+  }
+
+  function showApp() {
+    loginScreen.hidden = true;
+    appScreen.hidden = false;
+    connectWS();
+  }
+
+  document.getElementById("logoutBtn").addEventListener("click", () => {
     localStorage.removeItem("romb_session_token");
     location.reload();
   });
 
-  profileChip.addEventListener("click", () => { profileDropdown.hidden = !profileDropdown.hidden; });
-  document.addEventListener("click", (e) => {
-    if (!profileChip.contains(e.target) && !profileDropdown.contains(e.target)) profileDropdown.hidden = true;
+  profileChip.addEventListener("click", () => {
+    profileDropdown.hidden = !profileDropdown.hidden;
   });
 
-  // ===================== СТАРТ =====================
-  async function bootApp() {
-    if (!localStorage.getItem("romb_session_token")) {
-      loginScreen.hidden = false;
-      return;
-    }
-    try {
-      await fetchProfile();
-      loginScreen.hidden = true;
-      appScreen.hidden = false;
-      appScreen.classList.add("entering");
-      connectWS();
-    } catch {
-      localStorage.removeItem("romb_session_token");
-      loginScreen.hidden = false;
-    }
-  }
-
-  // ===================== НАВИГАЦИЯ =====================
-  openCrashBtn.addEventListener("click", () => {
-    menuView.hidden = true;
-    crashView.hidden = false;
+  // --- НАВИГАЦИЯ ---
+  document.getElementById("openCrashBtn").addEventListener("click", () => {
+    menuView.hidden = true; crashView.hidden = false;
     resizeCanvas();
-    requestDraw();
   });
-  backToMenuBtn.addEventListener("click", () => {
-    crashView.hidden = true;
-    menuView.hidden = false;
+  document.getElementById("backToMenuBtn").addEventListener("click", () => {
+    crashView.hidden = true; menuView.hidden = false;
   });
 
-  // ===================== БЫСТРЫЕ КНОПКИ =====================
-  document.querySelectorAll(".qbtn").forEach((btn) => {
+  // --- СТАВКИ И ИНТЕРФЕЙС ---
+  document.querySelectorAll(".qbtn").forEach(btn => {
     btn.addEventListener("click", () => {
-      const cur = parseInt(betAmountInput.value || "0", 10) || 0;
+      const cur = parseInt(betAmountInput.value || "0", 10);
       const bal = profile ? profile.balance : 0;
-      if (btn.dataset.op === "half") betAmountInput.value = Math.max(100, Math.floor(cur / 2) || 100);
-      if (btn.dataset.op === "double") betAmountInput.value = Math.max(100, Math.min(bal, cur * 2 || 100));
-      if (btn.dataset.op === "max") betAmountInput.value = Math.max(0, bal);
+      if (btn.dataset.op === "half") betAmountInput.value = Math.max(100, Math.floor(cur / 2));
+      if (btn.dataset.op === "double") betAmountInput.value = Math.min(bal, (cur || 100) * 2);
+      if (btn.dataset.op === "max") betAmountInput.value = bal;
     });
   });
 
   autoCashoutToggle.addEventListener("change", () => {
     autoCashoutInput.disabled = !autoCashoutToggle.checked;
-    // если включили в процессе полёта — цель могла уже пройтись, не триггерим задним числом
-    if (autoCashoutToggle.checked && currentState?.phase === "running") {
-      const target = parseFloat(autoCashoutInput.value);
-      if (localMultiplier() >= target) autoTriggered = true; // цель уже пройдена
-    }
   });
 
-  // ===================== WEBSOCKET =====================
+  // --- WEBSOCKET И ИГРОВАЯ ЛОГИКА ---
   function connectWS() {
-    if (ws && (ws.readyState === WebSocket.CONNECTING || ws.readyState === WebSocket.OPEN)) return;
-    const wsBase = API_BASE_URL.replace(/^http:/, "ws:").replace(/^https:/, "wss:").replace(/\/$/, "");
-    try { ws = new WebSocket(`${wsBase}/ws/crash`); } catch { scheduleReconnect(); return; }
-
-    ws.onopen = () => { wsRetry = 0; };
+    const wsBase = API_BASE_URL.replace(/^http/, "ws").replace(/\/$/, "");
+    ws = new WebSocket(`${wsBase}/ws/crash`);
+    
     ws.onmessage = (evt) => {
-      try { handleState(JSON.parse(evt.data)); } catch {}
+      const state = JSON.parse(evt.data);
+      handleState(state);
     };
-    ws.onclose = () => scheduleReconnect();
-    ws.onerror = () => { try { ws.close(); } catch {} };
-  }
-  function scheduleReconnect() {
-    setTimeout(() => { if (!appScreen.hidden) connectWS(); }, Math.min(5000, 1200 * (wsRetry + 1)));
-    wsRetry = Math.min(wsRetry + 1, 4);
+    ws.onclose = () => setTimeout(connectWS, 2000);
   }
 
-  // ===================== ОБРАБОТКА СОСТОЯНИЯ =====================
   function handleState(state) {
-    const prevPhase = currentState ? currentState.phase : null;
     currentState = state;
 
-    // новый раунд → сброс
     if (state.round_id !== lastSeenRoundId) {
       lastSeenRoundId = state.round_id;
       myBetPlaced = false;
       myBetActive = false;
-      myBetAmount = 0;
-      autoTriggered = false;
+      curvePoints = [];
       betError.hidden = true;
-      multBase = 1; multTime = 0; multRate = 0.09;
     }
 
-    // если сервер сам присылает статус моей ставки — доверяем ему
-    if (typeof state.my_bet_active === "boolean") myBetActive = state.my_bet_active;
-    if (typeof state.my_bet_placed === "boolean") myBetPlaced = state.my_bet_placed;
-
-    renderHistory(state.history);
-    renderPhase(state, prevPhase);
-    requestDraw();
-
-    // синк баланса только на смене фаз (конец раунда — сервер посчитал ставки)
-    if (state.phase !== prevPhase && (state.phase === "crashed" || state.phase === "waiting")) {
-      syncProfileSoon();
+    // Автоматическая проверка: если сервер сообщает, что автозабор сработал
+    if (state.user_cashout && myBetActive) {
+      myBetActive = false;
+      fetchProfile();
+      showWinToast(state.user_cashout.multiplier, state.user_cashout.win);
     }
+
+    renderHistory(state.history || []);
+    renderPhase(state);
+    drawRocket(state);
   }
 
-  // ===================== ИСТОРИЯ (только при изменении) =====================
-  let lastHistoryKey = "";
   function renderHistory(history) {
-    if (!history) return;
-    const key = history.join(",");
-    if (key === lastHistoryKey) return;
-    lastHistoryKey = key;
-    const frag = document.createDocumentFragment();
-    history.forEach((val) => {
+    const strip = document.getElementById("historyStrip");
+    strip.innerHTML = "";
+    history.forEach(val => {
       const chip = document.createElement("div");
-      let cls = "hc-low";
-      if (val >= 10) cls = "hc-high";
-      else if (val >= 2) cls = "hc-mid";
+      const cls = val >= 10 ? "hc-high" : val >= 2 ? "hc-mid" : "hc-low";
       chip.className = `history-chip ${cls}`;
       chip.textContent = `${val.toFixed(2)}x`;
-      frag.appendChild(chip);
+      strip.appendChild(chip);
     });
-    historyStrip.replaceChildren(frag);
   }
 
-  // ===================== ОБРАТНЫЙ ОТСЧЁТ =====================
-  let countdownTimer = null;
-  function startSmoothCountdown(endsIn) {
-    clearTimeout(countdownTimer);
-    if (!endsIn || endsIn <= 0) { countdownValue.textContent = ""; return; }
-    const endAt = performance.now() + endsIn * 1000;
-    let lastShown = -1;
-    const tick = () => {
-      if (!currentState || currentState.phase !== "waiting") return;
-      const left = Math.max(0, endAt - performance.now());
-      const sec = Math.ceil(left / 1000);
-      if (sec !== lastShown) { lastShown = sec; countdownValue.textContent = sec; }
-      if (left > 0) countdownTimer = setTimeout(tick, 100);
-    };
-    tick();
-  }
+  function renderPhase(state) {
+    const phaseLabel = document.getElementById("phaseLabel");
+    const multVal = document.getElementById("multiplierValue");
+    const countVal = document.getElementById("countdownValue");
 
-  // ===================== ФАЗЫ =====================
-  function renderPhase(state, prevPhase) {
-    multiplierValue.classList.remove("mv-running", "mv-crashed");
+    multVal.classList.remove("mv-running", "mv-crashed");
 
     if (state.phase === "waiting") {
-      clearTimeout(countdownTimer);
-      phaseLabel.textContent = "Ставки принимаются";
-      multiplierValue.textContent = "1.00x";
-      startSmoothCountdown(state.phase_ends_in);
-      updateActionButton();
+      phaseLabel.textContent = "Приём ставок";
+      multVal.textContent = "1.00x";
+      countVal.textContent = Math.max(0, Math.ceil(state.phase_ends_in || 0)) + "s";
+      updateActionButton("waiting");
     } else if (state.phase === "running") {
-      clearTimeout(countdownTimer);
-      countdownValue.textContent = "";
-      noteServerMult(state.multiplier);
       phaseLabel.textContent = "Полёт";
-      multiplierValue.classList.add("mv-running");
-      updateActionButton();
+      multVal.classList.add("mv-running");
+      multVal.textContent = `${state.multiplier.toFixed(2)}x`;
+      countVal.textContent = "";
+      updateActionButton("running", state.multiplier);
     } else if (state.phase === "crashed") {
-      clearTimeout(countdownTimer);
-      countdownValue.textContent = "";
-      phaseLabel.textContent = "Крах!";
-      multiplierValue.classList.add("mv-crashed");
-      multiplierValue.textContent = `${state.crash_point.toFixed(2)}x`;
-      updateActionButton();
-
-      // проигрыш — только если ставка реально не забрана
-      if (prevPhase === "running" && myBetActive) {
+      phaseLabel.textContent = "Краш!";
+      multVal.classList.add("mv-crashed");
+      multVal.textContent = `${(state.crash_point || 1.0).toFixed(2)}x`;
+      countVal.textContent = "";
+      
+      if (myBetActive) {
         myBetActive = false;
+        betError.textContent = "Ставка сгорела!";
         betError.hidden = false;
-        betError.textContent = `Крах на ${state.crash_point.toFixed(2)}x — ставка сгорела`;
-        syncProfileSoon();
+        fetchProfile();
       }
+      updateActionButton("crashed");
     }
   }
 
-  function updateActionButton() {
-    if (!currentState) return;
+  function updateActionButton(phase, mult = 1) {
     actionBtn.classList.remove("state-cashout", "state-locked");
 
-    if (currentState.phase === "waiting") {
+    if (phase === "waiting") {
       if (myBetPlaced) {
-        actionBtn.textContent = "Ставка принята ✓";
+        actionBtn.textContent = "Ставка сделана ✓";
         actionBtn.classList.add("state-locked");
         actionBtn.disabled = true;
       } else {
         actionBtn.textContent = "Поставить";
-        actionBtn.disabled = false;
+        actionBtn.disabled = isRequestPending;
       }
-    } else if (currentState.phase === "running") {
+    } else if (phase === "running") {
       if (myBetActive) {
-        // сумма обновляется в цикле отрисовки
+        const bet = parseInt(betAmountInput.value || "0", 10);
+        actionBtn.textContent = `Забрать ${fmt(bet * mult)}`;
         actionBtn.classList.add("state-cashout");
-        actionBtn.disabled = false;
+        actionBtn.disabled = isRequestPending;
       } else {
-        actionBtn.textContent = myBetPlaced ? "Уже забрано" : "Раунд уже идёт";
+        actionBtn.textContent = myBetPlaced ? "Забрано" : "Идёт раунд";
         actionBtn.classList.add("state-locked");
         actionBtn.disabled = true;
       }
     } else {
-      actionBtn.textContent = "Дождитесь раунда";
+      actionBtn.textContent = "Ожидание раунда";
       actionBtn.classList.add("state-locked");
       actionBtn.disabled = true;
     }
   }
 
-  // ===================== СТАВКА / ЗАБОР =====================
-  actionBtn.addEventListener("click", () => {
-    if (!currentState || betInFlight) return;
+  // --- ДЕЙСТВИЯ: СТАВКА / ЗАБОР ---
+  actionBtn.addEventListener("click", async () => {
+    if (!currentState || isRequestPending) return;
     betError.hidden = true;
 
     if (currentState.phase === "waiting" && !myBetPlaced) {
-      placeBet();
+      const amount = parseInt(betAmountInput.value || "0", 10);
+      if (isNaN(amount) || amount < 100) return showErrorBet("Мин. ставка: 100");
+
+      const payload = { amount };
+      if (autoCashoutToggle.checked) {
+        payload.auto_cashout = parseFloat(autoCashoutInput.value || "0");
+      }
+
+      isRequestPending = true;
+      actionBtn.disabled = true;
+
+      try {
+        const res = await fetch(apiUrl("/api/crash/bet"), {
+          method: "POST",
+          headers: apiHeaders({ "Content-Type": "application/json" }),
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || "Ошибка");
+
+        profile.balance = data.balance;
+        renderProfile();
+        myBetPlaced = true;
+        myBetActive = true;
+        updateActionButton("waiting");
+      } catch (err) {
+        showErrorBet(err.message);
+      } finally {
+        isRequestPending = false;
+      }
+
     } else if (currentState.phase === "running" && myBetActive) {
-      doCashout(false);
+      isRequestPending = true;
+      actionBtn.disabled = true;
+
+      try {
+        const res = await fetch(apiUrl("/api/crash/cashout"), { method: "POST", headers: apiHeaders() });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || "Не удалось забрать");
+
+        myBetActive = false;
+        profile.balance = data.balance;
+        renderProfile(true);
+        updateActionButton("running", currentState.multiplier);
+        showWinToast(data.multiplier, data.win);
+      } catch (err) {
+        showErrorBet(err.message);
+      } finally {
+        isRequestPending = false;
+      }
     }
   });
 
-  async function placeBet() {
-    const amount = parseInt(betAmountInput.value || "0", 10);
-    if (!amount || amount < 100) {
-      betError.textContent = "Минимальная ставка — 100";
-      betError.hidden = false;
-      return;
-    }
-    const body = { amount };
-    if (autoCashoutToggle.checked) {
-      const target = parseFloat(autoCashoutInput.value);
-      if (target > 1) body.auto_cashout = target;
-    }
-    betInFlight = true;
-    actionBtn.disabled = true;
-    try {
-      const res = await fetch(apiUrl("/api/crash/bet"), {
-        method: "POST",
-        headers: apiHeaders({ "Content-Type": "application/json" }),
-        body: JSON.stringify(body),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.detail || "Ошибка ставки");
-      setBalance(data.balance);
-      myBetPlaced = true;
-      myBetActive = true;
-      myBetAmount = amount;
-      autoTriggered = false;
-      updateActionButton();
-    } catch (err) {
-      betError.textContent = err.message;
-      betError.hidden = false;
-    } finally {
-      betInFlight = false;
-      updateActionButton();
-    }
+  function showErrorBet(msg) {
+    betError.textContent = msg;
+    betError.hidden = false;
   }
 
-  async function doCashout(isAuto) {
-    try {
-      const res = await fetch(apiUrl("/api/crash/cashout"), { method: "POST", headers: apiHeaders() });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.detail || "Ошибка забора");
-      myBetActive = false;
-      setBalance(data.balance, true); // анимация + пульс
-      updateActionButton();
-      showWinToast(data.multiplier, data.win);
-      launchConfetti();
-      syncProfileSoon();
-    } catch (err) {
-      if (isAuto) {
-        // сервер, скорее всего, уже забрал по своему автозабору — просто синк
-        myBetActive = false;
-        updateActionButton();
-        syncProfileSoon();
-      } else {
-        betError.textContent = err.message;
-        betError.hidden = false;
-      }
-    }
+  function showWinToast(mult, win) {
+    document.getElementById("winMult").textContent = `${mult.toFixed(2)}x`;
+    document.getElementById("winAmount").textContent = fmt(win);
+    const toast = document.getElementById("winToast");
+    toast.hidden = false;
+    requestAnimationFrame(() => toast.classList.add("show"));
+    setTimeout(() => {
+      toast.classList.remove("show");
+      setTimeout(() => { toast.hidden = true; }, 300);
+    }, 2500);
   }
 
-  // 🔧 АВТОЗАБОР: работает даже если включил тумблер ПОСЛЕ старта раунда
-  function maybeAutoCashout(m) {
-    if (autoTriggered || !myBetActive || !autoCashoutToggle.checked) return;
-    const target = parseFloat(autoCashoutInput.value);
-    if (!(target > 1)) return;
-    if (m >= target) {
-      autoTriggered = true;
-      doCashout(true);
-    }
-  }
-
-  // ===================== ТОСТ =====================
-  let toastTimer = null;
-  function showWinToast(mult, amount) {
-    winMult.textContent = `${mult.toFixed(2)}x`;
-    winAmount.textContent = fmt(amount);
-    winToast.hidden = false;
-    requestAnimationFrame(() => winToast.classList.add("show"));
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => {
-      winToast.classList.remove("show");
-      setTimeout(() => { winToast.hidden = true; }, 250);
-    }, 2600);
-  }
-
-  // ===================== КОНФЕТТИ =====================
-  let confettiParticles = [], confettiRAF = null;
-  function resizeConfetti() {
-    confettiCanvas.width = window.innerWidth;
-    confettiCanvas.height = window.innerHeight;
-  }
-  window.addEventListener("resize", resizeConfetti);
-  resizeConfetti();
-
-  function launchConfetti() {
-    const colors = ["#F5C94B", "#7C5CFF", "#38E1C6", "#FF9DB2"];
-    for (let i = 0; i < 50; i++) {
-      confettiParticles.push({
-        x: confettiCanvas.width / 2 + (Math.random() - 0.5) * 120,
-        y: 90,
-        vx: (Math.random() - 0.5) * 6,
-        vy: Math.random() * -6 - 2,
-        size: Math.random() * 5 + 3,
-        color: colors[(Math.random() * colors.length) | 0],
-        life: 0,
-      });
-    }
-    if (!confettiRAF) confettiRAF = requestAnimationFrame(tickConfetti);
-  }
-  function tickConfetti() {
-    cctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
-    confettiParticles.forEach((p) => {
-      p.vy += 0.18; p.x += p.vx; p.y += p.vy; p.life++;
-      cctx.globalAlpha = Math.max(0, 1 - p.life / 80);
-      cctx.fillStyle = p.color;
-      cctx.fillRect(p.x, p.y, p.size, p.size);
-    });
-    confettiParticles = confettiParticles.filter((p) => p.life < 80);
-    cctx.globalAlpha = 1;
-    confettiRAF = confettiParticles.length ? requestAnimationFrame(tickConfetti) : null;
-  }
-
-  // ===================== ГРАФИКА РАКЕТЫ =====================
+  // --- CANVAS РИСОВАНИЕ ---
   function resizeCanvas() {
     const rect = rocketCanvas.parentElement.getBoundingClientRect();
-    const dpr = Math.min(2, window.devicePixelRatio || 1);
-    rocketCanvas.width = Math.max(1, rect.width * dpr);
-    rocketCanvas.height = Math.max(1, rect.height * dpr);
-    rctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    rocketCanvas.width = rect.width;
+    rocketCanvas.height = rect.height;
   }
-  new ResizeObserver(() => { if (!crashView.hidden) { resizeCanvas(); requestDraw(); } }).observe(rocketCanvas.parentElement);
+  window.addEventListener("resize", resizeCanvas);
 
-  // Рисуем кривую АНАЛИТИЧЕСКИ (без накопления точек — нет лагов)
   function drawRocket(state) {
-    const w = rocketCanvas.clientWidth, h = rocketCanvas.clientHeight;
+    if (crashView.hidden) return;
+    const w = rocketCanvas.width;
+    const h = rocketCanvas.height;
     rctx.clearRect(0, 0, w, h);
 
-    // фоновая сетка
-    rctx.strokeStyle = "rgba(124,92,255,0.07)";
-    rctx.lineWidth = 1;
-    for (let i = 1; i <= 3; i++) {
-      const y = (h / 4) * i;
-      rctx.beginPath(); rctx.moveTo(0, y); rctx.lineTo(w, y); rctx.stroke();
-    }
-
     if (state.phase === "waiting") {
-      // ракета на старте
-      drawEmoji("🚀", 30, h - 34, 22, -0.5);
+      curvePoints = [];
       return;
     }
 
-    const crashed = state.phase === "crashed";
-    const m = crashed ? state.crash_point : localMultiplier();
+    const mult = state.phase === "crashed" ? state.crash_point : state.multiplier;
+    curvePoints.push(mult);
+    if (curvePoints.length > 150) curvePoints.shift();
 
-    const padL = 20, padR = 46, padB = 22, padT = 20;
-    const plotW = w - padL - padR, plotH = h - padT - padB;
-    const maxM = Math.max(2, m * 1.12);
-    const N = 40;
+    const maxM = Math.max(2, mult * 1.1);
+    const pad = 20;
 
-    const pts = [];
-    for (let i = 0; i <= N; i++) {
-      const f = i / N;
-      const mi = Math.pow(m, f); // экспонента от 1 до m
-      pts.push([
-        padL + f * plotW * 0.88,
-        padT + plotH - ((mi - 1) / (maxM - 1)) * plotH,
-      ]);
-    }
-
-    // заливка
     rctx.beginPath();
-    pts.forEach(([x, y], i) => i ? rctx.lineTo(x, y) : rctx.moveTo(x, y));
-    rctx.lineTo(pts[pts.length - 1][0], h - padB);
-    rctx.lineTo(pts[0][0], h - padB);
-    rctx.closePath();
-    rctx.fillStyle = crashed ? "rgba(255,77,109,0.08)" : "rgba(124,92,255,0.09)";
-    rctx.fill();
+    curvePoints.forEach((m, i) => {
+      const x = pad + (i / Math.max(1, curvePoints.length - 1)) * (w - pad * 2);
+      const y = h - pad - (Math.min(m, maxM) / maxM) * (h - pad * 2);
+      if (i === 0) rctx.moveTo(x, y);
+      else rctx.lineTo(x, y);
+    });
 
-    // линия
-    rctx.beginPath();
-    pts.forEach(([x, y], i) => i ? rctx.lineTo(x, y) : rctx.moveTo(x, y));
-    const grad = rctx.createLinearGradient(0, 0, w, 0);
-    grad.addColorStop(0, "#38E1C6");
-    grad.addColorStop(1, crashed ? "#FF4D6D" : "#7C5CFF");
-    rctx.strokeStyle = grad;
+    rctx.strokeStyle = state.phase === "crashed" ? "#FF4D6D" : "#7C5CFF";
     rctx.lineWidth = 3;
-    rctx.lineJoin = "round";
     rctx.stroke();
 
-    // точка на конце
-    const [hx, hy] = pts[pts.length - 1];
-    rctx.beginPath();
-    rctx.arc(hx, hy, 6, 0, Math.PI * 2);
-    rctx.fillStyle = crashed ? "#FF4D6D" : "#F5C94B";
-    rctx.shadowColor = rctx.fillStyle;
-    rctx.shadowBlur = 12;
-    rctx.fill();
-    rctx.shadowBlur = 0;
+    // Точка ракеты
+    if (curvePoints.length > 0) {
+      const lastM = curvePoints[curvePoints.length - 1];
+      const x = pad + (w - pad * 2);
+      const y = h - pad - (Math.min(lastM, maxM) / maxM) * (h - pad * 2);
 
-    if (crashed) {
-      drawEmoji("💥", hx, hy, 26, 0);
-    } else {
-      // наклон по касательной
-      const [px, py] = pts[pts.length - 2] || pts[0];
-      const angle = Math.atan2(hy - py, hx - px);
-      drawEmoji("🚀", hx, hy, 20, angle + Math.PI / 4);
+      rctx.beginPath();
+      rctx.arc(x, y, 6, 0, Math.PI * 2);
+      rctx.fillStyle = state.phase === "crashed" ? "#FF4D6D" : "#F5C94B";
+      rctx.fill();
     }
   }
 
-  function drawEmoji(ch, x, y, size, rot) {
-    rctx.save();
-    rctx.translate(x, y);
-    rctx.rotate(rot);
-    rctx.font = `${size}px sans-serif`;
-    rctx.textAlign = "center";
-    rctx.textBaseline = "middle";
-    rctx.fillText(ch, 0, 0);
-    rctx.restore();
+  // Запуск при старте
+  if (localStorage.getItem("romb_session_token")) {
+    fetchProfile().then(() => {
+      if (profile) showApp();
+    });
   }
-
-  // ===================== ЦИКЛ ОТРИСОВКИ (только когда нужен) =====================
-  let rafId = null;
-  function requestDraw() {
-    if (crashView.hidden || !currentState) return;
-    if (currentState.phase === "running") {
-      if (rafId == null) rafId = requestAnimationFrame(loop);
-    } else {
-      drawRocket(currentState);
-    }
-  }
-  function loop() {
-    rafId = null;
-    if (crashView.hidden || !currentState) return;
-    if (currentState.phase !== "running") { drawRocket(currentState); return; }
-
-    const m = localMultiplier();
-    multiplierValue.textContent = `${m.toFixed(2)}x`;
-
-    if (myBetActive) {
-      const potential = Math.floor(myBetAmount * m);
-      actionBtn.textContent = `Забрать ${fmt(potential)}`;
-      maybeAutoCashout(m);
-    }
-    drawRocket(currentState);
-    rafId = requestAnimationFrame(loop);
-  }
-
-  // ===================== ЗАПУСК =====================
-  setInterval(() => { // страховочный редкий синк
-    if (!appScreen.hidden && localStorage.getItem("romb_session_token")) syncProfileSoon();
-  }, 15000);
-
-  bootApp();
 })();
 </script>
 </body>
