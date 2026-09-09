@@ -9,7 +9,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-/* ===== EMBEDDED style.css ===== */
 :root{
   --bg: #100E27;
   --surface: #1B1938;
@@ -21,13 +20,16 @@
   --violet-soft: #4B3FA0;
   --gold: #F5C94B;
   --crash: #FF4D6D;
-  --cyan: #38E1C6;
+  --green: #6BFFA0;
   --radius: 18px;
   --font-display: 'Chakra Petch', sans-serif;
   --font-body: 'Inter', sans-serif;
 }
 
 *{box-sizing:border-box;}
+/* 🔧 КЛЮЧЕВОЙ ФИКС: hidden теперь всегда работает, даже при display:flex */
+[hidden]{display:none !important;}
+
 html,body{
   margin:0; padding:0; height:100%;
   background: radial-gradient(120% 120% at 50% -10%, #211d4a 0%, var(--bg) 55%);
@@ -37,10 +39,8 @@ html,body{
   overscroll-behavior: none;
 }
 
-button{font-family:inherit; cursor:pointer;}
+button{font-family:inherit; cursor:pointer; touch-action:manipulation;}
 input{font-family:inherit;}
-
-/* ===================== ОБЩЕЕ ===================== */
 
 .screen{min-height:100vh; width:100%;}
 
@@ -51,7 +51,7 @@ input{font-family:inherit;}
 
 .btn{
   border:none; border-radius:12px; padding:13px 20px;
-  font-weight:600; font-size:0.95rem; font-family:var(--font-body);
+  font-weight:600; font-size:0.95rem;
   transition: transform .12s ease, opacity .12s ease, background .2s ease;
 }
 .btn:active{transform: scale(0.97);}
@@ -62,235 +62,30 @@ input{font-family:inherit;}
   box-shadow: 0 8px 24px -8px rgba(124,92,255,0.6);
 }
 .btn-primary:hover{opacity:0.92;}
-.btn-ghost{
-  background: transparent; color: var(--text-muted); border:1px solid var(--border);
-}
-.btn-ghost:hover{color:var(--text); border-color: var(--violet-soft);}
+.btn-ghost{background:transparent; color:var(--text-muted); border:1px solid var(--border);}
+.btn-ghost:hover{color:var(--text); border-color:var(--violet-soft);}
 .btn:disabled{opacity:0.45; cursor:not-allowed; transform:none;}
 
-/* ===================== ЭКРАН ВХОДА ===================== */
-
-.login-screen{
-  display:flex; align-items:center; justify-content:center;
-  padding: 24px;
-}
+/* ===================== ВХОД ===================== */
+.login-screen{display:flex; align-items:center; justify-content:center; padding:24px;}
 .login-card{
-  width:100%; max-width: 380px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 32px 28px;
-  text-align:center;
+  width:100%; max-width:380px;
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); padding:32px 28px; text-align:center;
 }
-.login-card .brand{justify-content:center; margin-bottom: 28px;}
-.login-card h1{
-  font-family: var(--font-display);
-  font-size: 1.4rem; margin: 0 0 8px;
-}
-.login-hint{
-  color: var(--text-muted); font-size: 0.88rem; line-height:1.5;
-  margin: 0 0 24px;
-}
+.login-card .brand{justify-content:center; margin-bottom:28px;}
+.login-card h1{font-family:var(--font-display); font-size:1.4rem; margin:0 0 8px;}
+.login-hint{color:var(--text-muted); font-size:0.88rem; line-height:1.5; margin:0 0 24px;}
 .pincode-input{
   width:100%; text-align:center;
-  font-family: var(--font-display); font-size:1.6rem; letter-spacing: 0.35em;
-  background: var(--surface-2); border:1px solid var(--border); border-radius:12px;
-  color: var(--text); padding: 14px 10px 14px 18px;
-  margin-bottom: 16px;
-  outline:none;
+  font-family:var(--font-display); font-size:1.6rem; letter-spacing:0.35em;
+  background:var(--surface-2); border:1px solid var(--border); border-radius:12px;
+  color:var(--text); padding:14px 10px 14px 18px; margin-bottom:16px; outline:none;
 }
-.pincode-input:focus{border-color: var(--violet);}
-.login-error{
-  color: var(--crash); font-size:0.85rem; margin-top:14px;
-}
+.pincode-input:focus{border-color:var(--violet);}
+.login-error{color:var(--crash); font-size:0.85rem; margin-top:14px;}
 
-/* ===================== TOPBAR ===================== */
-
-.topbar{
-  display:flex; align-items:center; justify-content:space-between;
-  padding: 16px 20px;
-  position:relative;
-  border-bottom: 1px solid var(--border);
-}
-.profile-chip{
-  display:flex; align-items:center; gap:10px;
-  background: var(--surface); border:1px solid var(--border); border-radius:999px;
-  padding: 7px 14px 7px 8px;
-  color: var(--text);
-}
-.profile-balance{
-  display:flex; align-items:center; gap:5px;
-  background: var(--surface-2); border-radius:999px; padding:5px 10px;
-  font-family: var(--font-display); font-weight:600; font-size:0.92rem; color:var(--gold);
-}
-.profile-name{font-size:0.85rem; color:var(--text-muted); max-width:90px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-.chevron{color:var(--text-muted);}
-
-.profile-dropdown{
-  position:absolute; top:64px; right:20px; z-index:20;
-  background: var(--surface); border:1px solid var(--border); border-radius:14px;
-  padding: 14px; width:200px;
-  box-shadow: 0 16px 40px -12px rgba(0,0,0,0.6);
-}
-.pd-row{display:flex; justify-content:space-between; font-size:0.85rem; padding:6px 2px; color:var(--text-muted);}
-.pd-row b{color:var(--text); font-family:var(--font-display);}
-#logoutBtn{margin-top:10px; padding:9px;}
-
-/* ===================== ГЛАВНОЕ МЕНЮ ===================== */
-
-.menu-view{
-  max-width: 480px; margin: 0 auto; padding: 32px 20px;
-}
-.menu-title{
-  font-family: var(--font-display); font-size:1.2rem; font-weight:600;
-  margin: 0 0 18px; color: var(--text-muted);
-}
-.game-card{
-  width:100%; display:flex; align-items:center; gap:16px;
-  background: var(--surface); border:1px solid var(--border); border-radius: var(--radius);
-  padding: 18px; margin-bottom: 12px; text-align:left; color:inherit;
-  transition: border-color .15s ease, transform .12s ease;
-}
-.game-card:not(.game-card-soon):hover{border-color: var(--violet-soft); transform: translateY(-2px);}
-.game-card-soon{opacity:0.5; cursor:default;}
-.game-card-icon{font-size:1.8rem; width:48px; text-align:center;}
-.game-card-body{flex:1;}
-.game-card-name{font-family:var(--font-display); font-weight:600; font-size:1.05rem;}
-.game-card-desc{font-size:0.82rem; color:var(--text-muted); margin-top:2px;}
-.game-card-arrow{color:var(--violet); font-size:1.2rem;}
-
-/* ===================== ИГРА КРЭШ ===================== */
-
-.crash-view{
-  max-width: 480px; margin:0 auto; padding: 16px 16px 24px;
-  display:flex; flex-direction:column; gap:14px;
-}
-.back-btn{
-  align-self:flex-start; background:none; border:none; color:var(--text-muted);
-  font-size:0.88rem; padding:4px 0;
-}
-.back-btn:hover{color:var(--text);}
-
-.history-strip{
-  display:flex; gap:8px; overflow-x:auto; padding-bottom:2px;
-}
-.history-chip{
-  flex-shrink:0; font-family:var(--font-display); font-weight:600; font-size:0.8rem;
-  padding:6px 11px; border-radius:999px; background: var(--surface); border:1px solid var(--border);
-}
-.hc-low{color: var(--text-muted);}
-.hc-mid{color: var(--gold); border-color: rgba(245,201,75,0.35);}
-.hc-high{color: var(--violet); border-color: rgba(124,92,255,0.5); box-shadow: 0 0 14px -4px rgba(124,92,255,0.6);}
-
-.stage{
-  position:relative; height: 300px;
-  background: linear-gradient(180deg, #191650 0%, #100E27 100%);
-  border:1px solid var(--border); border-radius: var(--radius);
-  overflow:hidden;
-}
-#rocketCanvas{position:absolute; inset:0; width:100%; height:100%;}
-.stage-overlay{
-  position:absolute; inset:0; display:flex; flex-direction:column;
-  align-items:center; justify-content:center; text-align:center; pointer-events:none;
-}
-.phase-label{
-  font-size:0.82rem; color: var(--text-muted); letter-spacing:0.02em; margin-bottom:6px;
-}
-.multiplier-value{
-  font-family: var(--font-display); font-weight:700; font-size:3.2rem;
-  color: var(--text); text-shadow: 0 0 30px rgba(124,92,255,0.35);
-  transition: color .2s ease;
-}
-.multiplier-value.mv-running{color: var(--violet);}
-.multiplier-value.mv-crashed{color: var(--crash); text-shadow: 0 0 30px rgba(255,77,109,0.5);}
-.countdown-value{
-  font-family: var(--font-display); font-size:1.6rem; color: var(--gold); margin-top:6px;
-}
-
-.bet-panel{
-  background: var(--surface); border:1px solid var(--border); border-radius: var(--radius);
-  padding: 18px; display:flex; flex-direction:column; gap:14px;
-}
-.bet-row{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;}
-.bet-label{font-size:0.85rem; color:var(--text-muted); display:flex; align-items:center; gap:8px;}
-.bet-input-group{display:flex; align-items:center; gap:6px; flex:1; justify-content:flex-end;}
-.bet-input{
-  width:100px; background: var(--surface-2); border:1px solid var(--border); border-radius:10px;
-  color:var(--text); font-family:var(--font-display); font-weight:600; padding:9px 10px; text-align:right;
-  outline:none;
-}
-.bet-input:focus{border-color:var(--violet);}
-.bet-input:disabled{opacity:0.4;}
-.qbtn{
-  background: var(--surface-2); border:1px solid var(--border); color:var(--text-muted);
-  border-radius:8px; padding:8px 10px; font-size:0.78rem; font-weight:600;
-}
-.qbtn:hover{color:var(--text); border-color:var(--violet-soft);}
-
-.switch{position:relative; display:inline-block; width:34px; height:19px;}
-.switch input{opacity:0; width:0; height:0;}
-.switch-track{
-  position:absolute; inset:0; background: var(--surface-2); border:1px solid var(--border);
-  border-radius:999px; transition: background .2s ease;
-}
-.switch-track::before{
-  content:""; position:absolute; width:13px; height:13px; left:2px; top:2px;
-  background: var(--text-muted); border-radius:50%; transition: transform .2s ease, background .2s ease;
-}
-.switch input:checked + .switch-track{background: var(--violet-soft); border-color:var(--violet);}
-.switch input:checked + .switch-track::before{transform: translateX(15px); background:#fff;}
-
-.btn-action{
-  background: linear-gradient(135deg, #9B7CFF, #6B4CE0); color:#fff;
-  font-size:1rem; padding:15px;
-}
-.btn-action.state-cashout{background: linear-gradient(135deg, #FFD873, #F5C94B); color:#2a2005;}
-.btn-action.state-locked{background: var(--surface-2); color: var(--text-muted);}
-
-.bet-error{color:var(--crash); font-size:0.82rem; text-align:center; margin:0;}
-
-/* ===================== ТОСТ ВЫИГРЫША ===================== */
-
-.win-toast{
-  position:fixed; top:22px; left:50%; transform: translateX(-50%) translateY(-16px);
-  display:flex; align-items:center; gap:12px;
-  background: linear-gradient(135deg, #201c4a, #171341);
-  border:1px solid rgba(245,201,75,0.5);
-  border-radius:16px; padding:14px 20px; z-index:100;
-  box-shadow: 0 20px 50px -14px rgba(0,0,0,0.7);
-  opacity:0; transition: opacity .25s ease, transform .25s ease;
-}
-.win-toast.show{opacity:1; transform: translateX(-50%) translateY(0);}
-.win-toast-icon{font-size:1.6rem;}
-.win-toast-title{font-family:var(--font-display); font-weight:700; color:var(--gold);}
-.win-toast-sub{font-size:0.85rem; color:var(--text-muted); margin-top:2px;}
-.win-toast-glow{
-  position:absolute; inset:-2px; border-radius:18px; z-index:-1;
-  background: radial-gradient(circle, rgba(245,201,75,0.35), transparent 70%);
-  filter: blur(10px);
-}
-
-#confettiCanvas{
-  position:fixed; inset:0; pointer-events:none; z-index:99;
-}
-
-/* ===================== БАЛАНС АНИМАЦИЯ ===================== */
-
-.balance-pulse{animation: pulseGreen 0.7s ease;}
-@keyframes pulseGreen{
-  0%{color: var(--gold);}
-  30%{color: #6BFFA0; transform: scale(1.12);}
-  100%{color: var(--gold); transform: scale(1);}
-}
-.profile-balance span{display:inline-block;}
-
-@media (max-width: 480px){
-  .multiplier-value{font-size:2.6rem;}
-  .stage{height:260px;}
-}
-
-
-/* ===== ПЛАВНЫЙ ВХОД ===== */
+/* плавный вход */
 .login-success-overlay{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at center,#29215f 0%,#100e27 65%);opacity:0;pointer-events:none;transition:opacity .35s ease}
 .login-success-overlay.show{opacity:1;pointer-events:auto}
 .login-success-box{text-align:center;transform:translateY(18px) scale(.94);transition:transform .45s cubic-bezier(.2,.8,.2,1)}
@@ -302,6 +97,154 @@ input{font-family:inherit;}
 .app-screen.entering{animation:appEnter .55s cubic-bezier(.2,.8,.2,1)}
 @keyframes appEnter{from{opacity:0;transform:translateY(18px) scale(.985)}to{opacity:1;transform:none}}
 
+/* ===================== TOPBAR ===================== */
+.topbar{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:16px 20px; position:relative; border-bottom:1px solid var(--border);
+}
+.profile-chip{
+  display:flex; align-items:center; gap:10px;
+  background:var(--surface); border:1px solid var(--border); border-radius:999px;
+  padding:7px 14px 7px 8px; color:var(--text);
+}
+.profile-balance{
+  display:flex; align-items:center; gap:5px;
+  background:var(--surface-2); border-radius:999px; padding:5px 10px;
+  font-family:var(--font-display); font-weight:600; font-size:0.92rem; color:var(--gold);
+}
+.profile-name{font-size:0.85rem; color:var(--text-muted); max-width:90px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.chevron{color:var(--text-muted);}
+
+.profile-dropdown{
+  position:absolute; top:64px; right:20px; z-index:20;
+  background:var(--surface); border:1px solid var(--border); border-radius:14px;
+  padding:14px; width:200px; box-shadow:0 16px 40px -12px rgba(0,0,0,0.6);
+}
+.pd-row{display:flex; justify-content:space-between; font-size:0.85rem; padding:6px 2px; color:var(--text-muted);}
+.pd-row b{color:var(--text); font-family:var(--font-display);}
+#logoutBtn{margin-top:10px; padding:9px;}
+
+/* ===================== МЕНЮ ===================== */
+.menu-view{max-width:480px; margin:0 auto; padding:32px 20px;}
+.menu-title{font-family:var(--font-display); font-size:1.2rem; font-weight:600; margin:0 0 18px; color:var(--text-muted);}
+.game-card{
+  width:100%; display:flex; align-items:center; gap:16px;
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+  padding:18px; margin-bottom:12px; text-align:left; color:inherit;
+  transition:border-color .15s ease, transform .12s ease;
+}
+.game-card:not(.game-card-soon):hover{border-color:var(--violet-soft); transform:translateY(-2px);}
+.game-card-soon{opacity:0.5; cursor:default;}
+.game-card-icon{font-size:1.8rem; width:48px; text-align:center;}
+.game-card-body{flex:1;}
+.game-card-name{font-family:var(--font-display); font-weight:600; font-size:1.05rem;}
+.game-card-desc{font-size:0.82rem; color:var(--text-muted); margin-top:2px;}
+.game-card-arrow{color:var(--violet); font-size:1.2rem;}
+
+/* ===================== КРЭШ ===================== */
+.crash-view{max-width:480px; margin:0 auto; padding:16px 16px 24px; display:flex; flex-direction:column; gap:14px;}
+.back-btn{align-self:flex-start; background:none; border:none; color:var(--text-muted); font-size:0.88rem; padding:4px 0;}
+.back-btn:hover{color:var(--text);}
+
+.history-strip{display:flex; gap:8px; overflow-x:auto; padding-bottom:2px; scrollbar-width:none;}
+.history-strip::-webkit-scrollbar{display:none;}
+.history-chip{
+  flex-shrink:0; font-family:var(--font-display); font-weight:600; font-size:0.8rem;
+  padding:6px 11px; border-radius:999px; background:var(--surface); border:1px solid var(--border);
+}
+.hc-low{color:var(--text-muted);}
+.hc-mid{color:var(--gold); border-color:rgba(245,201,75,0.35);}
+.hc-high{color:var(--violet); border-color:rgba(124,92,255,0.5); box-shadow:0 0 14px -4px rgba(124,92,255,0.6);}
+
+.stage{
+  position:relative; height:300px;
+  background:linear-gradient(180deg,#191650 0%,#100E27 100%);
+  border:1px solid var(--border); border-radius:var(--radius); overflow:hidden;
+}
+#rocketCanvas{position:absolute; inset:0; width:100%; height:100%;}
+.stage-overlay{
+  position:absolute; inset:0; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; text-align:center; pointer-events:none;
+}
+.phase-label{font-size:0.82rem; color:var(--text-muted); letter-spacing:0.02em; margin-bottom:6px;}
+.multiplier-value{
+  font-family:var(--font-display); font-weight:700; font-size:3.2rem;
+  color:var(--text); text-shadow:0 0 30px rgba(124,92,255,0.35);
+  transition:color .2s ease;
+}
+.multiplier-value.mv-running{color:var(--violet);}
+.multiplier-value.mv-crashed{color:var(--crash); text-shadow:0 0 30px rgba(255,77,109,0.5);}
+.countdown-value{font-family:var(--font-display); font-size:1.6rem; color:var(--gold); margin-top:6px;}
+
+.bet-panel{
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+  padding:18px; display:flex; flex-direction:column; gap:14px;
+}
+.bet-row{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;}
+.bet-label{font-size:0.85rem; color:var(--text-muted); display:flex; align-items:center; gap:8px;}
+.bet-input-group{display:flex; align-items:center; gap:6px; flex:1; justify-content:flex-end;}
+.bet-input{
+  width:100px; background:var(--surface-2); border:1px solid var(--border); border-radius:10px;
+  color:var(--text); font-family:var(--font-display); font-weight:600; padding:9px 10px; text-align:right; outline:none;
+}
+.bet-input:focus{border-color:var(--violet);}
+.bet-input:disabled{opacity:0.4;}
+.qbtn{
+  background:var(--surface-2); border:1px solid var(--border); color:var(--text-muted);
+  border-radius:8px; padding:8px 10px; font-size:0.78rem; font-weight:600;
+}
+.qbtn:hover{color:var(--text); border-color:var(--violet-soft);}
+
+.switch{position:relative; display:inline-block; width:34px; height:19px;}
+.switch input{opacity:0; width:0; height:0;}
+.switch-track{
+  position:absolute; inset:0; background:var(--surface-2); border:1px solid var(--border);
+  border-radius:999px; transition:background .2s ease;
+}
+.switch-track::before{
+  content:""; position:absolute; width:13px; height:13px; left:2px; top:2px;
+  background:var(--text-muted); border-radius:50%; transition:transform .2s ease, background .2s ease;
+}
+.switch input:checked + .switch-track{background:var(--violet-soft); border-color:var(--violet);}
+.switch input:checked + .switch-track::before{transform:translateX(15px); background:#fff;}
+
+.btn-action{background:linear-gradient(135deg,#9B7CFF,#6B4CE0); color:#fff; font-size:1rem; padding:15px;}
+.btn-action.state-cashout{background:linear-gradient(135deg,#FFD873,#F5C94B); color:#2a2005;}
+.btn-action.state-locked{background:var(--surface-2); color:var(--text-muted);}
+
+.bet-error{color:var(--crash); font-size:0.82rem; text-align:center; margin:0;}
+
+/* ===================== ТОСТ ===================== */
+.win-toast{
+  position:fixed; top:22px; left:50%; transform:translateX(-50%) translateY(-16px);
+  display:flex; align-items:center; gap:12px;
+  background:linear-gradient(135deg,#201c4a,#171341);
+  border:1px solid rgba(245,201,75,0.5); border-radius:16px; padding:14px 20px; z-index:100;
+  box-shadow:0 20px 50px -14px rgba(0,0,0,0.7);
+  opacity:0; transition:opacity .25s ease, transform .25s ease;
+  pointer-events:none;
+}
+.win-toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+.win-toast-icon{font-size:1.6rem;}
+.win-toast-title{font-family:var(--font-display); font-weight:700; color:var(--gold);}
+.win-toast-sub{font-size:0.85rem; color:var(--text-muted); margin-top:2px;}
+.win-toast-glow{position:absolute; inset:-2px; border-radius:18px; z-index:-1; background:radial-gradient(circle,rgba(245,201,75,0.35),transparent 70%); filter:blur(10px);}
+
+#confettiCanvas{position:fixed; inset:0; pointer-events:none; z-index:99;}
+
+/* ===================== АНИМАЦИЯ БАЛАНСА ===================== */
+.balance-pulse{animation:pulseGreen 0.7s ease;}
+@keyframes pulseGreen{
+  0%{color:var(--gold);}
+  30%{color:var(--green); transform:scale(1.12);}
+  100%{color:var(--gold); transform:scale(1);}
+}
+.profile-balance span{display:inline-block;}
+
+@media (max-width:480px){
+  .multiplier-value{font-size:2.6rem;}
+  .stage{height:260px;}
+}
 </style>
 </head>
 <body>
@@ -313,11 +256,9 @@ input{font-family:inherit;}
       <svg class="brand-gem" viewBox="0 0 40 40" fill="none">
         <path d="M20 2 L36 14 L20 38 L4 14 Z" fill="url(#gemGrad)"/>
         <path d="M20 2 L36 14 L20 20 Z" fill="#fff" opacity="0.18"/>
-        <path d="M4 14 L20 20 L20 2 Z" fill="#fff" opacity="0.08"/>
         <defs>
           <linearGradient id="gemGrad" x1="4" y1="2" x2="36" y2="38" gradientUnits="userSpaceOnUse">
-            <stop stop-color="#9B7CFF"/>
-            <stop offset="1" stop-color="#5B3FE0"/>
+            <stop stop-color="#9B7CFF"/><stop offset="1" stop-color="#5B3FE0"/>
           </linearGradient>
         </defs>
       </svg>
@@ -328,15 +269,8 @@ input{font-family:inherit;}
     <p class="login-hint">Напишите боту <b>/mypincode</b> в личные сообщения — он пришлёт код входа.</p>
 
     <form id="loginForm" autocomplete="off">
-      <input
-        id="pincodeInput"
-        class="pincode-input"
-        inputmode="numeric"
-        maxlength="6"
-        placeholder="• • • • • •"
-        autocomplete="off"
-      >
-      <button type="submit" class="btn btn-primary btn-block">Войти</button>
+      <input id="pincodeInput" class="pincode-input" inputmode="numeric" maxlength="6" placeholder="• • • • • •" autocomplete="off">
+      <button type="submit" id="loginBtn" class="btn btn-primary btn-block">Войти</button>
     </form>
 
     <p id="loginError" class="login-error" hidden></p>
@@ -358,12 +292,9 @@ input{font-family:inherit;}
     <div class="brand brand-sm">
       <svg class="brand-gem" viewBox="0 0 40 40" fill="none">
         <path d="M20 2 L36 14 L20 38 L4 14 Z" fill="url(#gemGrad2)"/>
-        <path d="M20 2 L36 14 L20 20 Z" fill="#fff" opacity="0.18"/>
-        <path d="M4 14 L20 20 L20 2 Z" fill="#fff" opacity="0.08"/>
         <defs>
           <linearGradient id="gemGrad2" x1="4" y1="2" x2="36" y2="38" gradientUnits="userSpaceOnUse">
-            <stop stop-color="#9B7CFF"/>
-            <stop offset="1" stop-color="#5B3FE0"/>
+            <stop stop-color="#9B7CFF"/><stop offset="1" stop-color="#5B3FE0"/>
           </linearGradient>
         </defs>
       </svg>
@@ -387,7 +318,7 @@ input{font-family:inherit;}
     </div>
   </header>
 
-  <!-- ---------- ГЛАВНОЕ МЕНЮ ---------- -->
+  <!-- ---------- МЕНЮ ---------- -->
   <main id="menuView" class="menu-view">
     <h2 class="menu-title">Выберите игру</h2>
     <button id="openCrashBtn" class="game-card">
@@ -407,7 +338,7 @@ input{font-family:inherit;}
     </div>
   </main>
 
-  <!-- ---------- ИГРА КРЭШ ---------- -->
+  <!-- ---------- КРЭШ ---------- -->
   <main id="crashView" class="crash-view" hidden>
     <button id="backToMenuBtn" class="back-btn">← Меню</button>
 
@@ -450,7 +381,7 @@ input{font-family:inherit;}
   </main>
 </div>
 
-<!-- ---------- ТОСТ УСПЕШНОГО ЗАБОРА ---------- -->
+<!-- ---------- ТОСТ ---------- -->
 <div id="winToast" class="win-toast" hidden>
   <div class="win-toast-glow"></div>
   <div class="win-toast-icon">💎</div>
@@ -462,84 +393,141 @@ input{font-family:inherit;}
 
 <canvas id="confettiCanvas"></canvas>
 
-
 <script>
-/* ===== EMBEDDED app.js ===== */
 (() => {
   "use strict";
 
   // =====================================================
-  // GITHUB PAGES / REMOTE BACKEND
+  // BACKEND
   // =====================================================
-  // Replace this with the public HTTPS URL of your backend.
-  // Example: https://xxxxx.trycloudflare.com
   const API_BASE_URL = "https://follows-spanking-chicken-shadows.trycloudflare.com";
 
-  function apiUrl(path) {
-    return API_BASE_URL.replace(/\/$/, "") + path;
-  }
-
+  const apiUrl = (path) => API_BASE_URL.replace(/\/$/, "") + path;
   function apiHeaders(extra = {}) {
-    const headers = { ...extra };
-    const token = localStorage.getItem("romb_session_token");
-    if (token) headers["Authorization"] = `Bearer ${token}`;
-    return headers;
+    const h = { ...extra };
+    const t = localStorage.getItem("romb_session_token");
+    if (t) h["Authorization"] = `Bearer ${t}`;
+    return h;
   }
 
   // ===================== ЭЛЕМЕНТЫ =====================
-  const loginScreen = document.getElementById("loginScreen");
-  const appScreen = document.getElementById("app");
-  const loginForm = document.getElementById("loginForm");
-  const pincodeInput = document.getElementById("pincodeInput");
-  const loginError = document.getElementById("loginError");
-  const loginSuccessOverlay = document.getElementById("loginSuccessOverlay");
+  const $ = (id) => document.getElementById(id);
+  const loginScreen = $("loginScreen"), appScreen = $("app");
+  const loginForm = $("loginForm"), pincodeInput = $("pincodeInput");
+  const loginError = $("loginError"), loginBtn = $("loginBtn");
+  const loginSuccessOverlay = $("loginSuccessOverlay");
 
-  const profileChip = document.getElementById("profileChip");
-  const profileDropdown = document.getElementById("profileDropdown");
-  const balanceValue = document.getElementById("balanceValue");
-  const nicknameValue = document.getElementById("nicknameValue");
-  const pdBalance = document.getElementById("pdBalance");
-  const pdBank = document.getElementById("pdBank");
-  const pdLvl = document.getElementById("pdLvl");
-  const logoutBtn = document.getElementById("logoutBtn");
+  const profileChip = $("profileChip"), profileDropdown = $("profileDropdown");
+  const balanceValue = $("balanceValue"), nicknameValue = $("nicknameValue");
+  const pdBalance = $("pdBalance"), pdBank = $("pdBank"), pdLvl = $("pdLvl");
+  const logoutBtn = $("logoutBtn");
 
-  const menuView = document.getElementById("menuView");
-  const crashView = document.getElementById("crashView");
-  const openCrashBtn = document.getElementById("openCrashBtn");
-  const backToMenuBtn = document.getElementById("backToMenuBtn");
+  const menuView = $("menuView"), crashView = $("crashView");
+  const openCrashBtn = $("openCrashBtn"), backToMenuBtn = $("backToMenuBtn");
 
-  const historyStrip = document.getElementById("historyStrip");
-  const phaseLabel = document.getElementById("phaseLabel");
-  const multiplierValue = document.getElementById("multiplierValue");
-  const countdownValue = document.getElementById("countdownValue");
-  const rocketCanvas = document.getElementById("rocketCanvas");
-  const rctx = rocketCanvas.getContext("2d");
+  const historyStrip = $("historyStrip"), phaseLabel = $("phaseLabel");
+  const multiplierValue = $("multiplierValue"), countdownValue = $("countdownValue");
+  const rocketCanvas = $("rocketCanvas"), rctx = rocketCanvas.getContext("2d");
 
-  const betAmountInput = document.getElementById("betAmountInput");
-  const autoCashoutToggle = document.getElementById("autoCashoutToggle");
-  const autoCashoutInput = document.getElementById("autoCashoutInput");
-  const actionBtn = document.getElementById("actionBtn");
-  const betError = document.getElementById("betError");
+  const betAmountInput = $("betAmountInput");
+  const autoCashoutToggle = $("autoCashoutToggle");
+  const autoCashoutInput = $("autoCashoutInput");
+  const actionBtn = $("actionBtn"), betError = $("betError");
 
-  const winToast = document.getElementById("winToast");
-  const winMult = document.getElementById("winMult");
-  const winAmount = document.getElementById("winAmount");
-  const confettiCanvas = document.getElementById("confettiCanvas");
-  const cctx = confettiCanvas.getContext("2d");
+  const winToast = $("winToast"), winMult = $("winMult"), winAmount = $("winAmount");
+  const confettiCanvas = $("confettiCanvas"), cctx = confettiCanvas.getContext("2d");
+
+  const fmt = (n) => Math.round(n).toLocaleString("ru-RU").replace(/,/g, " ");
 
   // ===================== СОСТОЯНИЕ =====================
   let profile = null;
-  let ws = null;
+  let ws = null, wsRetry = 0;
   let currentState = null;
-  let myBetPlaced = false;      // ставка сделана в текущем раунде
-  let myBetActive = false;      // ставка ещё не забрана
+  let lastPhase = null;
   let lastSeenRoundId = null;
-  let curvePoints = [];
-  let drawPending = false;
-  let lastProfileSync = 0;
 
-  function fmt(n) {
-    return Math.round(n).toLocaleString("ru-RU").replace(/,/g, " ");
+  // моя ставка
+  let myBetPlaced = false;   // ставка сделана в раунде
+  let myBetActive = false;   // ещё не забрана
+  let myBetAmount = 0;
+  let betInFlight = false;
+  let autoTriggered = false; // автозабор уже сработал в этом раунде
+
+  // локальная экстраполяция множителя (плавность между WS-пакетами)
+  let multBase = 1, multTime = 0, multRate = 0.09;
+
+  function localMultiplier() {
+    if (!currentState || currentState.phase !== "running") return 1;
+    const dt = Math.max(0, (performance.now() - multTime) / 1000);
+    return Math.max(1, multBase * Math.exp(multRate * dt));
+  }
+
+  function noteServerMult(m) {
+    const now = performance.now();
+    if (multTime && m > multBase) {
+      const dt = (now - multTime) / 1000;
+      if (dt > 0.05) multRate = Math.min(1.5, Math.max(0.02, Math.log(m / multBase) / dt));
+    }
+    multBase = m;
+    multTime = now;
+  }
+
+  // ===================== БАЛАНС С АНИМАЦИЕЙ =====================
+  let balanceAnimId = null;
+  function setBalance(newVal, animate = false) {
+    const old = profile ? profile.balance : newVal;
+    profile = profile || {};
+    profile.balance = newVal;
+
+    if (balanceAnimId) cancelAnimationFrame(balanceAnimId);
+
+    if (!animate || old === newVal) {
+      balanceValue.textContent = fmt(newVal);
+      pdBalance.textContent = fmt(newVal);
+      return;
+    }
+    const start = performance.now(), dur = 550;
+    const step = (ts) => {
+      const p = Math.min(1, (ts - start) / dur);
+      const eased = 1 - Math.pow(1 - p, 3);
+      const v = old + (newVal - old) * eased;
+      balanceValue.textContent = fmt(v);
+      pdBalance.textContent = fmt(v);
+      if (p < 1) balanceAnimId = requestAnimationFrame(step);
+      else balanceAnimId = null;
+    };
+    balanceAnimId = requestAnimationFrame(step);
+    // пульс
+    const chip = balanceValue.parentElement;
+    chip.classList.remove("balance-pulse");
+    void chip.offsetWidth;
+    chip.classList.add("balance-pulse");
+  }
+
+  function renderProfileStatic() {
+    if (!profile) return;
+    nicknameValue.textContent = profile.nickname;
+    pdBank.textContent = fmt(profile.bank);
+    pdLvl.textContent = profile.lvl;
+    balanceValue.textContent = fmt(profile.balance);
+    pdBalance.textContent = fmt(profile.balance);
+  }
+
+  let lastSync = 0;
+  async function fetchProfile() {
+    const res = await fetch(apiUrl("/api/profile"), { headers: apiHeaders() });
+    if (!res.ok) throw new Error("unauth");
+    const fresh = await res.json();
+    const changed = profile && fresh.balance !== profile.balance;
+    profile = fresh;
+    renderProfileStatic();
+    if (changed) { /* баланс обновлён сервером (автозабор на бэке и т.п.) */ }
+  }
+  function syncProfileSoon() {
+    const now = Date.now();
+    if (now - lastSync < 800) return;
+    lastSync = now;
+    fetchProfile().catch(() => {});
   }
 
   // ===================== ЛОГИН =====================
@@ -556,6 +544,8 @@ input{font-family:inherit;}
       loginError.hidden = false;
       return;
     }
+    loginBtn.disabled = true;
+    loginBtn.textContent = "Входим...";
     try {
       const res = await fetch(apiUrl("/api/login"), {
         method: "POST",
@@ -566,75 +556,61 @@ input{font-family:inherit;}
         const data = await res.json().catch(() => ({}));
         throw new Error(data.detail || "Неверный пинкод");
       }
-      const loginData = await res.clone().json().catch(() => null);
+      const loginData = await res.json().catch(() => null);
       if (loginData?.token) localStorage.setItem("romb_session_token", loginData.token);
+
       await fetchProfile();
+
       loginSuccessOverlay.hidden = false;
       requestAnimationFrame(() => loginSuccessOverlay.classList.add("show"));
-      await new Promise(resolve => setTimeout(resolve, 650));
+      await new Promise(r => setTimeout(r, 650));
       loginSuccessOverlay.classList.remove("show");
+
       appScreen.hidden = false;
       appScreen.classList.remove("entering");
       void appScreen.offsetWidth;
       appScreen.classList.add("entering");
       loginScreen.hidden = true;
       setTimeout(() => { loginSuccessOverlay.hidden = true; }, 400);
+
       connectWS();
     } catch (err) {
       loginError.textContent = err.message;
       loginError.hidden = false;
+    } finally {
+      loginBtn.disabled = false;
+      loginBtn.textContent = "Войти";
     }
   });
 
   logoutBtn.addEventListener("click", async () => {
-    await fetch(apiUrl("/api/logout"), { method: "POST", headers: apiHeaders() });
-    if (ws) ws.close();
+    try { await fetch(apiUrl("/api/logout"), { method: "POST", headers: apiHeaders() }); } catch {}
+    if (ws) { try { ws.onclose = null; ws.close(); } catch {} }
     localStorage.removeItem("romb_session_token");
     location.reload();
   });
 
-  profileChip.addEventListener("click", () => {
-    profileDropdown.hidden = !profileDropdown.hidden;
-  });
+  profileChip.addEventListener("click", () => { profileDropdown.hidden = !profileDropdown.hidden; });
   document.addEventListener("click", (e) => {
-    if (!profileChip.contains(e.target) && !profileDropdown.contains(e.target)) {
-      profileDropdown.hidden = true;
-    }
+    if (!profileChip.contains(e.target) && !profileDropdown.contains(e.target)) profileDropdown.hidden = true;
   });
 
-  // ===================== ЗАГРУЗКА ПРОФИЛЯ =====================
-  async function fetchProfile() {
-    const res = await fetch(apiUrl("/api/profile"), { headers: apiHeaders() });
-    if (!res.ok) throw new Error("unauth");
-    profile = await res.json();
-    renderProfile();
-  }
-
-  function renderProfile(animateBalance = false) {
-    if (!profile) return;
-    nicknameValue.textContent = profile.nickname;
-    pdBank.textContent = fmt(profile.bank);
-    pdLvl.textContent = profile.lvl;
-    if (animateBalance) {
-      balanceValue.parentElement.classList.remove("balance-pulse");
-      void balanceValue.parentElement.offsetWidth; // restart animation
-      balanceValue.parentElement.classList.add("balance-pulse");
-    }
-    balanceValue.textContent = fmt(profile.balance);
-    pdBalance.textContent = fmt(profile.balance);
-  }
-
+  // ===================== СТАРТ =====================
   async function bootApp() {
-    try {
-      await fetchProfile();
-    } catch {
+    if (!localStorage.getItem("romb_session_token")) {
       loginScreen.hidden = false;
-      appScreen.hidden = true;
       return;
     }
-    loginScreen.hidden = true;
-    appScreen.hidden = false;
-    connectWS();
+    try {
+      await fetchProfile();
+      loginScreen.hidden = true;
+      appScreen.hidden = false;
+      appScreen.classList.add("entering");
+      connectWS();
+    } catch {
+      localStorage.removeItem("romb_session_token");
+      loginScreen.hidden = false;
+    }
   }
 
   // ===================== НАВИГАЦИЯ =====================
@@ -642,66 +618,89 @@ input{font-family:inherit;}
     menuView.hidden = true;
     crashView.hidden = false;
     resizeCanvas();
+    requestDraw();
   });
   backToMenuBtn.addEventListener("click", () => {
     crashView.hidden = true;
     menuView.hidden = false;
   });
 
-  // ===================== СТАВКА: БЫСТРЫЕ КНОПКИ =====================
+  // ===================== БЫСТРЫЕ КНОПКИ =====================
   document.querySelectorAll(".qbtn").forEach((btn) => {
     btn.addEventListener("click", () => {
-      const cur = parseInt(betAmountInput.value || "0", 10);
+      const cur = parseInt(betAmountInput.value || "0", 10) || 0;
       const bal = profile ? profile.balance : 0;
-      if (btn.dataset.op === "half") betAmountInput.value = Math.max(100, Math.floor(cur / 2));
-      if (btn.dataset.op === "double") betAmountInput.value = Math.min(bal, cur * 2 || 100);
-      if (btn.dataset.op === "max") betAmountInput.value = bal;
+      if (btn.dataset.op === "half") betAmountInput.value = Math.max(100, Math.floor(cur / 2) || 100);
+      if (btn.dataset.op === "double") betAmountInput.value = Math.max(100, Math.min(bal, cur * 2 || 100));
+      if (btn.dataset.op === "max") betAmountInput.value = Math.max(0, bal);
     });
   });
 
   autoCashoutToggle.addEventListener("change", () => {
     autoCashoutInput.disabled = !autoCashoutToggle.checked;
+    // если включили в процессе полёта — цель могла уже пройтись, не триггерим задним числом
+    if (autoCashoutToggle.checked && currentState?.phase === "running") {
+      const target = parseFloat(autoCashoutInput.value);
+      if (localMultiplier() >= target) autoTriggered = true; // цель уже пройдена
+    }
   });
 
   // ===================== WEBSOCKET =====================
   function connectWS() {
+    if (ws && (ws.readyState === WebSocket.CONNECTING || ws.readyState === WebSocket.OPEN)) return;
     const wsBase = API_BASE_URL.replace(/^http:/, "ws:").replace(/^https:/, "wss:").replace(/\/$/, "");
-    ws = new WebSocket(`${wsBase}/ws/crash`);
+    try { ws = new WebSocket(`${wsBase}/ws/crash`); } catch { scheduleReconnect(); return; }
+
+    ws.onopen = () => { wsRetry = 0; };
     ws.onmessage = (evt) => {
-      const state = JSON.parse(evt.data);
-      handleState(state);
+      try { handleState(JSON.parse(evt.data)); } catch {}
     };
-    ws.onclose = () => {
-      setTimeout(() => { if (!appScreen.hidden) connectWS(); }, 1500);
-    };
+    ws.onclose = () => scheduleReconnect();
+    ws.onerror = () => { try { ws.close(); } catch {} };
+  }
+  function scheduleReconnect() {
+    setTimeout(() => { if (!appScreen.hidden) connectWS(); }, Math.min(5000, 1200 * (wsRetry + 1)));
+    wsRetry = Math.min(wsRetry + 1, 4);
   }
 
+  // ===================== ОБРАБОТКА СОСТОЯНИЯ =====================
   function handleState(state) {
     const prevPhase = currentState ? currentState.phase : null;
     currentState = state;
 
+    // новый раунд → сброс
     if (state.round_id !== lastSeenRoundId) {
       lastSeenRoundId = state.round_id;
       myBetPlaced = false;
       myBetActive = false;
-      curvePoints = [];
+      myBetAmount = 0;
+      autoTriggered = false;
       betError.hidden = true;
+      multBase = 1; multTime = 0; multRate = 0.09;
     }
+
+    // если сервер сам присылает статус моей ставки — доверяем ему
+    if (typeof state.my_bet_active === "boolean") myBetActive = state.my_bet_active;
+    if (typeof state.my_bet_placed === "boolean") myBetPlaced = state.my_bet_placed;
 
     renderHistory(state.history);
     renderPhase(state, prevPhase);
-    scheduleRocketDraw(state);
+    requestDraw();
 
-    // Периодически сверяем баланс с сервером, чтобы UI не расходился с БД.
-    const now = Date.now();
-    if (now - lastProfileSync > 2500) {
-      lastProfileSync = now;
-      fetchProfile().catch(() => {});
+    // синк баланса только на смене фаз (конец раунда — сервер посчитал ставки)
+    if (state.phase !== prevPhase && (state.phase === "crashed" || state.phase === "waiting")) {
+      syncProfileSoon();
     }
   }
 
+  // ===================== ИСТОРИЯ (только при изменении) =====================
+  let lastHistoryKey = "";
   function renderHistory(history) {
-    historyStrip.innerHTML = "";
+    if (!history) return;
+    const key = history.join(",");
+    if (key === lastHistoryKey) return;
+    lastHistoryKey = key;
+    const frag = document.createDocumentFragment();
     history.forEach((val) => {
       const chip = document.createElement("div");
       let cls = "hc-low";
@@ -709,62 +708,68 @@ input{font-family:inherit;}
       else if (val >= 2) cls = "hc-mid";
       chip.className = `history-chip ${cls}`;
       chip.textContent = `${val.toFixed(2)}x`;
-      historyStrip.appendChild(chip);
+      frag.appendChild(chip);
     });
+    historyStrip.replaceChildren(frag);
   }
 
+  // ===================== ОБРАТНЫЙ ОТСЧЁТ =====================
   let countdownTimer = null;
   function startSmoothCountdown(endsIn) {
-    clearInterval(countdownTimer);
-    const endAt = performance.now() + Math.max(0, Number(endsIn) || 0) * 1000;
+    clearTimeout(countdownTimer);
+    if (!endsIn || endsIn <= 0) { countdownValue.textContent = ""; return; }
+    const endAt = performance.now() + endsIn * 1000;
+    let lastShown = -1;
     const tick = () => {
+      if (!currentState || currentState.phase !== "waiting") return;
       const left = Math.max(0, endAt - performance.now());
-      countdownValue.textContent = Math.ceil(left / 1000);
-      if (left > 0 && currentState?.phase === "waiting") countdownTimer = setTimeout(tick, 50);
+      const sec = Math.ceil(left / 1000);
+      if (sec !== lastShown) { lastShown = sec; countdownValue.textContent = sec; }
+      if (left > 0) countdownTimer = setTimeout(tick, 100);
     };
     tick();
   }
 
+  // ===================== ФАЗЫ =====================
   function renderPhase(state, prevPhase) {
     multiplierValue.classList.remove("mv-running", "mv-crashed");
 
     if (state.phase === "waiting") {
+      clearTimeout(countdownTimer);
       phaseLabel.textContent = "Ставки принимаются";
       multiplierValue.textContent = "1.00x";
       startSmoothCountdown(state.phase_ends_in);
-      updateActionButton("waiting");
+      updateActionButton();
     } else if (state.phase === "running") {
-      clearInterval(countdownTimer);
+      clearTimeout(countdownTimer);
+      countdownValue.textContent = "";
+      noteServerMult(state.multiplier);
       phaseLabel.textContent = "Полёт";
       multiplierValue.classList.add("mv-running");
-      multiplierValue.textContent = `${state.multiplier.toFixed(2)}x`;
-      countdownValue.textContent = "";
-      updateActionButton("running", state.multiplier);
+      updateActionButton();
     } else if (state.phase === "crashed") {
-      clearInterval(countdownTimer);
+      clearTimeout(countdownTimer);
+      countdownValue.textContent = "";
       phaseLabel.textContent = "Крах!";
       multiplierValue.classList.add("mv-crashed");
       multiplierValue.textContent = `${state.crash_point.toFixed(2)}x`;
-      countdownValue.textContent = "";
-      updateActionButton("crashed");
+      updateActionButton();
 
+      // проигрыш — только если ставка реально не забрана
       if (prevPhase === "running" && myBetActive) {
         myBetActive = false;
-        showBetLostFeedback(state.crash_point);
+        betError.hidden = false;
+        betError.textContent = `Крах на ${state.crash_point.toFixed(2)}x — ставка сгорела`;
+        syncProfileSoon();
       }
     }
   }
 
-  function showBetLostFeedback(crashPoint) {
-    betError.hidden = false;
-    betError.textContent = `Крах на ${crashPoint.toFixed(2)}x — ставка сгорела`;
-    fetchProfile();
-  }
-
-  function updateActionButton(phase, multiplier) {
+  function updateActionButton() {
+    if (!currentState) return;
     actionBtn.classList.remove("state-cashout", "state-locked");
 
-    if (phase === "waiting") {
+    if (currentState.phase === "waiting") {
       if (myBetPlaced) {
         actionBtn.textContent = "Ставка принята ✓";
         actionBtn.classList.add("state-locked");
@@ -773,11 +778,9 @@ input{font-family:inherit;}
         actionBtn.textContent = "Поставить";
         actionBtn.disabled = false;
       }
-    } else if (phase === "running") {
+    } else if (currentState.phase === "running") {
       if (myBetActive) {
-        const bet = parseInt(betAmountInput.value || "0", 10);
-        const potential = Math.floor(bet * multiplier);
-        actionBtn.textContent = `Забрать ${fmt(potential)}`;
+        // сумма обновляется в цикле отрисовки
         actionBtn.classList.add("state-cashout");
         actionBtn.disabled = false;
       } else {
@@ -792,52 +795,91 @@ input{font-family:inherit;}
     }
   }
 
-  actionBtn.addEventListener("click", async () => {
-    if (!currentState) return;
+  // ===================== СТАВКА / ЗАБОР =====================
+  actionBtn.addEventListener("click", () => {
+    if (!currentState || betInFlight) return;
     betError.hidden = true;
 
     if (currentState.phase === "waiting" && !myBetPlaced) {
-      const amount = parseInt(betAmountInput.value || "0", 10);
-      const body = { amount };
-      if (autoCashoutToggle.checked) {
-        body.auto_cashout = parseFloat(autoCashoutInput.value || "0");
-      }
-      try {
-        const res = await fetch(apiUrl("/api/crash/bet"), {
-          method: "POST",
-          headers: apiHeaders({ "Content-Type": "application/json" }),
-          body: JSON.stringify(body),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.detail || "Ошибка ставки");
-        profile.balance = data.balance;
-        renderProfile();
-        myBetPlaced = true;
-        myBetActive = true;
-        updateActionButton("waiting");
-      } catch (err) {
-        betError.textContent = err.message;
-        betError.hidden = false;
-      }
+      placeBet();
     } else if (currentState.phase === "running" && myBetActive) {
-      try {
-        const res = await fetch(apiUrl("/api/crash/cashout"), { method: "POST", headers: apiHeaders() });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.detail || "Ошибка забора");
+      doCashout(false);
+    }
+  });
+
+  async function placeBet() {
+    const amount = parseInt(betAmountInput.value || "0", 10);
+    if (!amount || amount < 100) {
+      betError.textContent = "Минимальная ставка — 100";
+      betError.hidden = false;
+      return;
+    }
+    const body = { amount };
+    if (autoCashoutToggle.checked) {
+      const target = parseFloat(autoCashoutInput.value);
+      if (target > 1) body.auto_cashout = target;
+    }
+    betInFlight = true;
+    actionBtn.disabled = true;
+    try {
+      const res = await fetch(apiUrl("/api/crash/bet"), {
+        method: "POST",
+        headers: apiHeaders({ "Content-Type": "application/json" }),
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || "Ошибка ставки");
+      setBalance(data.balance);
+      myBetPlaced = true;
+      myBetActive = true;
+      myBetAmount = amount;
+      autoTriggered = false;
+      updateActionButton();
+    } catch (err) {
+      betError.textContent = err.message;
+      betError.hidden = false;
+    } finally {
+      betInFlight = false;
+      updateActionButton();
+    }
+  }
+
+  async function doCashout(isAuto) {
+    try {
+      const res = await fetch(apiUrl("/api/crash/cashout"), { method: "POST", headers: apiHeaders() });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || "Ошибка забора");
+      myBetActive = false;
+      setBalance(data.balance, true); // анимация + пульс
+      updateActionButton();
+      showWinToast(data.multiplier, data.win);
+      launchConfetti();
+      syncProfileSoon();
+    } catch (err) {
+      if (isAuto) {
+        // сервер, скорее всего, уже забрал по своему автозабору — просто синк
         myBetActive = false;
-        profile.balance = data.balance;
-        renderProfile(true);
-        updateActionButton("running", currentState.multiplier);
-        showWinToast(data.multiplier, data.win);
-        launchConfetti();
-      } catch (err) {
+        updateActionButton();
+        syncProfileSoon();
+      } else {
         betError.textContent = err.message;
         betError.hidden = false;
       }
     }
-  });
+  }
 
-  // ===================== ТОСТ ВЫИГРЫША =====================
+  // 🔧 АВТОЗАБОР: работает даже если включил тумблер ПОСЛЕ старта раунда
+  function maybeAutoCashout(m) {
+    if (autoTriggered || !myBetActive || !autoCashoutToggle.checked) return;
+    const target = parseFloat(autoCashoutInput.value);
+    if (!(target > 1)) return;
+    if (m >= target) {
+      autoTriggered = true;
+      doCashout(true);
+    }
+  }
+
+  // ===================== ТОСТ =====================
   let toastTimer = null;
   function showWinToast(mult, amount) {
     winMult.textContent = `${mult.toFixed(2)}x`;
@@ -852,8 +894,7 @@ input{font-family:inherit;}
   }
 
   // ===================== КОНФЕТТИ =====================
-  let confettiParticles = [];
-  let confettiRAF = null;
+  let confettiParticles = [], confettiRAF = null;
   function resizeConfetti() {
     confettiCanvas.width = window.innerWidth;
     confettiCanvas.height = window.innerHeight;
@@ -863,148 +904,164 @@ input{font-family:inherit;}
 
   function launchConfetti() {
     const colors = ["#F5C94B", "#7C5CFF", "#38E1C6", "#FF9DB2"];
-    for (let i = 0; i < 60; i++) {
+    for (let i = 0; i < 50; i++) {
       confettiParticles.push({
         x: confettiCanvas.width / 2 + (Math.random() - 0.5) * 120,
         y: 90,
         vx: (Math.random() - 0.5) * 6,
         vy: Math.random() * -6 - 2,
         size: Math.random() * 5 + 3,
-        color: colors[Math.floor(Math.random() * colors.length)],
+        color: colors[(Math.random() * colors.length) | 0],
         life: 0,
       });
     }
     if (!confettiRAF) confettiRAF = requestAnimationFrame(tickConfetti);
   }
-
   function tickConfetti() {
     cctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
     confettiParticles.forEach((p) => {
-      p.vy += 0.18;
-      p.x += p.vx;
-      p.y += p.vy;
-      p.life += 1;
-      cctx.globalAlpha = Math.max(0, 1 - p.life / 90);
+      p.vy += 0.18; p.x += p.vx; p.y += p.vy; p.life++;
+      cctx.globalAlpha = Math.max(0, 1 - p.life / 80);
       cctx.fillStyle = p.color;
       cctx.fillRect(p.x, p.y, p.size, p.size);
     });
-    confettiParticles = confettiParticles.filter((p) => p.life < 90);
+    confettiParticles = confettiParticles.filter((p) => p.life < 80);
     cctx.globalAlpha = 1;
-    if (confettiParticles.length > 0) {
-      confettiRAF = requestAnimationFrame(tickConfetti);
-    } else {
-      confettiRAF = null;
-    }
+    confettiRAF = confettiParticles.length ? requestAnimationFrame(tickConfetti) : null;
   }
 
-  // ===================== АНИМАЦИЯ РАКЕТЫ =====================
+  // ===================== ГРАФИКА РАКЕТЫ =====================
   function resizeCanvas() {
     const rect = rocketCanvas.parentElement.getBoundingClientRect();
-    rocketCanvas.width = rect.width * devicePixelRatio;
-    rocketCanvas.height = rect.height * devicePixelRatio;
-    rocketCanvas.style.width = rect.width + "px";
-    rocketCanvas.style.height = rect.height + "px";
-    rctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    rocketCanvas.width = Math.max(1, rect.width * dpr);
+    rocketCanvas.height = Math.max(1, rect.height * dpr);
+    rctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
-  window.addEventListener("resize", () => { if (!crashView.hidden) resizeCanvas(); });
+  new ResizeObserver(() => { if (!crashView.hidden) { resizeCanvas(); requestDraw(); } }).observe(rocketCanvas.parentElement);
 
-  function scheduleRocketDraw(state) {
-    if (drawPending) return;
-    drawPending = true;
-    requestAnimationFrame(() => {
-      drawPending = false;
-      if (!crashView.hidden && currentState) drawRocket(currentState);
-    });
-  }
-
+  // Рисуем кривую АНАЛИТИЧЕСКИ (без накопления точек — нет лагов)
   function drawRocket(state) {
-    const w = rocketCanvas.clientWidth;
-    const h = rocketCanvas.clientHeight;
+    const w = rocketCanvas.clientWidth, h = rocketCanvas.clientHeight;
     rctx.clearRect(0, 0, w, h);
 
+    // фоновая сетка
+    rctx.strokeStyle = "rgba(124,92,255,0.07)";
+    rctx.lineWidth = 1;
+    for (let i = 1; i <= 3; i++) {
+      const y = (h / 4) * i;
+      rctx.beginPath(); rctx.moveTo(0, y); rctx.lineTo(w, y); rctx.stroke();
+    }
+
     if (state.phase === "waiting") {
-      curvePoints = [];
+      // ракета на старте
+      drawEmoji("🚀", 30, h - 34, 22, -0.5);
       return;
     }
 
-    const mult = state.phase === "crashed" ? state.crash_point : state.multiplier;
-    curvePoints.push(mult);
-    if (curvePoints.length > 400) curvePoints.shift();
+    const crashed = state.phase === "crashed";
+    const m = crashed ? state.crash_point : localMultiplier();
 
-    const maxMult = Math.max(2, mult * 1.15);
-    const padding = 24;
-    const toXY = (i, m) => {
-      const x = padding + (i / Math.max(1, curvePoints.length - 1)) * (w - padding * 2) * 0.85;
-      const y = h - padding - (Math.min(m, maxMult) / maxMult) * (h - padding * 2);
-      return [x, y];
-    };
+    const padL = 20, padR = 46, padB = 22, padT = 20;
+    const plotW = w - padL - padR, plotH = h - padT - padB;
+    const maxM = Math.max(2, m * 1.12);
+    const N = 40;
 
-    // трасса
+    const pts = [];
+    for (let i = 0; i <= N; i++) {
+      const f = i / N;
+      const mi = Math.pow(m, f); // экспонента от 1 до m
+      pts.push([
+        padL + f * plotW * 0.88,
+        padT + plotH - ((mi - 1) / (maxM - 1)) * plotH,
+      ]);
+    }
+
+    // заливка
     rctx.beginPath();
-    curvePoints.forEach((m, i) => {
-      const [x, y] = toXY(i, m);
-      if (i === 0) rctx.moveTo(x, y);
-      else rctx.lineTo(x, y);
-    });
+    pts.forEach(([x, y], i) => i ? rctx.lineTo(x, y) : rctx.moveTo(x, y));
+    rctx.lineTo(pts[pts.length - 1][0], h - padB);
+    rctx.lineTo(pts[0][0], h - padB);
+    rctx.closePath();
+    rctx.fillStyle = crashed ? "rgba(255,77,109,0.08)" : "rgba(124,92,255,0.09)";
+    rctx.fill();
+
+    // линия
+    rctx.beginPath();
+    pts.forEach(([x, y], i) => i ? rctx.lineTo(x, y) : rctx.moveTo(x, y));
     const grad = rctx.createLinearGradient(0, 0, w, 0);
     grad.addColorStop(0, "#38E1C6");
-    grad.addColorStop(1, state.phase === "crashed" ? "#FF4D6D" : "#7C5CFF");
+    grad.addColorStop(1, crashed ? "#FF4D6D" : "#7C5CFF");
     rctx.strokeStyle = grad;
     rctx.lineWidth = 3;
     rctx.lineJoin = "round";
     rctx.stroke();
 
-    // заливка под трассой
-    if (curvePoints.length > 1) {
-      const [lastX] = toXY(curvePoints.length - 1, curvePoints[curvePoints.length - 1]);
-      rctx.lineTo(lastX, h - padding);
-      rctx.lineTo(padding, h - padding);
-      rctx.closePath();
-      rctx.fillStyle = "rgba(124,92,255,0.08)";
-      rctx.fill();
-    }
+    // точка на конце
+    const [hx, hy] = pts[pts.length - 1];
+    rctx.beginPath();
+    rctx.arc(hx, hy, 6, 0, Math.PI * 2);
+    rctx.fillStyle = crashed ? "#FF4D6D" : "#F5C94B";
+    rctx.shadowColor = rctx.fillStyle;
+    rctx.shadowBlur = 12;
+    rctx.fill();
+    rctx.shadowBlur = 0;
 
-    // ракета/точка на конце
-    if (curvePoints.length > 0) {
-      const [x, y] = toXY(curvePoints.length - 1, curvePoints[curvePoints.length - 1]);
-      rctx.beginPath();
-      rctx.arc(x, y, 6, 0, Math.PI * 2);
-      rctx.fillStyle = state.phase === "crashed" ? "#FF4D6D" : "#F5C94B";
-      rctx.shadowColor = state.phase === "crashed" ? "#FF4D6D" : "#F5C94B";
-      rctx.shadowBlur = 16;
-      rctx.fill();
-      rctx.shadowBlur = 0;
-
-      if (state.phase === "running") {
-        rctx.font = "20px sans-serif";
-        rctx.textAlign = "center";
-        rctx.textBaseline = "middle";
-        rctx.save();
-        rctx.translate(x, y - 14);
-        rctx.rotate(-0.5);
-        rctx.fillText("🚀", 0, 0);
-        rctx.restore();
-      }
+    if (crashed) {
+      drawEmoji("💥", hx, hy, 26, 0);
+    } else {
+      // наклон по касательной
+      const [px, py] = pts[pts.length - 2] || pts[0];
+      const angle = Math.atan2(hy - py, hx - px);
+      drawEmoji("🚀", hx, hy, 20, angle + Math.PI / 4);
     }
   }
 
-
-  let visualRAF = null;
-  function visualLoop() {
-    if (!crashView.hidden && currentState?.phase === "running") {
-      scheduleRocketDraw(currentState);
-    }
-    visualRAF = requestAnimationFrame(visualLoop);
+  function drawEmoji(ch, x, y, size, rot) {
+    rctx.save();
+    rctx.translate(x, y);
+    rctx.rotate(rot);
+    rctx.font = `${size}px sans-serif`;
+    rctx.textAlign = "center";
+    rctx.textBaseline = "middle";
+    rctx.fillText(ch, 0, 0);
+    rctx.restore();
   }
-  visualRAF = requestAnimationFrame(visualLoop);
 
-  // ===================== СТАРТ =====================
-  setInterval(() => {
-    if (!appScreen.hidden && localStorage.getItem("romb_session_token")) fetchProfile().catch(() => {});
-  }, 3000);
+  // ===================== ЦИКЛ ОТРИСОВКИ (только когда нужен) =====================
+  let rafId = null;
+  function requestDraw() {
+    if (crashView.hidden || !currentState) return;
+    if (currentState.phase === "running") {
+      if (rafId == null) rafId = requestAnimationFrame(loop);
+    } else {
+      drawRocket(currentState);
+    }
+  }
+  function loop() {
+    rafId = null;
+    if (crashView.hidden || !currentState) return;
+    if (currentState.phase !== "running") { drawRocket(currentState); return; }
+
+    const m = localMultiplier();
+    multiplierValue.textContent = `${m.toFixed(2)}x`;
+
+    if (myBetActive) {
+      const potential = Math.floor(myBetAmount * m);
+      actionBtn.textContent = `Забрать ${fmt(potential)}`;
+      maybeAutoCashout(m);
+    }
+    drawRocket(currentState);
+    rafId = requestAnimationFrame(loop);
+  }
+
+  // ===================== ЗАПУСК =====================
+  setInterval(() => { // страховочный редкий синк
+    if (!appScreen.hidden && localStorage.getItem("romb_session_token")) syncProfileSoon();
+  }, 15000);
+
   bootApp();
 })();
-
 </script>
 </body>
 </html>
