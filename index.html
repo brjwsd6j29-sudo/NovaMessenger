@@ -1,155 +1,323 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Краш | Lira</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-        body { background: #12131C; color: #FFF; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; }
-        .card { background: #1E202D; border-radius: 16px; padding: 20px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
-        .balance-box { font-size: 18px; color: #8E92A8; margin-bottom: 15px; }
-        .balance-box span { color: #4EAC6D; font-weight: bold; }
-        .crash-display { height: 150px; background: #171822; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 48px; font-weight: bold; color: #5865F2; margin-bottom: 20px; border: 1px solid #2E3245; }
-        .crash-display.crashed { color: #FF4D4D; }
-        .input-group { margin-bottom: 15px; text-align: left; }
-        .input-group label { display: block; font-size: 12px; color: #8E92A8; margin-bottom: 5px; }
-        .input-group input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #2E3245; background: #171822; color: #FFF; font-size: 16px; outline: none; }
-        .btn { width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .btn-start { background: #5865F2; color: white; }
-        .btn-take { background: #4EAC6D; color: white; display: none; }
-        .btn:disabled { background: #3A3D4D; cursor: not-allowed; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DCOIN — Game Center</title>
+<style>
+:root{
+  --bg:#080a12;--panel:#101522;--panel2:#151b2b;--line:#242c40;
+  --text:#f5f7ff;--muted:#8993aa;--accent:#7c5cff;--accent2:#24d6a5;
+  --danger:#ff5577;--gold:#ffc857;--shadow:0 20px 60px #0008;
+}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 20% 0%,#241b52 0,#080a12 38%),#080a12;color:var(--text);font-family:Inter,system-ui,Arial,sans-serif;min-height:100vh}
+button,input{font:inherit}
+button{cursor:pointer;border:0}
+.hidden{display:none!important}
+.app{display:flex;min-height:100vh}
+.sidebar{width:250px;background:#0b0e18ee;border-right:1px solid var(--line);padding:22px 14px;position:fixed;inset:0 auto 0 0;z-index:20;backdrop-filter:blur(16px)}
+.logo{font-size:25px;font-weight:900;padding:8px 12px 25px;letter-spacing:.5px}.logo span{color:var(--accent)}
+.nav{display:grid;gap:7px}.nav button{background:transparent;color:#aeb7ca;text-align:left;padding:13px 14px;border-radius:12px;font-weight:700}.nav button:hover,.nav button.active{background:#171d30;color:#fff}.nav button.active{box-shadow:inset 3px 0 var(--accent)}
+.user-mini{position:absolute;bottom:18px;left:14px;right:14px;padding:12px;border:1px solid var(--line);border-radius:15px;background:#111625}
+.avatar{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),#35c8ff);font-weight:900}
+.main{margin-left:250px;width:calc(100% - 250px);padding:28px;max-width:1700px}
+.top{display:flex;justify-content:space-between;gap:15px;align-items:center;margin-bottom:24px}.top h1{margin:0;font-size:30px}.top-right{display:flex;gap:10px;align-items:center}
+.balance{background:#111827;border:1px solid var(--line);padding:10px 15px;border-radius:13px;font-weight:800}.balance b{color:var(--gold)}
+.btn{padding:11px 16px;border-radius:11px;background:#20283c;color:#fff;font-weight:800}.btn:hover{filter:brightness(1.15)}.primary{background:linear-gradient(135deg,#7358ff,#9b5cff)}.green{background:linear-gradient(135deg,#16b990,#28d9a8)}.red{background:#3a1723;color:#ff9db0}
+.grid{display:grid;gap:16px}.games{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}.card{background:linear-gradient(180deg,#121827,#0f1420);border:1px solid var(--line);border-radius:18px;padding:19px;box-shadow:var(--shadow)}.card h3{margin:0 0 8px}.card p{color:var(--muted);line-height:1.5;margin:6px 0 15px}.game-icon{font-size:38px;margin-bottom:14px}.game-card{min-height:190px;transition:.18s}.game-card:hover{transform:translateY(-3px);border-color:#4b5774}.tag{font-size:11px;padding:4px 8px;border-radius:8px;background:#20283a;color:#aeb8ce}
+.hero{padding:28px;background:linear-gradient(135deg,#171b35,#101826);border:1px solid var(--line);border-radius:22px;margin-bottom:20px}.hero h2{font-size:32px;margin:0 0 8px}.hero p{color:var(--muted);max-width:700px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}.stat{padding:17px;background:#111625;border:1px solid var(--line);border-radius:15px}.stat small{color:var(--muted)}.stat strong{display:block;font-size:24px;margin-top:7px}
+.two{grid-template-columns:1.2fr .8fr}.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #1f2637}.row:last-child{border-bottom:0}
+.modal{position:fixed;inset:0;background:#000b;display:grid;place-items:center;z-index:100;padding:18px}.modal-box{width:min(620px,100%);max-height:92vh;overflow:auto;background:#101522;border:1px solid #313b55;border-radius:20px;padding:24px;box-shadow:0 30px 100px #000d}
+input,select{width:100%;background:#0b101c;color:#fff;border:1px solid #2b3449;padding:12px;border-radius:10px;outline:0;margin:6px 0 12px}input:focus{border-color:var(--accent)}label{color:#9fa8bb;font-size:13px}.actions{display:flex;gap:9px;flex-wrap:wrap}.close{float:right;background:#222a3b;color:#bbb;border-radius:9px;padding:7px 10px}
+.auth{min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at 50% 10%,#2a1c65,#080a12 50%)}.auth-box{width:min(470px,100%);background:#101522;border:1px solid #2a3348;border-radius:22px;padding:30px;box-shadow:var(--shadow)}.auth-logo{text-align:center;font-size:32px;font-weight:900;margin-bottom:8px}.auth-logo span{color:var(--accent)}.auth-sub{text-align:center;color:var(--muted);margin-bottom:25px}.tabs{display:flex;background:#0a0f19;border-radius:12px;padding:4px;margin-bottom:20px}.tabs button{flex:1;background:transparent;color:#8993aa;padding:10px;border-radius:9px}.tabs button.on{background:#20283a;color:#fff}.google{width:100%;background:#fff;color:#111;padding:12px;border-radius:10px;font-weight:800;margin-top:5px}.or{text-align:center;color:#667086;margin:15px}.small{font-size:12px;color:#707b91;line-height:1.5}
+.toast{position:fixed;right:20px;bottom:20px;z-index:300;background:#151c2b;border:1px solid #36415b;padding:13px 16px;border-radius:12px;box-shadow:var(--shadow);display:none}.toast.show{display:block}
+.game-area{min-height:390px;display:grid;place-items:center}.crash-wrap{width:min(760px,100%)}.crash-chart{height:250px;border:1px solid var(--line);border-radius:15px;background:linear-gradient(180deg,#11182a,#0b101b);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}.mult{font-size:64px;font-weight:1000}.mult.live{color:var(--accent2)}.mult.dead{color:var(--danger)}
+.plinko{display:grid;gap:8px;justify-content:center;padding:15px}.pegs{font-size:21px;letter-spacing:6px;color:#7f8ba5;text-align:center}.bins{display:flex;gap:5px;justify-content:center}.bin{width:48px;height:42px;display:grid;place-items:center;background:#1b2437;border-radius:8px;font-size:12px}.mine-grid{display:grid;grid-template-columns:repeat(5,58px);gap:8px;justify-content:center}.mine-cell{height:58px;border-radius:10px;background:#1a2234;color:#fff;font-size:23px;border:1px solid #29344c}.mine-cell:hover{background:#222d44}.mine-cell.open{background:#172f35}.mine-cell.bomb{background:#461c2b}
+.coin{color:var(--gold)}
+.tower{display:grid;gap:9px;width:min(600px,100%)}.tower-row{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.tower-cell{height:52px;border-radius:10px;background:#1b2435;display:grid;place-items:center;font-size:20px;border:1px solid #29344c}.tower-cell:hover{background:#2a3550}.tower-cell.safe{background:#143b34}.tower-cell.hit{background:#4a1c2c}
+.flip{display:flex;justify-content:center;align-items:center;height:240px}.coin-big{width:150px;height:150px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 30%,#ffe28a,#c98d24);color:#4b3100;font-size:48px;font-weight:900;border:8px solid #e5b84c;box-shadow:0 15px 40px #0008}
+.chat{height:500px;display:grid;grid-template-rows:1fr auto}.messages{overflow:auto;padding:5px}.msg{padding:10px 12px;background:#171e2e;border-radius:12px;margin:7px 0;max-width:80%}.msg.me{margin-left:auto;background:#292051}.chat-send{display:flex;gap:8px}.chat-send input{margin:0}
+.profile-head{display:flex;align-items:center;gap:15px}.big-avatar{width:75px;height:75px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),#24d6a5);font-size:27px;font-weight:900}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:12px;border-bottom:1px solid var(--line);font-size:14px}th{color:#8993aa}
+.admin-grid{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+@media(max-width:900px){.sidebar{width:70px;padding:15px 8px}.logo{font-size:0;text-align:center}.logo span{font-size:23px}.nav button{font-size:0;text-align:center}.nav button::first-letter{font-size:20px}.user-mini{padding:7px}.user-mini div:not(.avatar){display:none}.main{margin-left:70px;width:calc(100% - 70px);padding:18px}.stats{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}}
+@media(max-width:560px){.top{align-items:flex-start;flex-direction:column}.stats{grid-template-columns:1fr 1fr}.mine-grid{grid-template-columns:repeat(5,48px)}.mine-cell{height:48px}.hero h2{font-size:25px}}
+</style>
 </head>
 <body>
 
-<div class="card">
-    <h2>🚀 Игра «Краш»</h2>
-    <div class="balance-box">Баланс: <span id="balance">0</span> LIRA</div>
-
-    <div class="input-group" id="idInputGroup" style="display: none;">
-        <label>Ваш Telegram ID:</label>
-        <input type="number" id="manualUserId" placeholder="Введите ID">
+<div id="auth" class="auth">
+  <div class="auth-box">
+    <div class="auth-logo">D<span>COIN</span></div>
+    <div class="auth-sub">Игровой центр с виртуальными Dcoins</div>
+    <div class="tabs">
+      <button id="tabLogin" class="on" onclick="authTab('login')">Вход</button>
+      <button id="tabReg" onclick="authTab('reg')">Регистрация</button>
     </div>
-
-    <div class="crash-display" id="multiplier">1.00x</div>
-
-    <div class="input-group">
-        <label>Ставка:</label>
-        <input type="number" id="betAmount" value="100" min="1">
+    <div id="loginForm">
+      <label>Логин</label><input id="loginUser" placeholder="Введите логин">
+      <label>Пароль</label><input id="loginPass" type="password" placeholder="Введите пароль">
+      <button class="btn primary" style="width:100%" onclick="login()">Войти</button>
+      <div class="or">или</div>
+      <button class="google" onclick="fakeGoogle()">🌐 Продолжить с Google</button>
+      <p class="small">Google-кнопка в этом одном HTML является демонстрационной. Настоящий Google OAuth требует серверной авторизации.</p>
     </div>
-
-    <button id="btnStart" class="btn btn-start" onclick="startGame()">Сделать ставку</button>
-    <button id="btnTake" class="btn btn-take" onclick="takeMoney()">Забрать</button>
+    <div id="regForm" class="hidden">
+      <label>Логин</label><input id="regUser" placeholder="Придумайте логин">
+      <label>Пароль</label><input id="regPass" type="password" placeholder="Не менее 6 символов">
+      <label>Повтор пароля</label><input id="regPass2" type="password">
+      <button class="btn primary" style="width:100%" onclick="register()">Создать аккаунт</button>
+      <div class="or">или</div>
+      <button class="google" onclick="fakeGoogle()">🌐 Регистрация через Google</button>
+    </div>
+  </div>
 </div>
 
+<div id="app" class="app hidden">
+  <aside class="sidebar">
+    <div class="logo">D<span>COIN</span></div>
+    <div class="nav">
+      <button onclick="showPage('home')" data-page="home">🏠 Главная</button>
+      <button onclick="showPage('games')" data-page="games">🎮 Игры</button>
+      <button onclick="showPage('profile')" data-page="profile">👤 Профиль</button>
+      <button onclick="showPage('transfer')" data-page="transfer">💸 Перевод</button>
+      <button onclick="showPage('chat')" data-page="chat">💬 Чат</button>
+      <button onclick="showPage('history')" data-page="history">📜 История</button>
+      <button onclick="showPage('admin')" data-page="admin" id="adminNav" class="hidden">🛡️ Админ-панель</button>
+    </div>
+    <div class="user-mini">
+      <div style="display:flex;gap:10px;align-items:center">
+        <div id="miniAvatar" class="avatar">D</div><div><b id="miniName">Player</b><div style="font-size:12px;color:#7e899e">Игрок</div></div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="top">
+      <div><h1 id="pageTitle">Главная</h1><div style="color:#737e94;margin-top:4px">Добро пожаловать в Dcoin Game Center</div></div>
+      <div class="top-right">
+        <div class="balance">🪙 <b id="balance">0</b> Dcoins</div>
+        <button class="btn" onclick="logout()">Выйти</button>
+      </div>
+    </div>
+
+    <section id="page-home" class="page">
+      <div class="hero">
+        <h2>Играй. Рискуй. Собирай Dcoins.</h2>
+        <p>Краш, Plinko, Мины 5×5, Орёл и решка и Башня. Все данные демонстрационного аккаунта сохраняются в localStorage этого браузера.</p>
+        <button class="btn primary" onclick="showPage('games')">🎮 Открыть игры</button>
+      </div>
+      <div class="stats">
+        <div class="stat"><small>Баланс</small><strong id="homeBal">0</strong></div>
+        <div class="stat"><small>Игр сыграно</small><strong id="played">0</strong></div>
+        <div class="stat"><small>Выиграно</small><strong id="won">0</strong></div>
+        <div class="stat"><small>Уровень</small><strong id="level">1</strong></div>
+      </div>
+      <div class="card"><h3>🔥 Популярные игры</h3><div id="homeGames" class="grid games"></div></div>
+    </section>
+
+    <section id="page-games" class="page hidden">
+      <div class="grid games" id="gamesGrid"></div>
+    </section>
+
+    <section id="page-profile" class="page hidden">
+      <div class="grid two">
+        <div class="card">
+          <div class="profile-head"><div id="bigAvatar" class="big-avatar">D</div><div><h2 id="profileName">Player</h2><span class="tag">Уровень <b id="profileLevel">1</b></span></div></div>
+          <hr style="border-color:#242c40;border-width:1px 0 0;margin:20px 0">
+          <div class="row"><span>🪙 Баланс</span><b class="coin" id="profileBal">0</b></div>
+          <div class="row"><span>🎮 Игр</span><b id="profilePlayed">0</b></div>
+          <div class="row"><span>🏆 Побед</span><b id="profileWon">0</b></div>
+          <div class="row"><span>📅 Регистрация</span><b id="profileReg">—</b></div>
+        </div>
+        <div class="card"><h3>Настройки профиля</h3><label>Отображаемое имя</label><input id="newName"><button class="btn primary" onclick="changeName()">Сохранить</button></div>
+      </div>
+    </section>
+
+    <section id="page-transfer" class="page hidden">
+      <div class="card" style="max-width:650px"><h2>💸 Перевод Dcoins</h2><p>Перевод между локальными аккаунтами этого браузера.</p>
+        <label>Получатель (логин)</label><input id="toUser" placeholder="Например: player2">
+        <label>Сумма</label><input id="toAmount" type="number" min="1" placeholder="1000">
+        <button class="btn green" onclick="transfer()">Отправить Dcoins</button>
+      </div>
+    </section>
+
+    <section id="page-chat" class="page hidden">
+      <div class="card chat"><div id="messages" class="messages"></div><div class="chat-send"><input id="chatInput" placeholder="Напишите сообщение..." onkeydown="if(event.key==='Enter')sendChat()"><button class="btn primary" onclick="sendChat()">Отправить</button></div></div>
+    </section>
+
+    <section id="page-history" class="page hidden">
+      <div class="card"><h2>📜 История игр</h2><div style="overflow:auto"><table><thead><tr><th>Игра</th><th>Ставка</th><th>Результат</th><th>Выплата</th><th>Время</th></tr></thead><tbody id="historyBody"></tbody></table></div></div>
+    </section>
+
+    <section id="page-admin" class="page hidden">
+      <div class="hero"><h2>🛡️ Админ-панель</h2><p>Управление демонстрационными аккаунтами и экономикой Dcoins.</p></div>
+      <div class="grid admin-grid">
+        <div class="card"><h3>👥 Игроки</h3><strong style="font-size:28px" id="adminUsers">0</strong><p>Зарегистрировано локально</p></div>
+        <div class="card"><h3>🪙 Dcoins в системе</h3><strong style="font-size:28px" id="adminCoins">0</strong><p>Сумма балансов</p></div>
+        <div class="card"><h3>⚡ Выдать Dcoins</h3><input id="giveUser" placeholder="Логин"><input id="giveAmount" type="number" placeholder="Сумма"><button class="btn green" onclick="adminGive()">Выдать</button></div>
+        <div class="card"><h3>🚫 Управление</h3><button class="btn red" onclick="resetDemo()">Сбросить локальную базу</button></div>
+      </div>
+      <div class="card" style="margin-top:16px"><h3>Список игроков</h3><div style="overflow:auto"><table><thead><tr><th>Логин</th><th>Баланс</th><th>Игр</th><th>Побед</th></tr></thead><tbody id="adminBody"></tbody></table></div></div>
+    </section>
+  </main>
+</div>
+
+<div id="gameModal" class="modal hidden"><div class="modal-box"><button class="close" onclick="closeGame()">✕</button><div id="gameContent"></div></div></div>
+<div id="toast" class="toast"></div>
+
 <script>
-    const SERVER_URL = "https://your-domain.com"; // ЗАМЕНИТЕ НА URL ВАШЕГО СЕРВЕРА
-    let tg = window.Telegram.WebApp;
-    let userId = null;
-    let currentMultiplier = 1.00;
-    let crashMultiplier = 1.00;
-    let gameInterval = null;
-    let isPlaying = false;
+const ADMIN_USER="Azvaren";
+const ADMIN_PASS="Azvaren7895911575";
+const START_BALANCE=10000;
+let current=null, gameTimer=null;
 
-    // Определение ID пользователя
-    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-        userId = tg.initDataUnsafe.user.id;
-    } else {
-        document.getElementById('idInputGroup').style.display = 'block';
-    }
+const gameDefs={
+ crash:{icon:"📈",name:"Краш",desc:"Растущий множитель. Забери выплату до краша.",tag:"Risk"},
+ plinko:{icon:"🔴",name:"Plinko",desc:"Шар падает через пирамиду и попадает в множитель.",tag:"Arcade"},
+ mines:{icon:"💣",name:"Мины 5×5",desc:"Открывай клетки, избегая мин. Чем дальше — тем выше множитель.",tag:"Classic"},
+ flip:{icon:"🪙",name:"Орёл и решка",desc:"Выбери сторону монеты и попробуй удвоить ставку.",tag:"50/50"},
+ tower:{icon:"🗼",name:"Башня",desc:"Поднимайся по этажам, выбирая безопасную клетку. 1–4 мины.",tag:"Tower"}
+};
 
-    async function loadBalance() {
-        let activeId = userId || document.getElementById('manualUserId').value;
-        if (!activeId) return;
-        
-        try {
-            let res = await fetch(`${SERVER_URL}/get_balance?user_id=${activeId}`);
-            let data = await res.json();
-            if (data.status === 'ok') {
-                document.getElementById('balance').textContent = data.balance;
-            }
-        } catch (e) {
-            console.error("Ошибка загрузки баланса", e);
-        }
-    }
+function db(){return JSON.parse(localStorage.getItem("dcoin_users")||"{}")}
+function saveDB(x){localStorage.setItem("dcoin_users",JSON.stringify(x))}
+function chats(){return JSON.parse(localStorage.getItem("dcoin_chat")||"[]")}
+function user(){return current?db()[current]:null}
+function fmt(n){return Math.floor(n).toLocaleString("ru-RU")}
+function toast(t){let e=document.getElementById("toast");e.textContent=t;e.classList.add("show");setTimeout(()=>e.classList.remove("show"),2300)}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
 
-    async function startGame() {
-        let activeId = userId || document.getElementById('manualUserId').value;
-        let bet = parseFloat(document.getElementById('betAmount').value);
+function authTab(t){
+ document.getElementById("loginForm").classList.toggle("hidden",t!=="login");document.getElementById("regForm").classList.toggle("hidden",t!=="reg");
+ document.getElementById("tabLogin").classList.toggle("on",t==="login");document.getElementById("tabReg").classList.toggle("on",t==="reg");
+}
+function register(){
+ let n=document.getElementById("regUser").value.trim(),p=document.getElementById("regPass").value,p2=document.getElementById("regPass2").value;
+ if(!/^[a-zA-Z0-9_А-Яа-я-]{3,24}$/.test(n))return toast("❌ Логин: 3–24 символа");
+ if(p.length<6||p!==p2)return toast("❌ Проверьте пароль");
+ let d=db();if(d[n])return toast("❌ Такой логин уже существует");
+ d[n]={login:n,password:p,balance:START_BALANCE,played:0,won:0,level:1,reg:new Date().toLocaleDateString("ru-RU"),history:[],name:n};
+ saveDB(d);current=n;enter();toast("✅ Аккаунт создан! +10 000 Dcoins");
+}
+function login(){
+ let n=document.getElementById("loginUser").value.trim(),p=document.getElementById("loginPass").value;
+ if(n===ADMIN_USER&&p===ADMIN_PASS){let d=db();if(!d[n])d[n]={login:n,password:p,balance:999999999,played:0,won:0,level:99,reg:new Date().toLocaleDateString("ru-RU"),history:[],name:"Администратор"};saveDB(d)}
+ let u=db()[n];if(!u||u.password!==p)return toast("❌ Неверный логин или пароль");
+ current=n;enter();
+}
+function fakeGoogle(){
+ let d=db(),base="GooglePlayer",n=base,ix=1;while(d[n])n=base+(ix++);
+ d[n]={login:n,password:"google-demo",balance:START_BALANCE,played:0,won:0,level:1,reg:new Date().toLocaleDateString("ru-RU"),history:[],name:"Google Player"};
+ saveDB(d);current=n;enter();toast("🌐 Создан демо Google-аккаунт");
+}
+function enter(){
+ document.getElementById("auth").classList.add("hidden");document.getElementById("app").classList.remove("hidden");
+ document.getElementById("adminNav").classList.toggle("hidden",current!==ADMIN_USER);refresh();showPage("home");
+}
+function logout(){current=null;document.getElementById("app").classList.add("hidden");document.getElementById("auth").classList.remove("hidden")}
+function refresh(){
+ let u=user();if(!u)return;
+ document.getElementById("balance").textContent=fmt(u.balance);document.getElementById("homeBal").textContent=fmt(u.balance);
+ document.getElementById("played").textContent=u.played;document.getElementById("won").textContent=u.won;document.getElementById("level").textContent=u.level;
+ document.getElementById("miniName").textContent=u.name;document.getElementById("miniAvatar").textContent=(u.name||"D")[0].toUpperCase();
+ document.getElementById("bigAvatar").textContent=(u.name||"D")[0].toUpperCase();document.getElementById("profileName").textContent=u.name;
+ document.getElementById("profileLevel").textContent=u.level;document.getElementById("profileBal").textContent=fmt(u.balance);document.getElementById("profilePlayed").textContent=u.played;document.getElementById("profileWon").textContent=u.won;document.getElementById("profileReg").textContent=u.reg;document.getElementById("newName").value=u.name;
+ renderHistory();renderChat();if(current===ADMIN_USER)renderAdmin();
+}
+function showPage(p){
+ document.querySelectorAll(".page").forEach(x=>x.classList.add("hidden"));document.getElementById("page-"+p).classList.remove("hidden");
+ document.querySelectorAll(".nav button").forEach(x=>x.classList.toggle("active",x.dataset.page===p));
+ document.getElementById("pageTitle").textContent={home:"Главная",games:"Игры",profile:"Профиль",transfer:"Перевод",chat:"Чат",history:"История",admin:"Админ-панель"}[p];
+ if(p==="games")renderGames();if(p==="home")renderHome();
+}
+function gameCard(k){let g=gameDefs[k];return `<div class="card game-card"><div class="game-icon">${g.icon}</div><h3>${g.name} <span class="tag">${g.tag}</span></h3><p>${g.desc}</p><button class="btn primary" onclick="openGame('${k}')">Играть</button></div>`}
+function renderGames(){document.getElementById("gamesGrid").innerHTML=Object.keys(gameDefs).map(gameCard).join("")}
+function renderHome(){document.getElementById("homeGames").innerHTML=Object.keys(gameDefs).map(gameCard).join("")}
+renderGames();
 
-        if (!activeId) return alert("Введите Ваш Telegram ID!");
-        if (!bet || bet <= 0) return alert("Введите корректную ставку!");
-
-        // Списание ставки на сервере
-        let res = await fetch(`${SERVER_URL}/start_crash`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ user_id: activeId, bet: bet })
-        });
-        let data = await res.json();
-
-        if (data.status !== 'ok') {
-            return alert(data.message || "Недостаточно средств!");
-        }
-
-        document.getElementById('balance').textContent = data.new_balance;
-        crashMultiplier = data.crash_point;
-        currentMultiplier = 1.00;
-        isPlaying = true;
-
-        // Переключение кнопок
-        document.getElementById('btnStart').style.display = 'none';
-        document.getElementById('btnTake').style.display = 'block';
-        document.getElementById('multiplier').classList.remove('crashed');
-
-        // Запуск роста коэффициента
-        gameInterval = setInterval(() => {
-            currentMultiplier += 0.01 + (currentMultiplier * 0.005);
-            if (currentMultiplier >= crashMultiplier) {
-                endGame(false);
-            } else {
-                document.getElementById('multiplier').textContent = currentMultiplier.toFixed(2) + 'x';
-            }
-        }, 100);
-    }
-
-    async function takeMoney() {
-        if (!isPlaying) return;
-        clearInterval(gameInterval);
-        isPlaying = false;
-
-        let activeId = userId || document.getElementById('manualUserId').value;
-        let bet = parseFloat(document.getElementById('betAmount').value);
-        let winAmount = bet * currentMultiplier;
-
-        let res = await fetch(`${SERVER_URL}/win_crash`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ user_id: activeId, win_amount: winAmount, coef: currentMultiplier.toFixed(2) })
-        });
-        let data = await res.json();
-
-        document.getElementById('balance').textContent = data.new_balance;
-        alert(`Вы выиграли ${winAmount.toFixed(0)} LIRA! (x${currentMultiplier.toFixed(2)})`);
-        resetUI();
-    }
-
-    function endGame(isWin) {
-        clearInterval(gameInterval);
-        isPlaying = false;
-        document.getElementById('multiplier').textContent = crashMultiplier.toFixed(2) + 'x CRASH!';
-        document.getElementById('multiplier').classList.add('crashed');
-        resetUI();
-    }
-
-    function resetUI() {
-        document.getElementById('btnStart').style.display = 'block';
-        document.getElementById('btnTake').style.display = 'none';
-    }
-
-    setInterval(loadBalance, 3000); // Автообновление баланса каждые 3 сек
+function openGame(k){
+ document.getElementById("gameModal").classList.remove("hidden");let e=document.getElementById("gameContent");
+ let forms={
+ crash:`<h2>📈 Краш</h2><p>Сделайте ставку и заберите её до случайного краша.</p>${betInput("crashBet")}<div id="crashArea" class="game-area"><button class="btn primary" onclick="startCrash()">🚀 Запустить</button></div>`,
+ plinko:`<h2>🔴 Plinko</h2><p>Чем удачнее траектория, тем выше множитель.</p>${betInput("plinkoBet")}<div id="plinkoArea" class="game-area"><button class="btn primary" onclick="startPlinko()">🔴 Бросить шар</button></div>`,
+ mines:`<h2>💣 Мины 5×5</h2><p>Количество мин: 3. После каждой безопасной клетки множитель растёт.</p>${betInput("minesBet")}<div id="minesArea" class="game-area"><button class="btn primary" onclick="startMines()">💣 Начать</button></div>`,
+ flip:`<h2>🪙 Орёл и решка</h2><p>Угадайте сторону монеты. Выплата — x1.92.</p>${betInput("flipBet")}<div class="game-area"><div><div class="flip"><div id="coinBig" class="coin-big">?</div></div><div class="actions" style="justify-content:center"><button class="btn primary" onclick="startFlip('Орёл')">👑 Орёл</button><button class="btn primary" onclick="startFlip('Решка')">🪙 Решка</button></div></div></div>`,
+ tower:`<h2>🗼 Башня</h2><p>Как в твоей логике: 5 колонок, выбор клетки на каждом этаже, 1–4 мины.</p>${betInput("towerBet")}<label>Мин на этаж</label><select id="towerBombs"><option>1</option><option>2</option><option>3</option><option>4</option></select><div id="towerArea" class="game-area"><button class="btn primary" onclick="startTower()">🗼 Начать подъём</button></div>`
+ };
+ e.innerHTML=forms[k];
+}
+function closeGame(){clearInterval(gameTimer);document.getElementById("gameModal").classList.add("hidden")}
+function betInput(id){return `<label>Ставка (Dcoins)</label><input id="${id}" type="number" min="100" value="1000">`}
+function takeBet(id){let a=Number(document.getElementById(id).value),u=user();if(!Number.isFinite(a)||a<100)return null;if(a>u.balance)return null;u.balance-=a;saveDB(db());return a}
+function settle(game,bet,payout){
+ let d=db(),u=d[current];u.balance+=payout;u.played++;if(payout>0)u.won++;
+ u.history.unshift({game,bet,payout,win:payout>0,time:new Date().toLocaleString("ru-RU")});u.history=u.history.slice(0,100);
+ let lvl=1+Math.floor(u.played/20);u.level=Math.min(99,lvl);saveDB(d);refresh();
+}
+function failGame(game,bet){settle(game,bet,0)}
+function startCrash(){
+ let b=takeBet("crashBet");if(!b)return toast("❌ Ставка от 100 Dcoins и не выше баланса");
+ let a=document.getElementById("crashArea"),m=1.00,crashAt=1.1+Math.random()*6;
+ a.innerHTML=`<div class="crash-wrap"><div class="crash-chart"><div id="crashMult" class="mult live">x1.00</div></div><div class="actions" style="margin-top:12px;justify-content:center"><button class="btn green" onclick="cashCrash()">💰 Забрать</button></div></div>`;
+ window.crashState={b,m,crashAt,done:false};gameTimer=setInterval(()=>{let s=window.crashState;if(!s||s.done)return; s.m+=0.05+s.m*.012;document.getElementById("crashMult").textContent="x"+s.m.toFixed(2);if(s.m>=s.crashAt){s.done=true;clearInterval(gameTimer);document.getElementById("crashMult").className="mult dead";document.getElementById("crashMult").textContent="💥 x"+s.m.toFixed(2);failGame("Краш",s.b);toast("💥 Краш! Ставка потеряна")}},80);
+}
+function cashCrash(){let s=window.crashState;if(!s||s.done)return;s.done=true;clearInterval(gameTimer);let pay=Math.floor(s.b*s.m);settle("Краш",s.b,pay);toast("🎉 Вы забрали "+fmt(pay)+" Dcoins")}
+function startPlinko(){
+ let b=takeBet("plinkoBet");if(!b)return toast("❌ Недостаточно Dcoins или неверная ставка");
+ let mults=[0.2,.5,.8,1,1.5,2,1.5,1,.8,.5,.2],m=mults[Math.floor(Math.random()*mults.length)];
+ document.getElementById("plinkoArea").innerHTML=`<div class="plinko"><div class="pegs">• • • • • • •<br> • • • • • •<br>• • • • • • •<br> • • • • • •</div><div class="coin-big" style="width:70px;height:70px;font-size:22px;margin:auto">🪙</div><div class="bins">${mults.map(x=>`<div class="bin">${x}x</div>`).join("")}</div><h3 style="text-align:center">Результат: x${m}</h3><div style="text-align:center"><button class="btn primary" onclick="closeGame();settle('Plinko',${b},${Math.floor(b*m)})">Забрать результат</button></div></div>`;
+}
+function startFlip(side){
+ let b=takeBet("flipBet");if(!b)return toast("❌ Недостаточно Dcoins или неверная ставка");
+ let result=Math.random()<.5?"Орёл":"Решка";let win=result===side,pay=win?Math.floor(b*1.92):0;
+ document.getElementById("coinBig").textContent=result==="Орёл"?"👑":"🪙";document.getElementById("coinBig").style.transform="rotateY(720deg)";
+ setTimeout(()=>{settle("Орёл и решка",b,pay);toast(win?"🎉 Победа! +"+fmt(pay):"❌ Не угадали");},650);
+}
+function startMines(){
+ let b=takeBet("minesBet");if(!b)return toast("❌ Недостаточно Dcoins или неверная ставка");
+ let bombs=new Set();while(bombs.size<3)bombs.add(Math.floor(Math.random()*25));let opened=new Set(),mult=1;
+ let area=document.getElementById("minesArea");area.innerHTML=`<div><div id="mineGrid" class="mine-grid"></div><div style="text-align:center;margin-top:12px">Множитель: <b id="mineMult">x1.00</b> <button class="btn green" onclick="cashMines()">Забрать</button></div></div>`;
+ window.mineState={b,bombs,opened,mult,done:false};renderMineGrid();
+}
+function renderMineGrid(){
+ let s=window.mineState,g=document.getElementById("mineGrid");if(!g)return;g.innerHTML="";
+ for(let i=0;i<25;i++){let x=document.createElement("button");x.className="mine-cell";x.textContent=s.opened.has(i)?"💎":"?";x.onclick=()=>openMine(i);if(s.done&&s.bombs.has(i)){x.textContent="💣";x.classList.add("bomb")}g.appendChild(x)}
+ document.getElementById("mineMult").textContent="x"+s.mult.toFixed(2);
+}
+function openMine(i){let s=window.mineState;if(!s||s.done||s.opened.has(i))return;if(s.bombs.has(i)){s.done=true;renderMineGrid();failGame("Мины 5×5",s.b);toast("💥 Мина! Ставка потеряна");return}s.opened.add(i);s.mult*=1.18;renderMineGrid()}
+function cashMines(){let s=window.mineState;if(!s||s.done||!s.opened.size)return;s.done=true;let p=Math.floor(s.b*s.mult);settle("Мины 5×5",s.b,p);toast("🎉 Выплата "+fmt(p))}
+function startTower(){
+ let b=takeBet("towerBet");if(!b)return toast("❌ Недостаточно Dcoins или неверная ставка");
+ let bc=Number(document.getElementById("towerBombs").value),rows=8,bombs=[];for(let r=0;r<rows;r++){let set=new Set();while(set.size<bc)set.add(Math.floor(Math.random()*5));bombs.push(set)}
+ window.towerState={b,bc,rows,bombs,lvl:0,history:{},mult:1,done:false};renderTower();
+}
+function renderTower(){
+ let s=window.towerState,area=document.getElementById("towerArea");if(!area)return;
+ let html=`<div class="tower"><div style="text-align:center">Этаж <b>${s.lvl+1}/${s.rows}</b> · Множитель <b>x${s.mult.toFixed(2)}</b></div>`;
+ for(let r=s.rows-1;r>=0;r--){html+=`<div class="tower-row">`;for(let c=0;c<5;c++){let st=s.history[r]&&s.history[r][c];html+=`<button class="tower-cell ${st==='safe'?'safe':''} ${st==='hit'?'hit':''}" ${r===s.lvl&&!s.done?'onclick="towerPick('+c+')"' :'disabled'}>${st==='safe'?'💎':st==='hit'?'💣':r<s.lvl?'·':'?'}</button>`}html+="</div>"}html+=`<div class="actions" style="justify-content:center"><button class="btn green" onclick="cashTower()">💰 Забрать ${fmt(Math.floor(s.b*s.mult))}</button></div></div>`;area.innerHTML=html;
+}
+function towerPick(c){
+ let s=window.towerState;if(!s||s.done)return;if(s.bombs[s.lvl].has(c)){s.history[s.lvl]={[c]:"hit"};s.done=true;renderTower();failGame("Башня",s.b);toast("💥 Мина на этаже!");return}
+ s.history[s.lvl]={[c]:"safe"};s.mult*=1+(s.bc===1?.18:s.bc===2?.26:s.bc===3?.38:.55);s.lvl++;
+ if(s.lvl>=s.rows){s.done=true;let p=Math.floor(s.b*s.mult);renderTower();settle("Башня",s.b,p);toast("🏆 Башня пройдена! "+fmt(p)+" Dcoins");return}renderTower();
+}
+function cashTower(){let s=window.towerState;if(!s||s.done||s.lvl===0)return;s.done=true;let p=Math.floor(s.b*s.mult);settle("Башня",s.b,p);toast("🎉 Забрано "+fmt(p)+" Dcoins")}
+function changeName(){let n=document.getElementById("newName").value.trim();if(n.length<2||n.length>24)return toast("❌ Имя 2–24 символа");let d=db();d[current].name=n;saveDB(d);refresh();toast("✅ Профиль обновлён")}
+function transfer(){let to=document.getElementById("toUser").value.trim(),a=Number(document.getElementById("toAmount").value),d=db();if(!d[to])return toast("❌ Игрок не найден");if(to===current)return toast("❌ Нельзя перевести самому себе");if(a<1||a>d[current].balance)return toast("❌ Недостаточно Dcoins");d[current].balance-=a;d[to].balance+=a;saveDB(d);refresh();toast("✅ Переведено "+fmt(a)+" Dcoins")}
+function renderHistory(){let u=user();document.getElementById("historyBody").innerHTML=(u.history||[]).map(x=>`<tr><td>${esc(x.game)}</td><td>${fmt(x.bet)}</td><td>${x.win?"<span style='color:#24d6a5'>Победа</span>":"<span style='color:#ff5577'>Поражение</span>"}</td><td>${fmt(x.payout)}</td><td>${x.time}</td></tr>`).join("")||`<tr><td colspan="5" style="color:#7d879b">История пуста</td></tr>`}
+function renderChat(){let arr=chats();document.getElementById("messages").innerHTML=arr.map(x=>`<div class="msg ${x.user===current?'me':''}"><b>${esc(x.user)}</b><div>${esc(x.text)}</div><small style="color:#667086">${x.time}</small></div>`).join("");let e=document.getElementById("messages");e.scrollTop=e.scrollHeight}
+function sendChat(){let e=document.getElementById("chatInput"),t=e.value.trim();if(!t)return;let a=chats();a.push({user:current,text:t,time:new Date().toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit"})});localStorage.setItem("dcoin_chat",JSON.stringify(a.slice(-200)));e.value="";renderChat()}
+function renderAdmin(){let d=db(),arr=Object.values(d);document.getElementById("adminUsers").textContent=arr.length;document.getElementById("adminCoins").textContent=fmt(arr.reduce((s,x)=>s+x.balance,0));document.getElementById("adminBody").innerHTML=arr.map(x=>`<tr><td>${esc(x.login)}</td><td>${fmt(x.balance)}</td><td>${x.played}</td><td>${x.won}</td></tr>`).join("")}
+function adminGive(){let n=document.getElementById("giveUser").value.trim(),a=Number(document.getElementById("giveAmount").value),d=db();if(!d[n]||a<=0)return toast("❌ Проверьте игрока и сумму");d[n].balance+=a;saveDB(d);refresh();toast("✅ Выдано "+fmt(a)+" Dcoins")}
+function resetDemo(){if(!confirm("Удалить локальную базу Dcoin?"))return;localStorage.removeItem("dcoin_users");localStorage.removeItem("dcoin_chat");logout();toast("База очищена")}
+(function init(){let saved=localStorage.getItem("dcoin_session");if(saved&&db()[saved]){current=saved;enter()}})();
+const oldEnter=enter;
+enter=function(){localStorage.setItem("dcoin_session",current);oldEnter()};
+const oldLogout=logout;
+logout=function(){localStorage.removeItem("dcoin_session");oldLogout()};
 </script>
 </body>
 </html>
