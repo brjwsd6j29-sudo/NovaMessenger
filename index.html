@@ -1,1 +1,200 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#070912" />
+  <title>LIRA — Crash</title>
+  <style>
+    :root{
+      --bg:#05060a;--panel:#0b0e16cc;--panel2:#101522;--line:#20283a;--text:#f5f7ff;
+      --muted:#8490a8;--accent:#8c5cff;--accent2:#18d8ff;--good:#24e48b;--bad:#ff4d6d;
+      --gold:#ffc857;--shadow:0 24px 80px rgba(0,0,0,.45);--r:22px;
+    }
+    *{box-sizing:border-box} html,body{margin:0;min-height:100%;background:radial-gradient(circle at 20% -10%,#221340 0,transparent 38%),radial-gradient(circle at 100% 0,#063047 0,transparent 35%),var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+    body{overflow-x:hidden}.hidden{display:none!important}.muted{color:var(--muted)}
+    button,input{font:inherit} button{cursor:pointer}
+    .noise{position:fixed;inset:0;pointer-events:none;opacity:.07;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.45'/%3E%3C/svg%3E")}
+    .orb{position:fixed;border-radius:999px;filter:blur(100px);opacity:.16;pointer-events:none}.o1{width:420px;height:420px;background:#8c5cff;left:-180px;top:20%}.o2{width:520px;height:520px;background:#18d8ff;right:-260px;bottom:-120px}
+    .login{min-height:100vh;display:grid;place-items:center;padding:24px}.login-card{width:min(460px,100%);padding:34px;border:1px solid #ffffff12;border-radius:30px;background:linear-gradient(180deg,#111522e8,#090b12ef);box-shadow:var(--shadow);backdrop-filter:blur(24px)}
+    .brand{display:flex;align-items:center;gap:13px;font-weight:900;letter-spacing:.14em}.logo{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 10px 28px #845cff4d;font-size:22px}.login h1{font-size:38px;line-height:1.03;margin:34px 0 12px}.login p{margin:0 0 26px;color:var(--muted);line-height:1.6}.field{display:flex;gap:10px;padding:9px;background:#070911;border:1px solid var(--line);border-radius:18px}.field input{flex:1;min-width:0;border:0;outline:0;background:transparent;color:white;padding:10px 12px;font-size:22px;letter-spacing:.22em}.btn{border:0;color:white;font-weight:800;border-radius:14px;padding:13px 18px;background:linear-gradient(135deg,var(--accent),#6640e8);box-shadow:0 10px 25px #6e48f233}.btn:disabled{opacity:.45;cursor:not-allowed}.login-help{font-size:13px;margin-top:14px!important}.error{min-height:22px;margin-top:14px;color:#ff7890;font-size:14px}
+    .app{min-height:100vh}.topbar{height:78px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;border-bottom:1px solid #ffffff0e;background:#060810b8;backdrop-filter:blur(20px);position:sticky;top:0;z-index:20}.top-left,.top-right{display:flex;align-items:center;gap:14px}.balance-pill{padding:11px 15px;border:1px solid #ffffff12;background:#ffffff08;border-radius:16px}.balance-pill b{color:var(--gold)}.avatar{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,#242c40,#121622);font-weight:900}.ghost{border:1px solid #ffffff14;background:#ffffff08;color:#dbe1ef;border-radius:13px;padding:10px 13px}
+    .shell{width:min(1420px,100%);margin:auto;padding:24px;display:grid;grid-template-columns:270px minmax(0,1fr);gap:22px}.side{position:sticky;top:102px;height:calc(100vh - 126px);border:1px solid #ffffff10;border-radius:var(--r);background:var(--panel);padding:16px;backdrop-filter:blur(18px)}.nav-title{font-size:12px;color:#69758d;text-transform:uppercase;letter-spacing:.18em;padding:10px 11px}.nav{display:grid;gap:7px}.nav button{display:flex;gap:12px;align-items:center;border:0;color:#aeb8cc;background:transparent;padding:13px;border-radius:14px;text-align:left}.nav button.active,.nav button:hover{background:linear-gradient(90deg,#8054ff25,#18d8ff0c);color:white}.nav .ico{width:28px;text-align:center;font-size:18px}.statusbox{position:absolute;left:16px;right:16px;bottom:16px;border:1px solid #ffffff0f;background:#080b12;border-radius:16px;padding:13px;font-size:13px;color:var(--muted)}.dot{display:inline-block;width:8px;height:8px;border-radius:99px;background:var(--good);box-shadow:0 0 12px var(--good);margin-right:8px}
+    .main{min-width:0}.view{display:none}.view.active{display:block}.hero-row{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-bottom:18px}.card{border:1px solid #ffffff10;background:linear-gradient(180deg,#0d111bd9,#090c13df);border-radius:var(--r);box-shadow:0 18px 55px #0005}.welcome{padding:25px;overflow:hidden;position:relative}.welcome:after{content:"";position:absolute;width:260px;height:260px;border-radius:50%;background:#8758ff30;filter:blur(45px);right:-80px;top:-120px}.welcome h2{font-size:30px;margin:2px 0 7px}.stat{padding:22px}.stat .big{font-size:28px;font-weight:900;margin-top:8px}.grid2{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(330px,.72fr);gap:18px}
+    .crash-stage{height:510px;padding:18px;position:relative;overflow:hidden}.stage-top{position:absolute;z-index:3;top:20px;left:22px;right:22px;display:flex;justify-content:space-between;color:#93a0b8;font-size:13px}.graph{position:absolute;inset:0;background:linear-gradient(#ffffff05 1px,transparent 1px),linear-gradient(90deg,#ffffff05 1px,transparent 1px);background-size:52px 52px;mask-image:linear-gradient(to bottom,black 75%,transparent)}canvas{position:absolute;inset:0;width:100%;height:100%}.multiplier{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);font-size:clamp(58px,7vw,112px);font-weight:950;letter-spacing:-.06em;text-shadow:0 0 42px #845cff55}.multiplier.live{color:white}.multiplier.crashed{color:var(--bad);animation:shake .28s linear}.multiplier.win{color:var(--good)}@keyframes shake{25%{transform:translate(-51%,-50%)}75%{transform:translate(-49%,-50%)}}
+    .last-strip{position:absolute;left:20px;right:20px;bottom:16px;display:flex;gap:8px;overflow:auto;padding-bottom:2px}.chip{white-space:nowrap;border:1px solid #ffffff12;background:#090c14cc;padding:7px 10px;border-radius:11px;font-weight:800;font-size:12px}.chip.low{color:#9ca6ba}.chip.mid{color:#41d7ff}.chip.high{color:#b994ff}.chip.mega{color:#ffd36b}
+    .betbox{padding:19px}.betbox h3{margin:2px 0 17px}.label{font-size:12px;color:#77839a;margin:14px 2px 7px}.money-input{display:flex;border:1px solid var(--line);background:#070911;border-radius:15px;overflow:hidden}.money-input input{width:100%;border:0;outline:0;background:transparent;color:white;padding:14px;font-weight:800}.money-input span{padding:14px;color:#717e96}.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:8px}.quick button{border:1px solid #ffffff0e;background:#111623;color:#9eabc0;padding:8px 4px;border-radius:10px;font-size:12px}.toggle-row{display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding:13px;border:1px solid #ffffff0e;background:#0a0d15;border-radius:15px}.switch{width:48px;height:27px;border-radius:99px;background:#252b39;position:relative;transition:.2s}.switch:after{content:"";position:absolute;width:21px;height:21px;left:3px;top:3px;border-radius:50%;background:white;transition:.2s}.switch.on{background:#7450ef}.switch.on:after{left:24px}.auto-wrap{transition:.2s;overflow:hidden;max-height:90px}.auto-wrap.off{max-height:0;opacity:0}.play{width:100%;margin-top:15px;padding:16px;border:0;border-radius:15px;background:linear-gradient(135deg,#7950f2,#4f8cff);color:white;font-weight:900;font-size:17px}.play.cash{background:linear-gradient(135deg,#15c980,#0ba76a)}.play.danger{background:linear-gradient(135deg,#ff536f,#e72d50)}
+    .profile-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.p-card{padding:20px}.p-card small{color:#78849a}.p-card strong{display:block;font-size:22px;margin-top:8px}.history{margin-top:18px;overflow:hidden}.history-head{padding:18px 20px;border-bottom:1px solid #ffffff0d;display:flex;justify-content:space-between}.table{width:100%;border-collapse:collapse}.table th,.table td{text-align:left;padding:14px 18px;border-bottom:1px solid #ffffff08;font-size:13px}.table th{color:#6f7a91;font-size:11px;text-transform:uppercase}.pos{color:var(--good);font-weight:800}.neg{color:var(--bad);font-weight:800}.empty{padding:38px;text-align:center;color:#69758d}.toast{position:fixed;right:20px;bottom:20px;z-index:50;padding:14px 16px;border:1px solid #ffffff16;background:#0d111bdd;backdrop-filter:blur(18px);border-radius:14px;box-shadow:var(--shadow);transform:translateY(25px);opacity:0;pointer-events:none;transition:.25s}.toast.show{transform:none;opacity:1}.toast.good{border-color:#24e48b55}.toast.bad{border-color:#ff4d6d55}
+    @media(max-width:980px){.shell{grid-template-columns:1fr;padding:14px}.side{position:fixed;left:10px;right:10px;bottom:10px;top:auto;height:auto;z-index:30;padding:8px}.nav-title,.statusbox{display:none}.nav{grid-template-columns:repeat(3,1fr)}.nav button{justify-content:center;padding:11px}.nav button span:last-child{display:none}.main{padding-bottom:80px}.hero-row,.grid2{grid-template-columns:1fr}.hero-row{grid-template-columns:1fr 1fr}.crash-stage{height:410px}.profile-grid{grid-template-columns:1fr 1fr}.topbar{padding:0 14px}.brand .brandname{display:none}.table th:nth-child(2),.table td:nth-child(2){display:none}}
+    @media(max-width:560px){.hero-row{grid-template-columns:1fr}.stat{display:none}.top-right .balance-pill{font-size:12px}.crash-stage{height:350px}.grid2{display:block}.betbox{margin-top:14px}.profile-grid{grid-template-columns:1fr}.multiplier{font-size:64px}.login-card{padding:25px}.login h1{font-size:31px}.field{display:block}.field .btn{width:100%;margin-top:8px}.table th:nth-child(4),.table td:nth-child(4){display:none}}
+  </style>
+</head>
+<body>
+<div class="noise"></div><div class="orb o1"></div><div class="orb o2"></div>
 
+<section id="loginScreen" class="login">
+  <div class="login-card">
+    <div class="brand"><div class="logo">L</div><span>LIRA GAME</span></div>
+    <h1>Вход в игровой кабинет</h1>
+    <p>Напиши боту <b>/mypincode</b> в личных сообщениях. Введи полученный код здесь — Telegram ID вводить не нужно.</p>
+    <form id="loginForm">
+      <div class="field"><input id="pin" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="••••••••"/><button class="btn" id="loginBtn">Войти</button></div>
+      <div id="loginError" class="error"></div>
+    </form>
+    <p class="login-help">PIN одноразовый и действует ограниченное время. Пароль и токен Telegram-бота в сайт не передаются.</p>
+  </div>
+</section>
+
+<section id="app" class="app hidden">
+  <header class="topbar">
+    <div class="top-left"><div class="brand"><div class="logo">L</div><span class="brandname">LIRA</span></div></div>
+    <div class="top-right"><div class="balance-pill">💰 <b id="topBalance">0</b> лир</div><div class="avatar" id="avatar">L</div><button class="ghost" id="logoutBtn">Выйти</button></div>
+  </header>
+  <div class="shell">
+    <aside class="side">
+      <div class="nav-title">Навигация</div>
+      <div class="nav">
+        <button class="active" data-view="crash"><span class="ico">🚀</span><span>Crash</span></button>
+        <button data-view="profile"><span class="ico">👤</span><span>Профиль</span></button>
+        <button data-view="history"><span class="ico">🕘</span><span>Ласт</span></button>
+      </div>
+      <div class="statusbox"><span class="dot"></span>API подключен<br><span id="apiState">LIRA Core Online</span></div>
+    </aside>
+
+    <main class="main">
+      <section class="view active" id="view-crash">
+        <div class="hero-row">
+          <div class="card welcome"><div class="muted">LIRA GAME / WEB</div><h2>Привет, <span id="helloName">Игрок</span> 👋</h2><div class="muted">Один баланс с Telegram-ботом. Результаты Web Crash появляются в «Ласт».</div></div>
+          <div class="card stat"><span class="muted">Текущий баланс</span><div class="big">💰 <span id="heroBalance">0</span></div><div class="muted">лир</div></div>
+        </div>
+        <div class="grid2">
+          <div class="card crash-stage">
+            <div class="graph"></div><canvas id="chart"></canvas>
+            <div class="stage-top"><span>🚀 WEB CRASH</span><span id="roundState">ГОТОВО</span></div>
+            <div id="multiplier" class="multiplier live">1.00×</div>
+            <div id="lastStrip" class="last-strip"></div>
+          </div>
+          <div class="card betbox">
+            <h3>Ставка</h3>
+            <div class="label">СУММА</div>
+            <div class="money-input"><input id="bet" value="1000" inputmode="numeric"><span>₤</span></div>
+            <div class="quick"><button data-q="1000">1K</button><button data-q="10000">10K</button><button data-q="100000">100K</button><button data-q="max">MAX</button></div>
+            <div class="toggle-row"><div><b>Автозабор</b><div class="muted" style="font-size:12px">Забрать на заданном x</div></div><div id="autoToggle" class="switch on"></div></div>
+            <div id="autoWrap" class="auto-wrap"><div class="label">АВТОЗАБОР НА</div><div class="money-input"><input id="autoCoef" value="2.00" inputmode="decimal"><span>×</span></div></div>
+            <button id="playBtn" class="play">🚀 Сделать ставку</button>
+            <div id="roundInfo" class="muted" style="font-size:12px;margin-top:12px;line-height:1.55">Минимальная ставка: 100 лир. Максимальный коэффициент автозабора: 100×.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="view-profile">
+        <div class="hero-row"><div class="card welcome"><div class="muted">АККАУНТ</div><h2 id="profileName">Игрок</h2><div class="muted">ID <span id="profileId">0</span> · регистрация <span id="profileReg">—</span></div></div><div class="card stat"><span class="muted">Репутация</span><div class="big">🫡 <span id="profileRep">0</span></div></div></div>
+        <div class="profile-grid">
+          <div class="card p-card"><small>Баланс</small><strong>💰 <span id="pBal">0</span></strong></div>
+          <div class="card p-card"><small>Банк</small><strong>🏦 <span id="pBank">0</span></strong></div>
+          <div class="card p-card"><small>Уровень</small><strong>⭐ <span id="pLevel">1</span></strong></div>
+          <div class="card p-card"><small>Username</small><strong>@<span id="pUsername">—</span></strong></div>
+        </div>
+      </section>
+
+      <section class="view" id="view-history">
+        <div class="card history" style="margin-top:0"><div class="history-head"><div><b>🕘 Последние игры</b><div class="muted" style="font-size:12px;margin-top:4px">Те же записи, которые использует «Ласт» в боте</div></div><button id="refreshHistory" class="ghost">Обновить</button></div><div style="overflow:auto"><table class="table"><thead><tr><th>Игра</th><th>Дата</th><th>Ставка</th><th>Коэф.</th><th>Результат</th></tr></thead><tbody id="historyBody"></tbody></table></div></div>
+      </section>
+    </main>
+  </div>
+</section>
+<div id="toast" class="toast"></div>
+
+<script>
+  // =========================================================
+  // ВАЖНО: ЗАМЕНИ НА HTTPS-АДРЕС API, ГДЕ РАБОТАЕТ ТВОЙ БОТ.
+  // Пример: https://lira-api.onrender.com
+  // НЕ вставляй сюда TOKEN Telegram-бота.
+  // =========================================================
+  const API_BASE = "https://ed959687.app.rubyhost.ru";
+
+  const $ = s => document.querySelector(s);
+  const fmt = n => new Intl.NumberFormat('ru-RU').format(Math.floor(Number(n)||0));
+  let token = localStorage.getItem('lira_session') || '';
+  let profile = null, activeRound = null, pollTimer = null, animFrame = null, autoEnabled = true;
+  const lastCrash = [];
+
+  function toast(text, good=true){const el=$('#toast');el.textContent=text;el.className='toast show '+(good?'good':'bad');setTimeout(()=>el.className='toast',2600)}
+  async function api(path, options={}){
+    const headers={'Content-Type':'application/json',...(options.headers||{})}; if(token) headers.Authorization='Bearer '+token;
+    const r=await fetch(API_BASE+path,{...options,headers}); let data={}; try{data=await r.json()}catch{}
+    if(r.status===401 && path!='/api/login'){logout(false);throw new Error(data.error||'Сессия истекла')}
+    if(!r.ok) throw new Error(data.error||('HTTP '+r.status)); return data;
+  }
+  function showApp(){ $('#loginScreen').classList.add('hidden'); $('#app').classList.remove('hidden') }
+  function showLogin(){ $('#app').classList.add('hidden'); $('#loginScreen').classList.remove('hidden') }
+  function logout(callApi=true){ if(callApi&&token) api('/api/logout',{method:'POST'}).catch(()=>{}); token='';localStorage.removeItem('lira_session');activeRound=null;clearInterval(pollTimer);showLogin() }
+
+  $('#loginForm').addEventListener('submit', async e=>{
+    e.preventDefault(); const pin=$('#pin').value.trim(); $('#loginError').textContent='';
+    if(!/^\d{6,8}$/.test(pin)){ $('#loginError').textContent='Введи PIN из /mypincode'; return }
+    $('#loginBtn').disabled=true;
+    try{const d=await api('/api/login',{method:'POST',body:JSON.stringify({pin})});token=d.token;localStorage.setItem('lira_session',token);showApp();await bootstrap();$('#pin').value=''}catch(err){$('#loginError').textContent=err.message}finally{$('#loginBtn').disabled=false}
+  });
+  $('#logoutBtn').onclick=()=>logout(true);
+
+  document.querySelectorAll('.nav button').forEach(b=>b.onclick=async()=>{
+    document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x===b));
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active')); $('#view-'+b.dataset.view).classList.add('active');
+    if(b.dataset.view==='profile') await loadProfile(); if(b.dataset.view==='history') await loadHistory();
+  });
+
+  $('#autoToggle').onclick=()=>{autoEnabled=!autoEnabled;$('#autoToggle').classList.toggle('on',autoEnabled);$('#autoWrap').classList.toggle('off',!autoEnabled)};
+  document.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{$('#bet').value=b.dataset.q==='max'?(profile?.balance||0):b.dataset.q});
+  $('#refreshHistory').onclick=loadHistory;
+
+  async function loadProfile(){
+    const d=await api('/api/profile'); profile=d.user;
+    $('#topBalance').textContent=fmt(profile.balance); $('#heroBalance').textContent=fmt(profile.balance); $('#helloName').textContent=profile.name||'Игрок'; $('#avatar').textContent=(profile.name||'L').trim()[0].toUpperCase();
+    $('#profileName').textContent=profile.name||'Игрок';$('#profileId').textContent=profile.uid;$('#profileReg').textContent=profile.reg||'—';$('#profileRep').textContent=profile.reputation||0;$('#pBal').textContent=fmt(profile.balance);$('#pBank').textContent=fmt(profile.bank);$('#pLevel').textContent=profile.level||1;$('#pUsername').textContent=profile.username&&profile.username!=='None'?profile.username:'—';
+    if(d.active_round){activeRound=d.active_round; startPolling()} return d;
+  }
+  async function loadHistory(){
+    try{const d=await api('/api/history?limit=30');const body=$('#historyBody');body.innerHTML='';
+      if(!d.items.length){body.innerHTML='<tr><td colspan="5" class="empty">История пока пустая</td></tr>';return}
+      d.items.forEach(x=>{const tr=document.createElement('tr');const result=x.is_win?`<span class="pos">+${fmt(x.win_amount)}</span>`:`<span class="neg">-${fmt(x.bet)}</span>`;tr.innerHTML=`<td><b>${esc(x.game_name)}</b></td><td class="muted">${esc(x.date||'—')}</td><td>${fmt(x.bet)}</td><td>${Number(x.coef||0).toFixed(2)}×</td><td>${result}</td>`;body.appendChild(tr)});
+      lastCrash.length=0;(d.crashes||[]).forEach(x=>lastCrash.push(Number(x||0)));renderLast();
+    }catch(e){toast(e.message,false)}
+  }
+  function esc(s){return String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+  function renderLast(){const box=$('#lastStrip');box.innerHTML='';lastCrash.forEach(x=>{const c=document.createElement('span');c.className='chip '+(x>=10?'mega':x>=5?'high':x>=2?'mid':'low');c.textContent=(x||0).toFixed(2)+'×';box.appendChild(c)})}
+
+  $('#playBtn').onclick=async()=>{
+    if(activeRound && activeRound.status==='active'){return cashout()}
+    const bet=Number(String($('#bet').value).replace(/\s/g,''));const autoCoef=Number(String($('#autoCoef').value).replace(',','.'));
+    if(!Number.isFinite(bet)||bet<100){return toast('Минимальная ставка 100 лир',false)}
+    if(autoEnabled && (!Number.isFinite(autoCoef)||autoCoef<=1||autoCoef>100)){return toast('Автозабор: от 1.01× до 100×',false)}
+    $('#playBtn').disabled=true;
+    try{const d=await api('/api/crash/start',{method:'POST',body:JSON.stringify({bet:Math.floor(bet),auto_enabled:autoEnabled,auto_coef:autoEnabled?autoCoef:null})});activeRound=d.round; profile.balance=d.balance;syncBalance();startPolling();toast('Ставка принята')}
+    catch(e){toast(e.message,false)}finally{$('#playBtn').disabled=false}
+  };
+  async function cashout(){
+    $('#playBtn').disabled=true;try{const d=await api('/api/crash/cashout',{method:'POST'});applyRound(d.round);if(d.balance!=null){profile.balance=d.balance;syncBalance()}}
+    catch(e){toast(e.message,false)}finally{$('#playBtn').disabled=false}
+  }
+  function syncBalance(){if(!profile)return;$('#topBalance').textContent=fmt(profile.balance);$('#heroBalance').textContent=fmt(profile.balance);$('#pBal').textContent=fmt(profile.balance)}
+  function startPolling(){clearInterval(pollTimer);pollStatus();pollTimer=setInterval(pollStatus,180)}
+  async function pollStatus(){
+    if(!token||!activeRound)return; try{const d=await api('/api/crash/status');if(d.round)applyRound(d.round);if(d.balance!=null&&profile){profile.balance=d.balance;syncBalance()}}catch(e){clearInterval(pollTimer)}
+  }
+  function applyRound(r){
+    if(!r)return;activeRound=r;const m=Math.max(1,Number(r.current_coef||1));drawCurve(m);$('#multiplier').textContent=m.toFixed(2)+'×';$('#roundState').textContent=r.status==='active'?'В ПОЛЁТЕ':r.status==='cashed'?'ЗАБРАНО':'КРАШ';
+    $('#multiplier').className='multiplier '+(r.status==='cashed'?'win':r.status==='crashed'?'crashed':'live');
+    const btn=$('#playBtn'); if(r.status==='active'){btn.textContent='💸 Забрать '+fmt((r.bet||0)*m)+' лир';btn.className='play cash';btn.disabled=false;$('#roundInfo').textContent=`Ставка: ${fmt(r.bet)} · ${r.auto_enabled?'Автозабор '+Number(r.auto_coef).toFixed(2)+'×':'Автозабор выключен'}`}
+    else{clearInterval(pollTimer);btn.className='play';btn.textContent='🚀 Сделать ставку';btn.disabled=false;$('#roundInfo').textContent=r.status==='cashed'?`✅ Забрано ${fmt(r.payout)} лир на ${Number(r.cashout_coef).toFixed(2)}×`:`💥 Краш на ${Number(r.crash_point).toFixed(2)}×`;lastCrash.unshift(Number(r.crash_point||0));if(lastCrash.length>12)lastCrash.pop();renderLast();activeRound=null;setTimeout(loadProfile,350)}
+  }
+
+  const canvas=$('#chart'),ctx=canvas.getContext('2d');
+  function resize(){const dpr=Math.min(devicePixelRatio||1,2);canvas.width=canvas.clientWidth*dpr;canvas.height=canvas.clientHeight*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);drawCurve(Number($('#multiplier').textContent.replace('×',''))||1)} addEventListener('resize',resize);
+  function drawCurve(mult){const w=canvas.clientWidth,h=canvas.clientHeight;ctx.clearRect(0,0,w,h);const pad=32;const progress=Math.min(.96,Math.log(Math.max(mult,1))*0.18+.12);ctx.beginPath();ctx.moveTo(pad,h-pad);const pts=70;for(let i=0;i<=pts;i++){const t=i/pts*progress;const x=pad+t*(w-pad*2);const y=(h-pad)-Math.pow(t/Math.max(progress,.01),1.7)*(h*.64);ctx.lineTo(x,y)}const g=ctx.createLinearGradient(0,0,w,h);g.addColorStop(0,'#8c5cff');g.addColorStop(1,'#18d8ff');ctx.strokeStyle=g;ctx.lineWidth=5;ctx.lineCap='round';ctx.shadowBlur=22;ctx.shadowColor='#845cff';ctx.stroke();ctx.shadowBlur=0}
+
+  async function bootstrap(){try{await loadProfile();await loadHistory();resize()}catch(e){toast(e.message,false)}}
+  (async()=>{if(token){showApp();await bootstrap()}else showLogin()})();
+</script>
+</body>
+</html>
