@@ -1,1256 +1,646 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="kk">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>RombGame — Краш</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Қолөнер мен кәсіптер — Жауаптар</title>
 
 <style>
-/* ===================================================
-   ТОКЕНЫ
-=================================================== */
-:root{
-  --bg: #0B0A1E;
-  --bg-deep: #08071A;
-  --surface: #17152F;
-  --surface-2: #1F1C42;
-  --surface-glass: rgba(27, 25, 56, 0.62);
-  --border: #2C2856;
-  --border-soft: rgba(124,92,255,0.18);
-  --text: #F3F1FF;
-  --text-muted: #8B87B8;
-  --text-dim: #625E92;
-  --violet: #7C5CFF;
-  --violet-bright: #9B7CFF;
-  --violet-soft: #4B3FA0;
-  --gold: #F5C94B;
-  --crash: #FF4D6D;
-  --win: #4CE8A6;
-  --cyan: #38E1C6;
-  --radius: 18px;
-  --radius-sm: 12px;
-  --font-display: 'Chakra Petch', sans-serif;
-  --font-body: 'Inter', sans-serif;
-  --ease: cubic-bezier(.2,.8,.2,1);
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
-*{box-sizing:border-box;}
-html,body{
-  margin:0; padding:0; min-height:100%;
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--font-body);
-  -webkit-font-smoothing: antialiased;
-  overscroll-behavior: none;
-}
-::selection{background: var(--violet-soft); color:#fff;}
-
-button{font-family:inherit; cursor:pointer;}
-input{font-family:inherit;}
-
-/* ===================================================
-   ФОН: звёздное поле (лёгкое, статичное + редкие мерцания)
-=================================================== */
-#bgField{
-  position:fixed; inset:0; z-index:-2;
-  background:
-    radial-gradient(120% 90% at 50% -10%, #241f52 0%, var(--bg) 55%),
-    var(--bg-deep);
-}
-#bgCanvas{position:fixed; inset:0; z-index:-1; pointer-events:none; opacity:0.55;}
-
-.screen{min-height:100vh; width:100%;}
-
-/* ===================================================
-   ОБЩЕЕ
-=================================================== */
-.brand{display:flex; align-items:center; gap:10px;}
-.brand-gem{width:28px; height:28px; flex-shrink:0; filter: drop-shadow(0 0 10px rgba(124,92,255,0.45));}
-.brand-name{font-family:var(--font-display); font-weight:700; font-size:1.05rem; letter-spacing:0.01em;}
-.brand-sm .brand-gem{width:24px; height:24px;}
-
-.btn{
-  border:none; border-radius:var(--radius-sm); padding:13px 20px;
-  font-weight:600; font-size:0.95rem; font-family:var(--font-body);
-  transition: transform .12s var(--ease), opacity .12s ease, background .2s ease, box-shadow .2s ease;
-  position:relative; overflow:hidden;
-}
-.btn:active{transform: scale(0.97);}
-.btn-block{width:100%;}
-.btn-primary{
-  background: linear-gradient(135deg, #A98BFF, #6B4CE0);
-  color:#fff;
-  box-shadow: 0 10px 28px -10px rgba(124,92,255,0.7);
-}
-.btn-primary:hover{box-shadow: 0 12px 32px -8px rgba(124,92,255,0.85);}
-.btn-ghost{
-  background: transparent; color: var(--text-muted); border:1px solid var(--border);
-}
-.btn-ghost:hover{color:var(--text); border-color: var(--violet-soft);}
-.btn:disabled{opacity:0.4; cursor:not-allowed; transform:none; box-shadow:none;}
-
-/* мягкая рябь при нажатии */
-.btn::after{
-  content:""; position:absolute; inset:0; border-radius:inherit;
-  background: radial-gradient(circle at var(--rx,50%) var(--ry,50%), rgba(255,255,255,0.35), transparent 60%);
-  opacity:0; transition: opacity .4s ease;
-  pointer-events:none;
-}
-.btn:active::after{opacity:1; transition:none;}
-
-/* ===================================================
-   ЭКРАН ВХОДА
-=================================================== */
-.login-screen{
-  display:flex; align-items:center; justify-content:center;
-  padding: 24px;
-}
-.login-card{
-  width:100%; max-width: 380px;
-  background: var(--surface-glass);
-  backdrop-filter: blur(18px);
-  border: 1px solid var(--border-soft);
-  border-radius: var(--radius);
-  padding: 34px 28px;
-  text-align:center;
-  box-shadow: 0 30px 80px -30px rgba(0,0,0,0.65), 0 0 0 1px rgba(124,92,255,0.05) inset;
-  animation: cardIn .55s var(--ease);
-}
-@keyframes cardIn{from{opacity:0; transform:translateY(14px) scale(.97);} to{opacity:1; transform:none;}}
-.login-card .brand{justify-content:center; margin-bottom: 26px;}
-.login-card h1{
-  font-family: var(--font-display);
-  font-size: 1.45rem; margin: 0 0 8px; font-weight:700;
-}
-.login-hint{
-  color: var(--text-muted); font-size: 0.88rem; line-height:1.55;
-  margin: 0 0 24px;
-}
-.login-hint b{color: var(--violet-bright); font-weight:600;}
-.pincode-input{
-  width:100%; text-align:center;
-  font-family: var(--font-display); font-size:1.7rem; letter-spacing: 0.4em;
-  background: var(--surface-2); border:1px solid var(--border); border-radius:var(--radius-sm);
-  color: var(--text); padding: 15px 10px 15px 22px;
-  margin-bottom: 16px;
-  outline:none;
-  transition: border-color .2s ease, box-shadow .2s ease;
-}
-.pincode-input:focus{border-color: var(--violet); box-shadow: 0 0 0 3px rgba(124,92,255,0.18);}
-.login-error{
-  color: var(--crash); font-size:0.85rem; margin-top:14px;
-  animation: shake .35s ease;
-}
-@keyframes shake{
-  0%,100%{transform:translateX(0);} 25%{transform:translateX(-5px);} 75%{transform:translateX(5px);}
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    background:
+        radial-gradient(circle at top left, #243b7a 0%, transparent 35%),
+        radial-gradient(circle at bottom right, #3b176e 0%, transparent 35%),
+        #080b16;
+    color: white;
+    min-height: 100vh;
+    padding: 20px;
 }
 
-/* ===================================================
-   TOPBAR
-=================================================== */
-.topbar{
-  display:flex; align-items:center; justify-content:space-between;
-  padding: 16px 20px;
-  position:sticky; top:0; z-index:20;
-  background: rgba(11,10,30,0.72);
-  backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--border);
-}
-.profile-chip{
-  display:flex; align-items:center; gap:10px;
-  background: var(--surface); border:1px solid var(--border); border-radius:999px;
-  padding: 7px 14px 7px 8px;
-  color: var(--text);
-  transition: border-color .2s ease;
-}
-.profile-chip:hover{border-color: var(--violet-soft);}
-.profile-balance{
-  display:flex; align-items:center; gap:5px;
-  background: var(--surface-2); border-radius:999px; padding:6px 11px;
-  font-family: var(--font-display); font-weight:700; font-size:0.92rem; color:var(--gold);
-}
-.profile-name{font-size:0.85rem; color:var(--text-muted); max-width:90px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-.chevron{color:var(--text-muted); transition: transform .2s ease;}
-.profile-chip[aria-expanded="true"] .chevron{transform: rotate(180deg);}
-
-.profile-dropdown{
-  position:absolute; top:64px; right:20px; z-index:30;
-  background: var(--surface); border:1px solid var(--border); border-radius:14px;
-  padding: 14px; width:210px;
-  box-shadow: 0 20px 50px -14px rgba(0,0,0,0.7);
-  transform-origin: top right;
-  animation: dropIn .16s var(--ease);
-}
-@keyframes dropIn{from{opacity:0; transform:scale(.94) translateY(-4px);} to{opacity:1; transform:none;}}
-.pd-row{display:flex; justify-content:space-between; font-size:0.85rem; padding:6px 2px; color:var(--text-muted);}
-.pd-row b{color:var(--text); font-family:var(--font-display);}
-#logoutBtn{margin-top:10px; padding:9px;}
-
-/* индикатор соединения */
-.conn-dot{
-  width:8px; height:8px; border-radius:50%; background: var(--text-dim);
-  transition: background .3s ease, box-shadow .3s ease;
-}
-.conn-dot.live{background: var(--win); box-shadow: 0 0 8px var(--win);}
-.conn-dot.reconnecting{background: var(--gold); box-shadow: 0 0 8px var(--gold); animation: pulseDot 1s ease infinite;}
-@keyframes pulseDot{50%{opacity:.35;}}
-
-/* ===================================================
-   ГЛАВНОЕ МЕНЮ
-=================================================== */
-.menu-view{
-  max-width: 480px; margin: 0 auto; padding: 32px 20px;
-}
-.menu-title{
-  font-family: var(--font-display); font-size:1.2rem; font-weight:600;
-  margin: 0 0 18px; color: var(--text-muted);
-}
-.game-card{
-  width:100%; display:flex; align-items:center; gap:16px;
-  background: var(--surface); border:1px solid var(--border); border-radius: var(--radius);
-  padding: 18px; margin-bottom: 12px; text-align:left; color:inherit;
-  transition: border-color .18s ease, transform .18s var(--ease), box-shadow .18s ease;
-}
-.game-card:not(.game-card-soon):hover{
-  border-color: var(--violet-soft); transform: translateY(-2px);
-  box-shadow: 0 14px 36px -18px rgba(124,92,255,0.5);
-}
-.game-card-soon{opacity:0.5; cursor:default;}
-.game-card-icon{font-size:1.8rem; width:48px; text-align:center;}
-.game-card-body{flex:1;}
-.game-card-name{font-family:var(--font-display); font-weight:600; font-size:1.05rem;}
-.game-card-desc{font-size:0.82rem; color:var(--text-muted); margin-top:2px;}
-.game-card-arrow{color:var(--violet); font-size:1.2rem;}
-
-/* ===================================================
-   ИГРА КРЭШ
-=================================================== */
-.crash-view{
-  max-width: 480px; margin:0 auto; padding: 16px 16px 24px;
-  display:flex; flex-direction:column; gap:14px;
-}
-.crash-topline{display:flex; align-items:center; justify-content:space-between;}
-.back-btn{
-  background:none; border:none; color:var(--text-muted);
-  font-size:0.88rem; padding:4px 0; display:flex; align-items:center; gap:6px;
-}
-.back-btn:hover{color:var(--text);}
-.conn-status{display:flex; align-items:center; gap:6px; font-size:0.78rem; color:var(--text-dim);}
-
-.history-strip{
-  display:flex; gap:8px; overflow-x:auto; padding-bottom:2px;
-  scrollbar-width:none;
-}
-.history-strip::-webkit-scrollbar{display:none;}
-.history-chip{
-  flex-shrink:0; font-family:var(--font-display); font-weight:600; font-size:0.8rem;
-  padding:6px 11px; border-radius:999px; background: var(--surface); border:1px solid var(--border);
-  animation: chipIn .25s var(--ease);
-}
-@keyframes chipIn{from{opacity:0; transform:scale(.7);} to{opacity:1; transform:none;}}
-.hc-low{color: var(--text-muted);}
-.hc-mid{color: var(--gold); border-color: rgba(245,201,75,0.35);}
-.hc-high{color: var(--violet-bright); border-color: rgba(124,92,255,0.5); box-shadow: 0 0 14px -4px rgba(124,92,255,0.6);}
-
-.stage{
-  position:relative; height: 300px;
-  background: linear-gradient(180deg, #1B1750 0%, #0B0A1E 100%);
-  border:1px solid var(--border); border-radius: var(--radius);
-  overflow:hidden;
-}
-.stage.crashed-flash{animation: crashFlash .4s ease;}
-@keyframes crashFlash{0%{box-shadow: inset 0 0 0 2px rgba(255,77,109,0.9);} 100%{box-shadow: inset 0 0 0 0 rgba(255,77,109,0);}}
-#rocketCanvas{position:absolute; inset:0; width:100%; height:100%;}
-.stage-overlay{
-  position:absolute; inset:0; display:flex; flex-direction:column;
-  align-items:center; justify-content:center; text-align:center; pointer-events:none;
-}
-.phase-label{
-  font-size:0.82rem; color: var(--text-muted); letter-spacing:0.02em; margin-bottom:6px;
-}
-.multiplier-value{
-  font-family: var(--font-display); font-weight:700; font-size:3.2rem;
-  color: var(--text); text-shadow: 0 0 30px rgba(124,92,255,0.35);
-  transition: color .2s ease;
-  font-variant-numeric: tabular-nums;
-}
-.multiplier-value.mv-running{color: var(--violet-bright);}
-.multiplier-value.mv-crashed{color: var(--crash); text-shadow: 0 0 34px rgba(255,77,109,0.55); animation: crashPop .3s var(--ease);}
-@keyframes crashPop{0%{transform:scale(1.14);} 100%{transform:scale(1);}}
-.countdown-value{
-  font-family: var(--font-display); font-size:1.6rem; color: var(--gold); margin-top:6px;
-  font-variant-numeric: tabular-nums;
-}
-.countdown-ring{
-  position:absolute; width:64px; height:64px; top:14px; right:14px;
-}
-.countdown-ring circle{fill:none; stroke-width:4;}
-.countdown-ring .track{stroke: rgba(255,255,255,0.08);}
-.countdown-ring .bar{stroke: var(--gold); stroke-linecap:round; transition: stroke-dashoffset .05s linear;}
-
-.bet-panel{
-  background: var(--surface); border:1px solid var(--border); border-radius: var(--radius);
-  padding: 18px; display:flex; flex-direction:column; gap:14px;
-}
-.bet-row{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;}
-.bet-label{font-size:0.85rem; color:var(--text-muted); display:flex; align-items:center; gap:8px;}
-.bet-input-group{display:flex; align-items:center; gap:6px; flex:1; justify-content:flex-end;}
-.bet-input{
-  width:100px; background: var(--surface-2); border:1px solid var(--border); border-radius:10px;
-  color:var(--text); font-family:var(--font-display); font-weight:600; padding:9px 10px; text-align:right;
-  outline:none;
-  transition: border-color .2s ease;
-}
-.bet-input:focus{border-color:var(--violet);}
-.bet-input:disabled{opacity:0.4;}
-.qbtn{
-  background: var(--surface-2); border:1px solid var(--border); color:var(--text-muted);
-  border-radius:8px; padding:8px 10px; font-size:0.78rem; font-weight:600;
-  transition: color .15s ease, border-color .15s ease, transform .1s ease;
-}
-.qbtn:hover{color:var(--text); border-color:var(--violet-soft);}
-.qbtn:active{transform: scale(0.94);}
-
-.switch{position:relative; display:inline-block; width:34px; height:19px;}
-.switch input{opacity:0; width:0; height:0;}
-.switch-track{
-  position:absolute; inset:0; background: var(--surface-2); border:1px solid var(--border);
-  border-radius:999px; transition: background .2s ease;
-}
-.switch-track::before{
-  content:""; position:absolute; width:13px; height:13px; left:2px; top:2px;
-  background: var(--text-muted); border-radius:50%; transition: transform .2s ease, background .2s ease;
-}
-.switch input:checked + .switch-track{background: var(--violet-soft); border-color:var(--violet);}
-.switch input:checked + .switch-track::before{transform: translateX(15px); background:#fff;}
-
-.btn-action{
-  background: linear-gradient(135deg, #A98BFF, #6B4CE0); color:#fff;
-  font-size:1rem; padding:15px;
-  box-shadow: 0 10px 28px -10px rgba(124,92,255,0.7);
-}
-.btn-action.state-cashout{
-  background: linear-gradient(135deg, #FFD873, #F5C94B); color:#2a2005;
-  box-shadow: 0 10px 28px -10px rgba(245,201,75,0.6);
-  animation: cashoutPulse 1.1s ease infinite;
-}
-@keyframes cashoutPulse{0%,100%{box-shadow: 0 10px 28px -10px rgba(245,201,75,0.6);} 50%{box-shadow: 0 10px 34px -6px rgba(245,201,75,0.9);}}
-.btn-action.state-locked{background: var(--surface-2); color: var(--text-muted); box-shadow:none;}
-
-.bet-error{color:var(--crash); font-size:0.82rem; text-align:center; margin:0;}
-
-/* ===================================================
-   ТОСТ ВЫИГРЫША
-=================================================== */
-.win-toast{
-  position:fixed; top:22px; left:50%; transform: translateX(-50%) translateY(-16px) scale(.96);
-  display:flex; align-items:center; gap:12px;
-  background: linear-gradient(135deg, #211c4e, #171341);
-  border:1px solid rgba(245,201,75,0.5);
-  border-radius:16px; padding:14px 20px; z-index:100;
-  box-shadow: 0 20px 50px -14px rgba(0,0,0,0.7);
-  opacity:0; transition: opacity .28s var(--ease), transform .28s var(--ease);
-}
-.win-toast.show{opacity:1; transform: translateX(-50%) translateY(0) scale(1);}
-.win-toast-icon{font-size:1.6rem;}
-.win-toast-title{font-family:var(--font-display); font-weight:700; color:var(--gold);}
-.win-toast-sub{font-size:0.85rem; color:var(--text-muted); margin-top:2px;}
-.win-toast-glow{
-  position:absolute; inset:-2px; border-radius:18px; z-index:-1;
-  background: radial-gradient(circle, rgba(245,201,75,0.35), transparent 70%);
-  filter: blur(10px);
+.container {
+    width: 100%;
+    max-width: 900px;
+    margin: auto;
 }
 
-#confettiCanvas{
-  position:fixed; inset:0; pointer-events:none; z-index:99;
+/* HEADER */
+
+.header {
+    text-align: center;
+    padding: 35px 20px;
+    margin-bottom: 25px;
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 28px;
+    background: rgba(255,255,255,.06);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 20px 60px rgba(0,0,0,.35);
 }
 
-/* ===================================================
-   БАЛАНС АНИМАЦИЯ
-=================================================== */
-.balance-pulse{animation: pulseGreen 0.7s ease;}
-@keyframes pulseGreen{
-  0%{color: var(--gold);}
-  30%{color: #6BFFA0; transform: scale(1.12);}
-  100%{color: var(--gold); transform: scale(1);}
-}
-.balance-drop{animation: pulseRed 0.7s ease;}
-@keyframes pulseRed{
-  0%{color: var(--gold);}
-  30%{color: var(--crash); transform: scale(1.08);}
-  100%{color: var(--gold); transform: scale(1);}
-}
-.profile-balance span{display:inline-block;}
-
-@media (max-width: 480px){
-  .multiplier-value{font-size:2.6rem;}
-  .stage{height:260px;}
+.icon {
+    width: 75px;
+    height: 75px;
+    margin: 0 auto 18px;
+    border-radius: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 38px;
+    background: linear-gradient(135deg,#667eea,#764ba2);
+    box-shadow: 0 10px 30px rgba(118,75,162,.4);
 }
 
-/* ===================================================
-   ПЛАВНЫЙ ВХОД
-=================================================== */
-.login-success-overlay{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at center,#2C2568 0%,#0B0A1E 65%);opacity:0;pointer-events:none;transition:opacity .35s ease}
-.login-success-overlay.show{opacity:1;pointer-events:auto}
-.login-success-box{text-align:center;transform:translateY(18px) scale(.94);transition:transform .45s var(--ease)}
-.login-success-overlay.show .login-success-box{transform:translateY(0) scale(1)}
-.login-success-gem{font-size:58px;filter:drop-shadow(0 0 24px rgba(124,92,255,.7));animation:successFloat 1.2s ease-in-out infinite alternate}
-.login-success-title{font-family:var(--font-display);font-size:1.45rem;font-weight:700;margin-top:12px}
-.login-success-sub{color:var(--text-muted);margin-top:6px;font-size:.88rem}
-@keyframes successFloat{to{transform:translateY(-7px) scale(1.04)}}
-.app-screen.entering{animation:appEnter .55s var(--ease)}
-@keyframes appEnter{from{opacity:0;transform:translateY(18px) scale(.985)}to{opacity:1;transform:none}}
+h1 {
+    font-size: 30px;
+    margin-bottom: 10px;
+}
 
-@media (prefers-reduced-motion: reduce){
-  *{animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important;}
+.subtitle {
+    color: #aeb6d1;
+    font-size: 15px;
+}
+
+/* PROGRESS */
+
+.progress-box {
+    margin-top: 25px;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    color: #aeb6d1;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.progress {
+    height: 8px;
+    background: rgba(255,255,255,.1);
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg,#667eea,#a855f7);
+    border-radius: 20px;
+    transition: .4s;
+}
+
+/* QUESTIONS */
+
+.questions {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.question {
+    background: rgba(255,255,255,.055);
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 23px;
+    padding: 22px;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 12px 35px rgba(0,0,0,.22);
+    transition: .3s;
+}
+
+.question:hover {
+    transform: translateY(-2px);
+    border-color: rgba(125,140,255,.35);
+}
+
+.question-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+.number {
+    min-width: 40px;
+    height: 40px;
+    border-radius: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg,#667eea,#764ba2);
+    font-weight: 800;
+    font-size: 15px;
+}
+
+.question-text {
+    font-size: 16px;
+    line-height: 1.5;
+    font-weight: 600;
+}
+
+/* OPTIONS */
+
+.options {
+    margin-top: 18px;
+    display: grid;
+    gap: 9px;
+}
+
+.option {
+    padding: 12px 15px;
+    border-radius: 13px;
+    background: rgba(255,255,255,.045);
+    color: #cbd1e5;
+    border: 1px solid rgba(255,255,255,.07);
+    font-size: 14px;
+    transition: .25s;
+}
+
+.option.correct {
+    background: rgba(34,197,94,.15);
+    border-color: #22c55e;
+    color: #86efac;
+    font-weight: 700;
+}
+
+/* BUTTON */
+
+.answer-btn {
+    margin-top: 17px;
+    width: 100%;
+    padding: 13px;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+    background: linear-gradient(135deg,#667eea,#764ba2);
+    box-shadow: 0 7px 20px rgba(102,126,234,.22);
+    transition: .25s;
+}
+
+.answer-btn:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.1);
+}
+
+.answer-btn:active {
+    transform: scale(.98);
+}
+
+/* ANSWER */
+
+.answer {
+    display: none;
+    margin-top: 14px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: rgba(34,197,94,.10);
+    border: 1px solid rgba(34,197,94,.35);
+    color: #86efac;
+    line-height: 1.5;
+    animation: show .3s ease;
+}
+
+.answer.show {
+    display: block;
+}
+
+@keyframes show {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* FOOTER */
+
+.footer {
+    text-align: center;
+    color: #777f99;
+    font-size: 13px;
+    padding: 30px 0 10px;
+}
+
+/* MOBILE */
+
+@media(max-width:600px) {
+    body {
+        padding: 12px;
+    }
+
+    .header {
+        padding: 28px 15px;
+        border-radius: 22px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    .question {
+        padding: 17px;
+        border-radius: 19px;
+    }
+
+    .question-text {
+        font-size: 15px;
+    }
+
+    .option {
+        font-size: 13px;
+    }
 }
 </style>
 </head>
+
 <body>
 
-<div id="bgField"></div>
-<canvas id="bgCanvas"></canvas>
+<div class="container">
 
-<!-- ===================== ЭКРАН ВХОДА ===================== -->
-<div id="loginScreen" class="screen login-screen">
-  <div class="login-card">
-    <div class="brand">
-      <svg class="brand-gem" viewBox="0 0 40 40" fill="none">
-        <path d="M20 2 L36 14 L20 38 L4 14 Z" fill="url(#gemGrad)"/>
-        <path d="M20 2 L36 14 L20 20 Z" fill="#fff" opacity="0.18"/>
-        <path d="M4 14 L20 20 L20 2 Z" fill="#fff" opacity="0.08"/>
-        <defs>
-          <linearGradient id="gemGrad" x1="4" y1="2" x2="36" y2="38" gradientUnits="userSpaceOnUse">
-            <stop stop-color="#A98BFF"/>
-            <stop offset="1" stop-color="#5B3FE0"/>
-          </linearGradient>
-        </defs>
-      </svg>
-      <span class="brand-name">RombGame</span>
-    </div>
+    <div class="header">
 
-    <h1>Вход в аккаунт</h1>
-    <p class="login-hint">Напишите боту <b>/mypincode</b> в личные сообщения — он пришлёт код входа.</p>
+        <div class="icon">📚</div>
 
-    <form id="loginForm" autocomplete="off">
-      <input
-        id="pincodeInput"
-        class="pincode-input"
-        inputmode="numeric"
-        maxlength="6"
-        placeholder="• • • • • •"
-        autocomplete="off"
-      >
-      <button type="submit" class="btn btn-primary btn-block" id="loginSubmitBtn">Войти</button>
-    </form>
+        <h1>Қолөнер мен кәсіптер</h1>
 
-    <p id="loginError" class="login-error" hidden></p>
-  </div>
-</div>
-
-<div id="loginSuccessOverlay" class="login-success-overlay" hidden>
-  <div class="login-success-box">
-    <div class="login-success-gem">💎</div>
-    <div class="login-success-title">Вход выполнен</div>
-    <div class="login-success-sub">Добро пожаловать в RombGame</div>
-  </div>
-</div>
-
-<!-- ===================== ПРИЛОЖЕНИЕ ===================== -->
-<div id="app" class="screen app-screen" hidden>
-
-  <header class="topbar">
-    <div class="brand brand-sm">
-      <svg class="brand-gem" viewBox="0 0 40 40" fill="none">
-        <path d="M20 2 L36 14 L20 38 L4 14 Z" fill="url(#gemGrad2)"/>
-        <path d="M20 2 L36 14 L20 20 Z" fill="#fff" opacity="0.18"/>
-        <path d="M4 14 L20 20 L20 2 Z" fill="#fff" opacity="0.08"/>
-        <defs>
-          <linearGradient id="gemGrad2" x1="4" y1="2" x2="36" y2="38" gradientUnits="userSpaceOnUse">
-            <stop stop-color="#A98BFF"/>
-            <stop offset="1" stop-color="#5B3FE0"/>
-          </linearGradient>
-        </defs>
-      </svg>
-      <span class="brand-name">RombGame</span>
-    </div>
-
-    <button id="profileChip" class="profile-chip" aria-expanded="false">
-      <span class="profile-balance">
-        <svg width="14" height="14" viewBox="0 0 40 40"><path d="M20 2 L36 14 L20 38 L4 14 Z" fill="#F5C94B"/></svg>
-        <span id="balanceValue">0</span>
-      </span>
-      <span class="profile-name" id="nicknameValue">Игрок</span>
-      <svg class="chevron" width="10" height="10" viewBox="0 0 10 10"><path d="M1 3 L5 7 L9 3" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
-    </button>
-
-    <div id="profileDropdown" class="profile-dropdown" hidden>
-      <div class="pd-row"><span>Баланс</span><b id="pdBalance">0</b></div>
-      <div class="pd-row"><span>Банк</span><b id="pdBank">0</b></div>
-      <div class="pd-row"><span>Уровень</span><b id="pdLvl">1</b></div>
-      <button id="logoutBtn" class="btn btn-ghost btn-block">Выйти</button>
-    </div>
-  </header>
-
-  <!-- ---------- ГЛАВНОЕ МЕНЮ ---------- -->
-  <main id="menuView" class="menu-view">
-    <h2 class="menu-title">Выберите игру</h2>
-    <button id="openCrashBtn" class="game-card">
-      <div class="game-card-icon">🚀</div>
-      <div class="game-card-body">
-        <div class="game-card-name">Краш</div>
-        <div class="game-card-desc">Забери выигрыш до того, как ракета улетит</div>
-      </div>
-      <div class="game-card-arrow">→</div>
-    </button>
-    <div class="game-card game-card-soon">
-      <div class="game-card-icon">✨</div>
-      <div class="game-card-body">
-        <div class="game-card-name">Скоро новые игры</div>
-        <div class="game-card-desc">Следите за обновлениями в боте</div>
-      </div>
-    </div>
-  </main>
-
-  <!-- ---------- ИГРА КРЭШ ---------- -->
-  <main id="crashView" class="crash-view" hidden>
-    <div class="crash-topline">
-      <button id="backToMenuBtn" class="back-btn">← Меню</button>
-      <div class="conn-status"><span id="connDot" class="conn-dot"></span><span id="connText">Подключение…</span></div>
-    </div>
-
-    <div class="history-strip" id="historyStrip"></div>
-
-    <div class="stage" id="stageBox">
-      <canvas id="rocketCanvas"></canvas>
-      <svg class="countdown-ring" id="countdownRing" viewBox="0 0 64 64" hidden>
-        <circle class="track" cx="32" cy="32" r="27"></circle>
-        <circle class="bar" cx="32" cy="32" r="27" stroke-dasharray="169.6" stroke-dashoffset="0" transform="rotate(-90 32 32)"></circle>
-      </svg>
-      <div class="stage-overlay">
-        <div id="phaseLabel" class="phase-label">Ставки принимаются</div>
-        <div id="multiplierValue" class="multiplier-value">1.00x</div>
-        <div id="countdownValue" class="countdown-value"></div>
-      </div>
-    </div>
-
-    <div class="bet-panel">
-      <div class="bet-row">
-        <label class="bet-label">Ставка</label>
-        <div class="bet-input-group">
-          <button class="qbtn" data-op="half" type="button">½</button>
-          <input id="betAmountInput" type="number" min="100" step="100" value="100" class="bet-input">
-          <button class="qbtn" data-op="double" type="button">2×</button>
-          <button class="qbtn" data-op="max" type="button">MAX</button>
+        <div class="subtitle">
+            §3–4 бойынша тест жауаптары
         </div>
-      </div>
 
-      <div class="bet-row">
-        <label class="bet-label">
-          <span class="switch">
-            <input type="checkbox" id="autoCashoutToggle">
-            <span class="switch-track"></span>
-          </span>
-          Автозабор
-        </label>
-        <input id="autoCashoutInput" type="number" min="1.01" step="0.01" value="2.00" class="bet-input" disabled>
-      </div>
+        <div class="progress-box">
 
-      <button id="actionBtn" class="btn btn-action" disabled>Дождитесь раунда</button>
-      <p id="betError" class="bet-error" hidden></p>
+            <div class="progress-info">
+                <span>Жауаптар</span>
+                <span id="counter">0 / 21</span>
+            </div>
+
+            <div class="progress">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+
+        </div>
+
     </div>
-  </main>
+
+
+    <div class="questions" id="questions"></div>
+
+
+    <div class="footer">
+        Қазақстан тарихы • 11 сынып
+    </div>
+
 </div>
 
-<!-- ---------- ТОСТ УСПЕШНОГО ЗАБОРА ---------- -->
-<div id="winToast" class="win-toast" hidden>
-  <div class="win-toast-glow"></div>
-  <div class="win-toast-icon">💎</div>
-  <div class="win-toast-text">
-    <div class="win-toast-title">Успешно забрали!</div>
-    <div class="win-toast-sub"><span id="winMult">1.00x</span> · +<span id="winAmount">0</span> ромб</div>
-  </div>
-</div>
-
-<canvas id="confettiCanvas"></canvas>
 
 <script>
-(() => {
-  "use strict";
 
-  // =====================================================
-  // GITHUB PAGES / REMOTE BACKEND
-  // =====================================================
-  const API_BASE_URL = "https://buf-drew-show-transcription.trycloudflare.com";
+const questions = [
 
-  function apiUrl(path) {
-    return API_BASE_URL.replace(/\/$/, "") + path;
-  }
-  function apiHeaders(extra = {}) {
-    const headers = { ...extra };
-    const token = localStorage.getItem("romb_session_token");
-    if (token) headers["Authorization"] = `Bearer ${token}`;
-    return headers;
-  }
+{
+    q: "Қазақстан жеріндегі тұрғындар негізгі бөлігінің 4000 жыл бойы автохтонды түрде өлкені тұрақты мекендеп келгенін дәлелдеген антрополог, академик",
+    options: [
+        "A) К. Ақышев",
+        "B) Ш. Шөкин",
+        "C) О. Смағұлов",
+        "D) Қ. Сәтбаев"
+    ],
+    answer: 2
+},
 
-  // ===================== ЭЛЕМЕНТЫ =====================
-  const loginScreen = document.getElementById("loginScreen");
-  const appScreen = document.getElementById("app");
-  const loginForm = document.getElementById("loginForm");
-  const pincodeInput = document.getElementById("pincodeInput");
-  const loginError = document.getElementById("loginError");
-  const loginSubmitBtn = document.getElementById("loginSubmitBtn");
-  const loginSuccessOverlay = document.getElementById("loginSuccessOverlay");
+{
+    q: "Киіз жасауды білген қазақ халқының арғы ата-бабасы:",
+    options: [
+        "A) аландар",
+        "B) ахеменидтер",
+        "C) пенджабтықтар",
+        "D) сақтар"
+    ],
+    answer: 3
+},
 
-  const profileChip = document.getElementById("profileChip");
-  const profileDropdown = document.getElementById("profileDropdown");
-  const balanceValue = document.getElementById("balanceValue");
-  const nicknameValue = document.getElementById("nicknameValue");
-  const pdBalance = document.getElementById("pdBalance");
-  const pdBank = document.getElementById("pdBank");
-  const pdLvl = document.getElementById("pdLvl");
-  const logoutBtn = document.getElementById("logoutBtn");
+{
+    q: "1969 ж. Есік қорғанын ашқан белгілі археолог",
+    options: [
+        "A) О. Смағұлов",
+        "B) Қ. Сәтбаев",
+        "C) К. Ақышев",
+        "D) Ә. Марғұлан"
+    ],
+    answer: 2
+},
 
-  const menuView = document.getElementById("menuView");
-  const crashView = document.getElementById("crashView");
-  const openCrashBtn = document.getElementById("openCrashBtn");
-  const backToMenuBtn = document.getElementById("backToMenuBtn");
+{
+    q: "«Қазақтардың амандасуы «мал-жан аман ба?» деуден басталады» деп көшпелілер тұрмысындағы малдың маңызын дәл сипаттаған",
+    options: [
+        "A) Ә. Марғұлан",
+        "B) Ы. Алтынсарин",
+        "C) Ш. Уәлиханов",
+        "D) А. Құнанбаев"
+    ],
+    answer: 2
+},
 
-  const historyStrip = document.getElementById("historyStrip");
-  const phaseLabel = document.getElementById("phaseLabel");
-  const multiplierValue = document.getElementById("multiplierValue");
-  const countdownValue = document.getElementById("countdownValue");
-  const countdownRing = document.getElementById("countdownRing");
-  const ringBar = countdownRing.querySelector(".bar");
-  const RING_CIRC = 169.6;
-  const stageBox = document.getElementById("stageBox");
-  const rocketCanvas = document.getElementById("rocketCanvas");
-  const rctx = rocketCanvas.getContext("2d");
-  const connDot = document.getElementById("connDot");
-  const connText = document.getElementById("connText");
+{
+    q: "«Темір ұсталары балта, үзеңгі, ер-тұрман, пышақ жасады... Бұл заттардың сапасы біздегі Ресей бұйымдарынан кем түспейді» деп қазақ ұсталарының жасаған бұйымдарына жоғары баға берген зерттеуші",
+    options: [
+        "A) В. В. Радлов",
+        "B) Д. Сокольский",
+        "C) И. Я. Скворцов",
+        "D) Л. Н. Гумилев"
+    ],
+    answer: 0
+},
 
-  const betAmountInput = document.getElementById("betAmountInput");
-  const autoCashoutToggle = document.getElementById("autoCashoutToggle");
-  const autoCashoutInput = document.getElementById("autoCashoutInput");
-  const actionBtn = document.getElementById("actionBtn");
-  const betError = document.getElementById("betError");
+{
+    q: "Қазақтарда күнделікті өмірде кеңінен қолданылатын үй малы терісінен жасалған ыдыстар",
+    options: [
+        "A) тегене, шара",
+        "B) ожау, астау",
+        "C) тон, ішік, мәсі",
+        "D) саба, торсық, мес"
+    ],
+    answer: 3
+},
 
-  const winToast = document.getElementById("winToast");
-  const winMult = document.getElementById("winMult");
-  const winAmount = document.getElementById("winAmount");
-  const confettiCanvas = document.getElementById("confettiCanvas");
-  const cctx = confettiCanvas.getContext("2d");
+{
+    q: "Теріден жасалған бие саууға арналған ыдыс",
+    options: [
+        "A) балға",
+        "B) найза",
+        "C) ожау",
+        "D) көнек"
+    ],
+    answer: 3
+},
 
-  // ===================== СОСТОЯНИЕ =====================
-  let profile = null;
-  let ws = null;
-  let wsReconnectDelay = 1200;
-  let currentState = null;
-  let myBetPlaced = false;
-  let myBetActive = false;
-  let lastSeenRoundId = null;
-  let lastHistoryKey = null;      // чтобы не перерисовывать историю на каждый тик
-  let lastMultiplierText = null;  // чтобы не трогать DOM без изменений
-  let curvePoints = [];
-  let drawPending = false;
-  let lastProfileSync = 0;
-  const PROFILE_SYNC_MS = 2500;
+{
+    q: "Қазіргі қазақ оюларымен ұқсас келетін ою-өрнектер бар бұйымдар табылған қорған",
+    options: [
+        "A) Ботай",
+        "B) Есік",
+        "C) Шілікті",
+        "D) Пазырық"
+    ],
+    answer: 3
+},
 
-  function fmt(n) {
-    return Math.round(n).toLocaleString("ru-RU").replace(/,/g, " ");
-  }
+{
+    q: "Қазақтар кең тараған ағаштан шабылған ыдыс түрлері",
+    options: [
+        "A) саба, торсық, мес, көнек",
+        "B) балға, балта, найза",
+        "C) айыр, тырма, күрек",
+        "D) тегене, шара, ожау, астау"
+    ],
+    answer: 3
+},
 
-  // ripple-координаты для .btn::after
-  document.addEventListener("pointerdown", (e) => {
-    const btn = e.target.closest(".btn");
-    if (!btn) return;
-    const r = btn.getBoundingClientRect();
-    btn.style.setProperty("--rx", `${((e.clientX - r.left) / r.width) * 100}%`);
-    btn.style.setProperty("--ry", `${((e.clientY - r.top) / r.height) * 100}%`);
-  });
+{
+    q: "Қазақтарда жабайы аң терісінен пішілген сыртқы киім",
+    options: [
+        "A) тырма",
+        "B) күрек",
+        "C) тон (ішік)",
+        "D) көнек"
+    ],
+    answer: 2
+},
 
-  // ===================== ЛОГИН =====================
-  pincodeInput.addEventListener("input", () => {
-    pincodeInput.value = pincodeInput.value.replace(/\D/g, "").slice(0, 6);
-  });
+{
+    q: "Байлық пен молшылықты, дәулет пен еркіндікті білдіретін, киізден жасалған бұйымдарда қолданылатын ою-өрнек",
+    options: [
+        "A) толқын",
+        "B) жұлдыз",
+        "C) қошқармүйіз",
+        "D) құланкірпі"
+    ],
+    answer: 2
+},
 
-  loginForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    loginError.hidden = true;
-    const pincode = pincodeInput.value.trim();
-    if (pincode.length !== 6) {
-      loginError.textContent = "Введите 6-значный пинкод из бота";
-      loginError.hidden = false;
-      return;
-    }
-    loginSubmitBtn.disabled = true;
-    loginSubmitBtn.textContent = "Входим…";
-    try {
-      const res = await fetch(apiUrl("/api/login"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pincode }),
-      });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.detail || "Неверный пинкод");
-      }
-      const loginData = await res.clone().json().catch(() => null);
-      if (loginData?.token) localStorage.setItem("romb_session_token", loginData.token);
-      await fetchProfile();
+{
+    q: "Қазақ оюларына ұқсас ою-өрнектермен безендірілген Есік қорғанынан табылған жәдігер",
+    options: [
+        "A) «Күміс адам»",
+        "B) «Алтын адам»",
+        "C) «Шілікті әйелі»",
+        "D) «Сармат әйелі»"
+    ],
+    answer: 1
+},
 
-      loginSuccessOverlay.hidden = false;
-      requestAnimationFrame(() => loginSuccessOverlay.classList.add("show"));
-      await new Promise((resolve) => setTimeout(resolve, 650));
-      loginSuccessOverlay.classList.remove("show");
+{
+    q: "«Қазақтың ою-өрнегі - сақ, үйсін, ғұн, түркі, қаңлы, қыпшақ секілді көне көшпелі тайпалар өнерінің негізінде қалыптасты» деп жазған",
+    options: [
+        "A) Ы. Алтынсарин",
+        "B) Ш. Уәлиханов",
+        "C) А. Құнанбаев",
+        "D) Ә. Марғұлан"
+    ],
+    answer: 3
+},
 
-      appScreen.hidden = false;
-      appScreen.classList.remove("entering");
-      void appScreen.offsetWidth;
-      appScreen.classList.add("entering");
-      loginScreen.hidden = true;
-      setTimeout(() => { loginSuccessOverlay.hidden = true; }, 400);
+{
+    q: "Көшпелі өмірге бейімделген, ерте заманнан келе жатқан көшпелілердің баспанасы",
+    options: [
+        "A) там",
+        "B) киіз үй",
+        "C) сарай",
+        "D) қақыра"
+    ],
+    answer: 1
+},
 
-      connectWS();
-    } catch (err) {
-      loginError.textContent = err.message;
-      loginError.hidden = false;
-    } finally {
-      loginSubmitBtn.disabled = false;
-      loginSubmitBtn.textContent = "Войти";
-    }
-  });
+{
+    q: "Жезқазған маңындағы кен орындарын тауып, бұл аумақтың көне металлургия орталықтарының бірі болғанын дәлелдеген",
+    options: [
+        "A) К. Ақышев",
+        "B) Ш. Шөкин",
+        "C) Қ. Сәтбаев",
+        "D) Ә. Марғұлан"
+    ],
+    answer: 2
+},
 
-  logoutBtn.addEventListener("click", async () => {
-    await fetch(apiUrl("/api/logout"), { method: "POST", headers: apiHeaders() });
-    if (ws) { ws.onclose = null; ws.close(); }
-    localStorage.removeItem("romb_session_token");
-    location.reload();
-  });
+{
+    q: "Кілемнің алғашқы үлгітүрлері табылған Алтай маңындағы қола дәуіріне жататын қорғандар",
+    options: [
+        "A) Шілікті, Берел",
+        "B) Бесшатыр, Берел",
+        "C) Тасмола, Есік",
+        "D) Пазырық, Нойын-Улинск"
+    ],
+    answer: 3
+},
 
-  profileChip.addEventListener("click", () => {
-    const willShow = profileDropdown.hidden;
-    profileDropdown.hidden = !willShow;
-    profileChip.setAttribute("aria-expanded", String(willShow));
-  });
-  document.addEventListener("click", (e) => {
-    if (!profileChip.contains(e.target) && !profileDropdown.contains(e.target)) {
-      profileDropdown.hidden = true;
-      profileChip.setAttribute("aria-expanded", "false");
-    }
-  });
+{
+    q: "Өзіне ұнаған затты, бұйымды үй иесінен сұрап алу салты",
+    options: [
+        "A) сырға салу",
+        "B) сүйінші",
+        "C) жоқтау",
+        "D) қалау"
+    ],
+    answer: 3
+},
 
-  // ===================== ЗАГРУЗКА ПРОФИЛЯ =====================
-  async function fetchProfile() {
-    const res = await fetch(apiUrl("/api/profile"), { headers: apiHeaders() });
-    if (!res.ok) throw new Error("unauth");
-    const prevBalance = profile ? profile.balance : null;
-    profile = await res.json();
-    renderProfile(prevBalance);
-  }
+{
+    q: "Қабір үстіне құлпытастар тұрғызудың кең таралған аймағы",
+    options: [
+        "A) Батыс Қазақстан",
+        "B) Шығыс Қазақстан",
+        "C) Солтүстік Қазақстан",
+        "D) Оңтүстік Қазақстан"
+    ],
+    answer: 0
+},
 
-  function renderProfile(prevBalance = null) {
-    if (!profile) return;
-    nicknameValue.textContent = profile.nickname;
-    pdBank.textContent = fmt(profile.bank);
-    pdLvl.textContent = profile.lvl;
+{
+    q: "Қазақтың ұлттық ою-өрнек түрлерін сәйкестендіріңіз: 1. Зооморфтық 2. Өсімдік тектес 3. Космогониялық 4. Геометриялық",
+    options: [
+        "A) 1-В, 2-А, 3-С, 4-D",
+        "B) 1-А, 2-С, 3-D, 4-В",
+        "C) 1-В, 2-С, 3-А, 4-D",
+        "D) 1-С, 2-D, 3-В, 4-А",
+        "E) 1-С, 2-В, 3-D, 4-А"
+    ],
+    answer: 2
+},
 
-    const wrap = balanceValue.parentElement;
-    if (prevBalance !== null && prevBalance !== profile.balance) {
-      wrap.classList.remove("balance-pulse", "balance-drop");
-      void wrap.offsetWidth;
-      wrap.classList.add(profile.balance > prevBalance ? "balance-pulse" : "balance-drop");
-    }
-    balanceValue.textContent = fmt(profile.balance);
-    pdBalance.textContent = fmt(profile.balance);
-  }
+{
+    q: "Тоқылу ерекшелігіне қарай қазақ кілемдерінің түрлері",
+    options: [
+        "A) түкті және тақыр",
+        "B) көлденеңінен және тігінен",
+        "C) жанама және тікелей",
+        "D) киізді және жібекті"
+    ],
+    answer: 0
+},
 
-  async function bootApp() {
-    try {
-      await fetchProfile();
-    } catch {
-      loginScreen.hidden = false;
-      appScreen.hidden = true;
-      return;
-    }
-    loginScreen.hidden = true;
-    appScreen.hidden = false;
-    connectWS();
-  }
+{
+    q: "Қайың, қараағаш, үйеңкі ағашынан дайындалатын құрал-саймандар",
+    options: [
+        "A) сырмақ, текемет, аяққап",
+        "B) түскиіз, алаша",
+        "C) айыр, тырма, күрек"
+    ],
+    answer: 2
+}
 
-  // единый цикл синхронизации профиля (без дублирующего интервала)
-  setInterval(() => {
-    if (!appScreen.hidden && localStorage.getItem("romb_session_token") && document.visibilityState === "visible") {
-      fetchProfile().catch(() => {});
-    }
-  }, 4000);
+];
 
-  // ===================== НАВИГАЦИЯ =====================
-  openCrashBtn.addEventListener("click", () => {
-    menuView.hidden = true;
-    crashView.hidden = false;
-    resizeCanvas();
-  });
-  backToMenuBtn.addEventListener("click", () => {
-    crashView.hidden = true;
-    menuView.hidden = false;
-  });
+let shown = 0;
 
-  // ===================== СТАВКА: БЫСТРЫЕ КНОПКИ =====================
-  document.querySelectorAll(".qbtn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const cur = parseInt(betAmountInput.value || "0", 10);
-      const bal = profile ? profile.balance : 0;
-      if (btn.dataset.op === "half") betAmountInput.value = Math.max(100, Math.floor(cur / 2));
-      if (btn.dataset.op === "double") betAmountInput.value = Math.min(bal, cur * 2 || 100);
-      if (btn.dataset.op === "max") betAmountInput.value = bal;
-    });
-  });
+const container = document.getElementById("questions");
 
-  autoCashoutToggle.addEventListener("change", () => {
-    autoCashoutInput.disabled = !autoCashoutToggle.checked;
-  });
+questions.forEach((item, index) => {
 
-  // ===================== WEBSOCKET =====================
-  function setConnStatus(state) {
-    connDot.className = "conn-dot" + (state === "live" ? " live" : state === "reconnecting" ? " reconnecting" : "");
-    connText.textContent = state === "live" ? "В сети" : state === "reconnecting" ? "Переподключение…" : "Подключение…";
-  }
+    const card = document.createElement("div");
+    card.className = "question";
 
-  function connectWS() {
-    if (ws) { ws.onclose = null; ws.onmessage = null; try { ws.close(); } catch {} }
-    setConnStatus("connecting");
-    const wsBase = API_BASE_URL.replace(/^http:/, "ws:").replace(/^https:/, "wss:").replace(/\/$/, "");
-    ws = new WebSocket(`${wsBase}/ws/crash`);
+    const optionsHTML = item.options.map((option, i) => {
 
-    ws.onopen = () => {
-      wsReconnectDelay = 1200;
-      setConnStatus("live");
-    };
-    ws.onmessage = (evt) => {
-      let state;
-      try { state = JSON.parse(evt.data); } catch { return; }
-      handleState(state);
-    };
-    ws.onerror = () => setConnStatus("reconnecting");
-    ws.onclose = () => {
-      setConnStatus("reconnecting");
-      setTimeout(() => { if (!appScreen.hidden) connectWS(); }, wsReconnectDelay);
-      wsReconnectDelay = Math.min(wsReconnectDelay * 1.5, 8000);
-    };
-  }
+        return `
+            <div class="option" data-index="${i}">
+                ${option}
+            </div>
+        `;
 
-  function handleState(state) {
-    const prevPhase = currentState ? currentState.phase : null;
-    currentState = state;
+    }).join("");
 
-    if (state.round_id !== lastSeenRoundId) {
-      lastSeenRoundId = state.round_id;
-      myBetPlaced = false;
-      myBetActive = false;
-      curvePoints = [];
-      lastMultiplierText = null;
-      betError.hidden = true;
-    }
+    card.innerHTML = `
 
-    renderHistory(state.history);
-    renderPhase(state, prevPhase);
-    scheduleRocketDraw(state);
+        <div class="question-top">
 
-    const now = Date.now();
-    if (now - lastProfileSync > PROFILE_SYNC_MS) {
-      lastProfileSync = now;
-      fetchProfile().catch(() => {});
-    }
-  }
+            <div class="number">
+                ${index + 1}
+            </div>
 
-  // Перерисовываем историю только когда она реально изменилась —
-  // раньше DOM пересобирался на КАЖДЫЙ тик мультипликатора, что и вызывало лаги.
-  function renderHistory(history) {
-    const key = history.join(",");
-    if (key === lastHistoryKey) return;
-    lastHistoryKey = key;
+            <div class="question-text">
+                ${item.q}
+            </div>
 
-    const frag = document.createDocumentFragment();
-    history.forEach((val) => {
-      const chip = document.createElement("div");
-      let cls = "hc-low";
-      if (val >= 10) cls = "hc-high";
-      else if (val >= 2) cls = "hc-mid";
-      chip.className = `history-chip ${cls}`;
-      chip.textContent = `${val.toFixed(2)}x`;
-      frag.appendChild(chip);
-    });
-    historyStrip.innerHTML = "";
-    historyStrip.appendChild(frag);
-  }
+        </div>
 
-  let countdownTimer = null;
-  function startSmoothCountdown(endsIn) {
-    clearInterval(countdownTimer);
-    const totalMs = Math.max(0, Number(endsIn) || 0) * 1000;
-    const endAt = performance.now() + totalMs;
-    countdownRing.hidden = totalMs <= 0;
-    const tick = () => {
-      const left = Math.max(0, endAt - performance.now());
-      countdownValue.textContent = Math.ceil(left / 1000);
-      if (totalMs > 0) {
-        const frac = left / totalMs;
-        ringBar.style.strokeDashoffset = String(RING_CIRC * (1 - frac));
-      }
-      if (left > 0 && currentState?.phase === "waiting") {
-        countdownTimer = setTimeout(tick, 50);
-      }
-    };
-    tick();
-  }
+        <div class="options">
+            ${optionsHTML}
+        </div>
 
-  function renderPhase(state, prevPhase) {
-    multiplierValue.classList.remove("mv-running", "mv-crashed");
+        <button class="answer-btn">
+            👁 Жауабын көрсету
+        </button>
 
-    if (state.phase === "waiting") {
-      countdownRing.hidden = false;
-      phaseLabel.textContent = "Ставки принимаются";
-      setMultiplierText("1.00x");
-      startSmoothCountdown(state.phase_ends_in);
-      updateActionButton("waiting");
-    } else if (state.phase === "running") {
-      clearInterval(countdownTimer);
-      countdownRing.hidden = true;
-      phaseLabel.textContent = "Полёт";
-      multiplierValue.classList.add("mv-running");
-      setMultiplierText(`${state.multiplier.toFixed(2)}x`);
-      countdownValue.textContent = "";
-      updateActionButton("running", state.multiplier);
-    } else if (state.phase === "crashed") {
-      clearInterval(countdownTimer);
-      countdownRing.hidden = true;
-      phaseLabel.textContent = "Крах!";
-      multiplierValue.classList.add("mv-crashed");
-      setMultiplierText(`${state.crash_point.toFixed(2)}x`);
-      countdownValue.textContent = "";
-      updateActionButton("crashed");
+        <div class="answer">
+            ✅ Дұрыс жауап:
+            <strong>${item.options[item.answer]}</strong>
+        </div>
 
-      if (prevPhase === "running") {
-        stageBox.classList.remove("crashed-flash");
-        void stageBox.offsetWidth;
-        stageBox.classList.add("crashed-flash");
-        if (myBetActive) {
-          myBetActive = false;
-          showBetLostFeedback(state.crash_point);
+    `;
+
+    container.appendChild(card);
+
+});
+
+
+document.querySelectorAll(".answer-btn").forEach((button, index) => {
+
+    button.addEventListener("click", () => {
+
+        const card = button.closest(".question");
+        const answer = card.querySelector(".answer");
+        const correctOption = card.querySelector(
+            `.option[data-index="${questions[index].answer}"]`
+        );
+
+        if (!answer.classList.contains("show")) {
+
+            answer.classList.add("show");
+
+            correctOption.classList.add("correct");
+
+            button.innerHTML = "✓ Жауап көрсетілді";
+
+            shown++;
+
+            document.getElementById("counter").textContent =
+                `${shown} / ${questions.length}`;
+
+            document.getElementById("progressBar").style.width =
+                `${(shown / questions.length) * 100}%`;
+
+        } else {
+
+            answer.classList.remove("show");
+
+            correctOption.classList.remove("correct");
+
+            button.innerHTML = "👁 Жауабын көрсету";
+
+            shown--;
+
+            document.getElementById("counter").textContent =
+                `${shown} / ${questions.length}`;
+
+            document.getElementById("progressBar").style.width =
+                `${(shown / questions.length) * 100}%`;
         }
-      }
-    }
-  }
 
-  // не трогаем textContent, если значение не изменилось — экономит reflow на частых тиках WS
-  function setMultiplierText(text) {
-    if (text === lastMultiplierText) return;
-    lastMultiplierText = text;
-    multiplierValue.textContent = text;
-  }
-
-  function showBetLostFeedback(crashPoint) {
-    betError.hidden = false;
-    betError.textContent = `Крах на ${crashPoint.toFixed(2)}x — ставка сгорела`;
-    fetchProfile().catch(() => {});
-  }
-
-  function updateActionButton(phase, multiplier) {
-    actionBtn.classList.remove("state-cashout", "state-locked");
-
-    if (phase === "waiting") {
-      if (myBetPlaced) {
-        actionBtn.textContent = "Ставка принята ✓";
-        actionBtn.classList.add("state-locked");
-        actionBtn.disabled = true;
-      } else {
-        actionBtn.textContent = "Поставить";
-        actionBtn.disabled = false;
-      }
-    } else if (phase === "running") {
-      if (myBetActive) {
-        const bet = parseInt(betAmountInput.value || "0", 10);
-        const potential = Math.floor(bet * multiplier);
-        actionBtn.textContent = `Забрать ${fmt(potential)}`;
-        actionBtn.classList.add("state-cashout");
-        actionBtn.disabled = false;
-      } else {
-        actionBtn.textContent = myBetPlaced ? "Уже забрано" : "Раунд уже идёт";
-        actionBtn.classList.add("state-locked");
-        actionBtn.disabled = true;
-      }
-    } else {
-      actionBtn.textContent = "Дождитесь раунда";
-      actionBtn.classList.add("state-locked");
-      actionBtn.disabled = true;
-    }
-  }
-
-  actionBtn.addEventListener("click", async () => {
-    if (!currentState) return;
-    betError.hidden = true;
-
-    if (currentState.phase === "waiting" && !myBetPlaced) {
-      const amount = parseInt(betAmountInput.value || "0", 10);
-      const body = { amount };
-      if (autoCashoutToggle.checked) {
-        body.auto_cashout = parseFloat(autoCashoutInput.value || "0");
-      }
-      actionBtn.disabled = true;
-      try {
-        const res = await fetch(apiUrl("/api/crash/bet"), {
-          method: "POST",
-          headers: apiHeaders({ "Content-Type": "application/json" }),
-          body: JSON.stringify(body),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.detail || "Ошибка ставки");
-        const prevBal = profile ? profile.balance : null;
-        profile.balance = data.balance;
-        renderProfile(prevBal);
-        myBetPlaced = true;
-        myBetActive = true;
-        updateActionButton("waiting");
-      } catch (err) {
-        betError.textContent = err.message;
-        betError.hidden = false;
-        actionBtn.disabled = false;
-      }
-    } else if (currentState.phase === "running" && myBetActive) {
-      actionBtn.disabled = true;
-      try {
-        const res = await fetch(apiUrl("/api/crash/cashout"), { method: "POST", headers: apiHeaders() });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.detail || "Ошибка забора");
-        myBetActive = false;
-        const prevBal = profile ? profile.balance : null;
-        profile.balance = data.balance;
-        renderProfile(prevBal);
-        updateActionButton("running", currentState.multiplier);
-        showWinToast(data.multiplier, data.win);
-        launchConfetti();
-      } catch (err) {
-        betError.textContent = err.message;
-        betError.hidden = false;
-        actionBtn.disabled = false;
-      }
-    }
-  });
-
-  // ===================== ТОСТ ВЫИГРЫША =====================
-  let toastTimer = null;
-  function showWinToast(mult, amount) {
-    winMult.textContent = `${mult.toFixed(2)}x`;
-    winAmount.textContent = fmt(amount);
-    winToast.hidden = false;
-    requestAnimationFrame(() => winToast.classList.add("show"));
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => {
-      winToast.classList.remove("show");
-      setTimeout(() => { winToast.hidden = true; }, 250);
-    }, 2600);
-  }
-
-  // ===================== КОНФЕТТИ =====================
-  let confettiParticles = [];
-  let confettiRAF = null;
-  function resizeConfetti() {
-    confettiCanvas.width = window.innerWidth;
-    confettiCanvas.height = window.innerHeight;
-  }
-  window.addEventListener("resize", resizeConfetti, { passive: true });
-  resizeConfetti();
-
-  function launchConfetti() {
-    const colors = ["#F5C94B", "#7C5CFF", "#38E1C6", "#FF9DB2"];
-    for (let i = 0; i < 60; i++) {
-      confettiParticles.push({
-        x: confettiCanvas.width / 2 + (Math.random() - 0.5) * 120,
-        y: 90,
-        vx: (Math.random() - 0.5) * 6,
-        vy: Math.random() * -6 - 2,
-        size: Math.random() * 5 + 3,
-        color: colors[Math.floor(Math.random() * colors.length)],
-        life: 0,
-      });
-    }
-    if (!confettiRAF) confettiRAF = requestAnimationFrame(tickConfetti);
-  }
-
-  function tickConfetti() {
-    cctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
-    confettiParticles.forEach((p) => {
-      p.vy += 0.18;
-      p.x += p.vx;
-      p.y += p.vy;
-      p.life += 1;
-      cctx.globalAlpha = Math.max(0, 1 - p.life / 90);
-      cctx.fillStyle = p.color;
-      cctx.fillRect(p.x, p.y, p.size, p.size);
     });
-    confettiParticles = confettiParticles.filter((p) => p.life < 90);
-    cctx.globalAlpha = 1;
-    if (confettiParticles.length > 0) {
-      confettiRAF = requestAnimationFrame(tickConfetti);
-    } else {
-      confettiRAF = null;
-    }
-  }
 
-  // ===================== АНИМАЦИЯ РАКЕТЫ =====================
-  function resizeCanvas() {
-    const rect = rocketCanvas.parentElement.getBoundingClientRect();
-    const dpr = Math.min(devicePixelRatio || 1, 2); // ограничиваем DPR — на 3x-экранах экономит массу пикселей
-    rocketCanvas.width = rect.width * dpr;
-    rocketCanvas.height = rect.height * dpr;
-    rocketCanvas.style.width = rect.width + "px";
-    rocketCanvas.style.height = rect.height + "px";
-    rctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  }
-  let resizeRAF = null;
-  window.addEventListener("resize", () => {
-    if (crashView.hidden) return;
-    if (resizeRAF) cancelAnimationFrame(resizeRAF);
-    resizeRAF = requestAnimationFrame(resizeCanvas);
-  }, { passive: true });
+});
 
-  function scheduleRocketDraw(state) {
-    if (drawPending) return;
-    drawPending = true;
-    requestAnimationFrame(() => {
-      drawPending = false;
-      if (!crashView.hidden && currentState && document.visibilityState === "visible") drawRocket(currentState);
-    });
-  }
-
-  function drawRocket(state) {
-    const w = rocketCanvas.clientWidth;
-    const h = rocketCanvas.clientHeight;
-    rctx.clearRect(0, 0, w, h);
-
-    if (state.phase === "waiting") {
-      curvePoints = [];
-      return;
-    }
-
-    const mult = state.phase === "crashed" ? state.crash_point : state.multiplier;
-    curvePoints.push(mult);
-    if (curvePoints.length > 400) curvePoints.shift();
-
-    const maxMult = Math.max(2, mult * 1.15);
-    const padding = 24;
-    const toXY = (i, m) => {
-      const x = padding + (i / Math.max(1, curvePoints.length - 1)) * (w - padding * 2) * 0.85;
-      const y = h - padding - (Math.min(m, maxMult) / maxMult) * (h - padding * 2);
-      return [x, y];
-    };
-
-    rctx.beginPath();
-    curvePoints.forEach((m, i) => {
-      const [x, y] = toXY(i, m);
-      if (i === 0) rctx.moveTo(x, y);
-      else rctx.lineTo(x, y);
-    });
-    const grad = rctx.createLinearGradient(0, 0, w, 0);
-    grad.addColorStop(0, "#38E1C6");
-    grad.addColorStop(1, state.phase === "crashed" ? "#FF4D6D" : "#7C5CFF");
-    rctx.strokeStyle = grad;
-    rctx.lineWidth = 3;
-    rctx.lineJoin = "round";
-    rctx.shadowColor = state.phase === "crashed" ? "rgba(255,77,109,0.5)" : "rgba(124,92,255,0.45)";
-    rctx.shadowBlur = 10;
-    rctx.stroke();
-    rctx.shadowBlur = 0;
-
-    if (curvePoints.length > 1) {
-      const [lastX] = toXY(curvePoints.length - 1, curvePoints[curvePoints.length - 1]);
-      rctx.lineTo(lastX, h - padding);
-      rctx.lineTo(padding, h - padding);
-      rctx.closePath();
-      rctx.fillStyle = "rgba(124,92,255,0.10)";
-      rctx.fill();
-    }
-
-    if (curvePoints.length > 0) {
-      const [x, y] = toXY(curvePoints.length - 1, curvePoints[curvePoints.length - 1]);
-      rctx.beginPath();
-      rctx.arc(x, y, 6, 0, Math.PI * 2);
-      rctx.fillStyle = state.phase === "crashed" ? "#FF4D6D" : "#F5C94B";
-      rctx.shadowColor = state.phase === "crashed" ? "#FF4D6D" : "#F5C94B";
-      rctx.shadowBlur = 16;
-      rctx.fill();
-      rctx.shadowBlur = 0;
-
-      if (state.phase === "running") {
-        rctx.font = "20px sans-serif";
-        rctx.textAlign = "center";
-        rctx.textBaseline = "middle";
-        rctx.save();
-        rctx.translate(x, y - 14);
-        rctx.rotate(-0.5);
-        rctx.fillText("🚀", 0, 0);
-        rctx.restore();
-      }
-    }
-  }
-
-  // цикл перерисовки идёт, только пока вкладка видима и мы в игре — экономит CPU в фоне
-  function visualLoop() {
-    if (!crashView.hidden && currentState?.phase === "running" && document.visibilityState === "visible") {
-      scheduleRocketDraw(currentState);
-    }
-    requestAnimationFrame(visualLoop);
-  }
-  requestAnimationFrame(visualLoop);
-
-  // ===================== ФОНОВОЕ ЗВЁЗДНОЕ ПОЛЕ =====================
-  // Лёгкий, редко обновляемый слой — не requestAnimationFrame на каждый кадр,
-  // а интервал ~2 fps, этого достаточно для мерцания и почти не грузит CPU.
-  const bgCanvas = document.getElementById("bgCanvas");
-  const bctx = bgCanvas.getContext("2d");
-  let stars = [];
-  function initStars() {
-    const dpr = Math.min(devicePixelRatio || 1, 1.5);
-    bgCanvas.width = window.innerWidth * dpr;
-    bgCanvas.height = window.innerHeight * dpr;
-    bgCanvas.style.width = window.innerWidth + "px";
-    bgCanvas.style.height = window.innerHeight + "px";
-    bctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    const count = Math.min(90, Math.floor((window.innerWidth * window.innerHeight) / 14000));
-    stars = Array.from({ length: count }, () => ({
-      x: Math.random() * window.innerWidth,
-      y: Math.random() * window.innerHeight,
-      r: Math.random() * 1.4 + 0.3,
-      phase: Math.random() * Math.PI * 2,
-    }));
-  }
-  let starT = 0;
-  function drawStars() {
-    if (document.visibilityState !== "visible") return;
-    bctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-    starT += 0.08;
-    for (const s of stars) {
-      const tw = 0.35 + 0.65 * Math.abs(Math.sin(starT + s.phase));
-      bctx.globalAlpha = tw;
-      bctx.fillStyle = "#C9C2FF";
-      bctx.beginPath();
-      bctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-      bctx.fill();
-    }
-    bctx.globalAlpha = 1;
-  }
-  initStars();
-  drawStars();
-  window.addEventListener("resize", () => { initStars(); drawStars(); }, { passive: true });
-  setInterval(drawStars, 500);
-
-  // ===================== СТАРТ =====================
-  bootApp();
-})();
 </script>
+
 </body>
 </html>
