@@ -3,230 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIRA Platform — Web Portal</title>
-    <!-- Подключаем Telegram WebApp API -->
+    <title>Краш | Lira</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- Подключаем Tailwind CSS для красивого дизайна -->
-    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .glass { background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
-        .glow-purple { box-shadow: 0 0 40px -10px rgba(147, 51, 234, 0.3); }
-        .glow-btn { box-shadow: 0 0 20px rgba(168, 85, 247, 0.4); }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background: #12131C; color: #FFF; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; }
+        .card { background: #1E202D; border-radius: 16px; padding: 20px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+        .balance-box { font-size: 18px; color: #8E92A8; margin-bottom: 15px; }
+        .balance-box span { color: #4EAC6D; font-weight: bold; }
+        .crash-display { height: 150px; background: #171822; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 48px; font-weight: bold; color: #5865F2; margin-bottom: 20px; border: 1px solid #2E3245; }
+        .crash-display.crashed { color: #FF4D4D; }
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .input-group label { display: block; font-size: 12px; color: #8E92A8; margin-bottom: 5px; }
+        .input-group input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #2E3245; background: #171822; color: #FFF; font-size: 16px; outline: none; }
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-start { background: #5865F2; color: white; }
+        .btn-take { background: #4EAC6D; color: white; display: none; }
+        .btn:disabled { background: #3A3D4D; cursor: not-allowed; }
     </style>
 </head>
-<body class="bg-[#0b0f19] text-gray-100 min-h-screen flex flex-col justify-between selection:bg-purple-500 selection:text-white">
+<body>
 
-    <!-- ЭКРАН АВТОРИЗАЦИИ (PIN-код) -->
-    <div id="auth-screen" class="fixed inset-0 z-50 flex items-center justify-center bg-[#0b0f19]/95 backdrop-blur-xl p-4">
-        <div class="glass w-full max-w-md p-8 rounded-3xl glow-purple text-center">
-            <div class="w-16 h-16 bg-purple-600/20 border border-purple-500/30 rounded-2xl mx-auto flex items-center justify-center mb-6 text-purple-400 text-2xl font-bold">🔒</div>
-            <h1 class="text-2xl font-bold tracking-tight mb-2">Авторизация LIRA</h1>
-            <p class="text-gray-400 text-sm mb-6">Введите PIN-код для доступа. Получите его в боте командой <span class="text-purple-400 font-mono">/mypincode</span></p>
-            
-            <input type="password" id="pin-input" placeholder="Введите 4-значный PIN" maxlength="6" class="w-full bg-gray-900/80 border border-gray-800 rounded-2xl px-4 py-3.5 text-center text-lg tracking-widest text-white focus:outline-none focus:border-purple-500 transition mb-4">
-            
-            <button onclick="verifyPin()" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-semibold py-3.5 rounded-2xl transition glow-btn">Войти в систему</button>
-            
-            <p id="error-msg" class="text-red-400 text-xs mt-3 hidden">Неверный PIN-код. Попробуйте еще раз.</p>
-        </div>
+<div class="card">
+    <h2>🚀 Игра «Краш»</h2>
+    <div class="balance-box">Баланс: <span id="balance">0</span> LIRA</div>
+
+    <div class="input-group" id="idInputGroup" style="display: none;">
+        <label>Ваш Telegram ID:</label>
+        <input type="number" id="manualUserId" placeholder="Введите ID">
     </div>
 
-    <!-- ОСНОВНОЙ ИНТЕРФЕЙС WebApp (Скрыт до ввода пина) -->
-    <div id="app-content" class="hidden flex-1 flex flex-col max-w-4xl mx-auto w-full p-4 md:p-6 space-y-6">
-        <!-- Шапка профиля -->
-        <header class="glass rounded-3xl p-6 flex flex-col md:flex-row justify-between items-center gap-4">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center font-bold text-xl shadow-lg">⚡</div>
-                <div>
-                    <h2 id="user-name" class="font-bold text-lg">Игрок</h2>
-                    <p class="text-xs text-purple-400 font-medium">Веб-портал LIRA</p>
-                </div>
-            </div>
-            <div class="glass px-5 py-2.5 rounded-2xl flex items-center gap-3 bg-gray-900/40">
-                <span class="text-sm text-gray-400">Баланс:</span>
-                <span id="user-balance" class="font-extrabold text-purple-400 text-lg">0 лир</span>
-            </div>
-        </header>
+    <div class="crash-display" id="multiplier">1.00x</div>
 
-        <!-- ИГРОВОЙ МОДУЛЬ: КРАШ -->
-        <main class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="glass rounded-3xl p-6 md:col-span-2 flex flex-col justify-between relative overflow-hidden">
-                <div class="absolute -right-10 -top-10 w-40 h-40 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
-                <div>
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="font-bold text-xl flex items-center gap-2">🚀 Игра: Краш</h3>
-                        <div class="flex items-center gap-2 bg-gray-900/60 px-3 py-1.5 rounded-xl border border-gray-800">
-                            <span class="text-xs text-gray-400">Автозабор:</span>
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" id="autocashout-toggle" class="sr-only peer" checked>
-                                <div class="w-9 h-5 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-600"></div>
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-gray-900/60 rounded-2xl p-8 text-center border border-gray-800/80 mb-6 relative">
-                        <div id="crash-multiplier" class="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-300">1.00x</div>
-                        <p id="crash-status" class="text-xs text-gray-400 mt-2">Ожидание старта раунда...</p>
-                    </div>
-                </div>
-
-                <div class="space-y-4">
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="text-xs text-gray-400 block mb-1">Ставка (лир)</label>
-                            <input type="number" id="crash-bet" value="100" class="w-full bg-gray-900/80 border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                        </div>
-                        <div>
-                            <label class="text-xs text-gray-400 block mb-1">Множитель забора</label>
-                            <input type="number" step="0.1" id="crash-target" value="2.0" class="w-full bg-gray-900/80 border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                        </div>
-                    </div>
-                    <button id="crash-btn" onclick="toggleCrashGame()" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold py-3.5 rounded-xl transition glow-btn">Сделать ставку</button>
-                </div>
-            </div>
-
-            <!-- Сайдбар истории -->
-            <div class="glass rounded-3xl p-6 flex flex-col">
-                <h3 class="font-bold text-lg mb-4 flex items-center gap-2">📊 Статистика</h3>
-                <div class="space-y-2.5 flex-1 overflow-y-auto max-h-[300px] pr-1">
-                    <div class="flex justify-between items-center p-3 bg-gray-900/50 rounded-xl border border-gray-800 text-sm">
-                        <span class="text-gray-400">Последний кэф:</span>
-                        <span id="last-crash-val" class="font-bold text-purple-400">1.45x</span>
-                    </div>
-                    <p class="text-xs text-gray-500 text-center mt-4">Сессия защищена сквозным шифрованием WebApp.</p>
-                </div>
-            </div>
-        </main>
+    <div class="input-group">
+        <label>Ставка:</label>
+        <input type="number" id="betAmount" value="100" min="1">
     </div>
 
-    <footer class="text-center py-4 text-xs text-gray-600">LIRA Platform &bull; Secure WebApp Interface</footer>
+    <button id="btnStart" class="btn btn-start" onclick="startGame()">Сделать ставку</button>
+    <button id="btnTake" class="btn btn-take" onclick="takeMoney()">Забрать</button>
+</div>
 
-    <script>
-        // Инициализация Telegram WebApp
-        const tg = window.Telegram?.WebApp;
-        if (tg) { tg.expand(); }
+<script>
+    const SERVER_URL = "https://your-domain.com"; // ЗАМЕНИТЕ НА URL ВАШЕГО СЕРВЕРА
+    let tg = window.Telegram.WebApp;
+    let userId = null;
+    let currentMultiplier = 1.00;
+    let crashMultiplier = 1.00;
+    let gameInterval = null;
+    let isPlaying = false;
 
-        let userBalance = 0;
-        let userName = tg?.initDataUnsafe?.user?.first_name || "Игрок LIRA";
-        document.getElementById('user-name').innerText = userName;
+    // Определение ID пользователя
+    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+        userId = tg.initDataUnsafe.user.id;
+    } else {
+        document.getElementById('idInputGroup').style.display = 'block';
+    }
 
-        // Функция проверки PIN-кода через запрос на ваш хостинг RubyHost
-        async function verifyPin() {
-            const enteredPin = document.getElementById('pin-input').value.trim();
-            const errorMsg = document.getElementById('error-msg');
-            
-            // Автоматически берем Telegram ID открывшего приложение пользователя
-            const userId = tg?.initDataUnsafe?.user?.id;
-
-            // Защита для тестов в обычном браузере (если открыто не из Телеграма)
-            const finalUserId = userId || 123456789; 
-
-            if (!enteredPin) {
-                errorMsg.innerText = "Введите PIN-код!";
-                errorMsg.classList.remove('hidden');
-                return;
+    async function loadBalance() {
+        let activeId = userId || document.getElementById('manualUserId').value;
+        if (!activeId) return;
+        
+        try {
+            let res = await fetch(`${SERVER_URL}/get_balance?user_id=${activeId}`);
+            let data = await res.json();
+            if (data.status === 'ok') {
+                document.getElementById('balance').textContent = data.balance;
             }
+        } catch (e) {
+            console.error("Ошибка загрузки баланса", e);
+        }
+    }
 
-            try {
-                // Отправляем POST-запрос на ваш сервер RubyHost
-                const response = await fetch("https://ed959687.app.rubyhost.ru/api/login", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ 
-                        user_id: finalUserId, 
-                        pin: enteredPin 
-                    })
-                });
+    async function startGame() {
+        let activeId = userId || document.getElementById('manualUserId').value;
+        let bet = parseFloat(document.getElementById('betAmount').value);
 
-                const data = await response.json();
+        if (!activeId) return alert("Введите Ваш Telegram ID!");
+        if (!bet || bet <= 0) return alert("Введите корректную ставку!");
 
-                if (data.success) {
-                    // Успех! Подтягиваем реальный баланс из базы бота
-                    userBalance = data.balance;
-                    document.getElementById('user-balance').innerText = userBalance.toLocaleString() + " лир";
-                    
-                    // Скрываем окно авторизации, показываем игру
-                    document.getElementById('auth-screen').classList.add('hidden');
-                    document.getElementById('app-content').classList.remove('hidden');
-                } else {
-                    // Ошибка (неверный пин)
-                    errorMsg.innerText = data.error || "Неверный PIN-код.";
-                    errorMsg.classList.remove('hidden');
-                }
-            } catch (err) {
-                console.error(err);
-                errorMsg.innerText = "Ошибка соединения с сервером бота.";
-                errorMsg.classList.remove('hidden');
-            }
+        // Списание ставки на сервере
+        let res = await fetch(`${SERVER_URL}/start_crash`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ user_id: activeId, bet: bet })
+        });
+        let data = await res.json();
+
+        if (data.status !== 'ok') {
+            return alert(data.message || "Недостаточно средств!");
         }
 
-        // Логика игры "Краш" в интерфейсе
-        let isPlaying = false;
-        let crashInterval = null;
+        document.getElementById('balance').textContent = data.new_balance;
+        crashMultiplier = data.crash_point;
+        currentMultiplier = 1.00;
+        isPlaying = true;
 
-        function toggleCrashGame() {
-            const btn = document.getElementById('crash-btn');
-            const multEl = document.getElementById('crash-multiplier');
-            const statusEl = document.getElementById('crash-status');
-            const betInput = document.getElementById('crash-bet');
-            const targetInput = document.getElementById('crash-target');
-            const autoCashoutEnabled = document.getElementById('autocashout-toggle').checked;
+        // Переключение кнопок
+        document.getElementById('btnStart').style.display = 'none';
+        document.getElementById('btnTake').style.display = 'block';
+        document.getElementById('multiplier').classList.remove('crashed');
 
-            if (!isPlaying) {
-                let bet = parseInt(betInput.value);
-                if (isNaN(bet) || bet <= 0 || bet > userBalance) {
-                    alert('Неверная ставка или недостаточно средств на балансе!');
-                    return;
-                }
-                userBalance -= bet;
-                document.getElementById('user-balance').innerText = userBalance.toLocaleString() + " лир";
-
-                isPlaying = true;
-                btn.innerText = "Забрать досрочно";
-                btn.className = "w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold py-3.5 rounded-xl transition";
-                statusEl.innerText = "Раунд начался...";
-                
-                let currentMult = 1.00;
-                let target = parseFloat(targetInput.value) || 2.0;
-                let crashPoint = (Math.random() * 3 + 1.1).toFixed(2);
-
-                crashInterval = setInterval(() => {
-                    currentMult += 0.05;
-                    multEl.innerText = currentMult.toFixed(2) + "x";
-
-                    if (autoCashoutEnabled && currentMult >= target) {
-                        finishCrash(true, target, bet);
-                    } else if (currentMult >= crashPoint) {
-                        finishCrash(false, crashPoint, bet);
-                    }
-                }, 100);
+        // Запуск роста коэффициента
+        gameInterval = setInterval(() => {
+            currentMultiplier += 0.01 + (currentMultiplier * 0.005);
+            if (currentMultiplier >= crashMultiplier) {
+                endGame(false);
             } else {
-                finishCrash(true, parseFloat(multEl.innerText), parseInt(betInput.value));
+                document.getElementById('multiplier').textContent = currentMultiplier.toFixed(2) + 'x';
             }
-        }
+        }, 100);
+    }
 
-        function finishCrash(isWin, mult, bet) {
-            clearInterval(crashInterval);
-            isPlaying = false;
-            const btn = document.getElementById('crash-btn');
-            const statusEl = document.getElementById('crash-status');
-            
-            btn.innerText = "Сделать ставку";
-            btn.className = "w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold py-3.5 rounded-xl transition glow-btn";
+    async function takeMoney() {
+        if (!isPlaying) return;
+        clearInterval(gameInterval);
+        isPlaying = false;
 
-            if (isWin) {
-                let winAmt = Math.floor(bet * mult);
-                userBalance += winAmt;
-                statusEl.innerHTML = `<span class="text-emerald-400 font-bold">Победа! +${winAmt.toLocaleString()} лир</span>`;
-                document.getElementById('last-crash-val').innerText = mult.toFixed(2) + "x";
-            } else {
-                statusEl.innerHTML = `<span class="text-red-400 font-bold">Краш на ${mult}x. Проигрыш.</span>`;
-                document.getElementById('last-crash-val').innerText = mult + "x (Краш)";
-            }
-            document.getElementById('user-balance').innerText = userBalance.toLocaleString() + " лир";
-        }
-    </script>
+        let activeId = userId || document.getElementById('manualUserId').value;
+        let bet = parseFloat(document.getElementById('betAmount').value);
+        let winAmount = bet * currentMultiplier;
+
+        let res = await fetch(`${SERVER_URL}/win_crash`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ user_id: activeId, win_amount: winAmount, coef: currentMultiplier.toFixed(2) })
+        });
+        let data = await res.json();
+
+        document.getElementById('balance').textContent = data.new_balance;
+        alert(`Вы выиграли ${winAmount.toFixed(0)} LIRA! (x${currentMultiplier.toFixed(2)})`);
+        resetUI();
+    }
+
+    function endGame(isWin) {
+        clearInterval(gameInterval);
+        isPlaying = false;
+        document.getElementById('multiplier').textContent = crashMultiplier.toFixed(2) + 'x CRASH!';
+        document.getElementById('multiplier').classList.add('crashed');
+        resetUI();
+    }
+
+    function resetUI() {
+        document.getElementById('btnStart').style.display = 'block';
+        document.getElementById('btnTake').style.display = 'none';
+    }
+
+    setInterval(loadBalance, 3000); // Автообновление баланса каждые 3 сек
+</script>
 </body>
 </html>
