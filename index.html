@@ -3,59 +3,88 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>36 клеток</title>
+  <title>36 карт</title>
 
   <style>
     body {
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
       margin: 0;
+      padding: 20px;
       background: #222;
+      font-family: Arial, sans-serif;
     }
 
-    .grid {
+    .cards {
       display: grid;
-      grid-template-columns: repeat(6, 60px);
+      grid-template-columns: repeat(6, 1fr);
       gap: 8px;
+      max-width: 500px;
+      margin: auto;
     }
 
-    .cell {
-      width: 60px;
-      height: 60px;
+    .card {
+      height: 80px;
       background: gray;
       border-radius: 8px;
       cursor: pointer;
+
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      font-size: 22px;
+      font-weight: bold;
+      user-select: none;
       transition: 0.2s;
     }
 
-    .cell.white {
+    .card.white {
       background: white;
+    }
+
+    .red {
+      color: red;
+    }
+
+    .black {
+      color: black;
     }
   </style>
 </head>
 
 <body>
 
-  <div class="grid" id="grid"></div>
+  <div class="cards" id="cards"></div>
 
   <script>
-    const grid = document.getElementById("grid");
+    const cards = document.getElementById("cards");
 
-    // Создаём 36 клеток
-    for (let i = 0; i < 36; i++) {
-      const cell = document.createElement("div");
-      cell.classList.add("cell");
+    const ranks = ["6", "7", "8", "9", "10", "В", "Д", "К", "Т"];
+    const suits = [
+      { symbol: "♦️", class: "red" },
+      { symbol: "♥️", class: "red" },
+      { symbol: "♠️", class: "black" },
+      { symbol: "♣️", class: "black" }
+    ];
 
-      // Нажатие: серый <-> белый
-      cell.addEventListener("click", () => {
-        cell.classList.toggle("white");
+    ranks.forEach(rank => {
+      suits.forEach(suit => {
+        const card = document.createElement("div");
+
+        card.className = `card ${suit.class}`;
+
+        card.innerHTML = `
+          <div>${rank}</div>
+          <div>${suit.symbol}</div>
+        `;
+
+        card.addEventListener("click", () => {
+          card.classList.toggle("white");
+        });
+
+        cards.appendChild(card);
       });
-
-      grid.appendChild(cell);
-    }
+    });
   </script>
 
 </body>
