@@ -1,91 +1,197 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>36 карт</title>
-
-  <style>
-    body {
-      margin: 0;
-      padding: 20px;
-      background: #222;
-      font-family: Arial, sans-serif;
-    }
-
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 8px;
-      max-width: 500px;
-      margin: auto;
-    }
-
-    .card {
-      height: 80px;
-      background: gray;
-      border-radius: 8px;
-      cursor: pointer;
-
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-
-      font-size: 22px;
-      font-weight: bold;
-      user-select: none;
-      transition: 0.2s;
-    }
-
-    .card.white {
-      background: white;
-    }
-
-    .red {
-      color: red;
-    }
-
-    .black {
-      color: black;
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Почему бывают времена года</title>
+<style>
+  :root{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:#000;overflow:hidden;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+  #stage{position:relative;height:100vh;height:100dvh;aspect-ratio:9/16;max-width:100vw;margin:0 auto;background:#02030a;overflow:hidden}
+  canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .top{position:absolute;top:5%;left:0;right:0;text-align:center;color:#fff;font-weight:900;font-size:min(7.2vh,12vw);line-height:1.1;padding:0 6%;text-shadow:0 4px 18px rgba(0,0,0,.8);transition:opacity .3s}
+  .badge{position:absolute;top:22%;left:0;right:0;text-align:center;font-size:min(9vh,15vw);font-weight:900;text-shadow:0 4px 20px rgba(0,0,0,.9);opacity:0;transition:opacity .3s}
+  .cap{position:absolute;bottom:9%;left:5%;right:5%;text-align:center;color:#fff;font-weight:800;font-size:min(4.2vh,7vw);line-height:1.25;background:rgba(0,0,0,.45);border-radius:18px;padding:2.2vh 4vw;backdrop-filter:blur(4px);opacity:0;transition:opacity .3s}
+  .bar{position:absolute;left:0;bottom:0;height:5px;background:linear-gradient(90deg,#ffb300,#ff3d71);width:0}
+  #start{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2vh;background:rgba(2,3,10,.85);color:#fff;z-index:5;text-align:center;padding:0 8%}
+  #start button{font-size:min(4vh,7vw);font-weight:800;padding:1.6vh 6vw;border:0;border-radius:999px;background:linear-gradient(90deg,#ffb300,#ff3d71);color:#fff;cursor:pointer}
+  #start p{opacity:.75;font-size:min(2.4vh,4vw);margin:0}
+  #start h1{margin:0;font-size:min(5.4vh,9vw)}
+</style>
 </head>
-
 <body>
+<div id="stage">
+  <canvas id="c"></canvas>
+  <div class="top" id="top"></div>
+  <div class="badge" id="badge"></div>
+  <div class="cap" id="cap"></div>
+  <div class="bar" id="bar"></div>
+  <div id="start">
+    <h1>🌍 Почему бывают<br>времена года?</h1>
+    <button id="go">▶ Запустить</button>
+    <p>Включи запись экрана и жми «Запустить».<br>Озвучка включится сама (звук должен быть включён).</p>
+  </div>
+</div>
 
-  <div class="cards" id="cards"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+  var stage=document.getElementById('stage'), canvas=document.getElementById('c');
+  var topEl=document.getElementById('top'), badge=document.getElementById('badge'), cap=document.getElementById('cap'), bar=document.getElementById('bar');
+  var DUR=34;
 
-  <script>
-    const cards = document.getElementById("cards");
+  var renderer=new THREE.WebGLRenderer({canvas:canvas,antialias:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+  var scene=new THREE.Scene();
+  var camera=new THREE.PerspectiveCamera(60,9/16,0.1,200);
+  camera.position.set(0,6.5,12.5); camera.lookAt(0,0,0);
 
-    const ranks = ["6", "7", "8", "9", "10", "В", "Д", "К", "Т"];
-    const suits = [
-      { symbol: "♦️", class: "red" },
-      { symbol: "♥️", class: "red" },
-      { symbol: "♠️", class: "black" },
-      { symbol: "♣️", class: "black" }
-    ];
+  function resize(){
+    var w=stage.clientWidth,h=stage.clientHeight;
+    renderer.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix();
+  }
+  window.addEventListener('resize',resize); resize();
 
-    ranks.forEach(rank => {
-      suits.forEach(suit => {
-        const card = document.createElement("div");
+  // stars
+  var sg=new THREE.BufferGeometry(), sp=[];
+  for(var i=0;i<900;i++){
+    var r=60+Math.random()*40,a=Math.random()*6.283,b=Math.acos(2*Math.random()-1);
+    sp.push(r*Math.sin(b)*Math.cos(a),r*Math.cos(b),r*Math.sin(b)*Math.sin(a));
+  }
+  sg.setAttribute('position',new THREE.Float32BufferAttribute(sp,3));
+  scene.add(new THREE.Points(sg,new THREE.PointsMaterial({color:0xffffff,size:0.35})));
 
-        card.className = `card ${suit.class}`;
+  // sun
+  var sun=new THREE.Mesh(new THREE.SphereGeometry(1.1,32,32),new THREE.MeshBasicMaterial({color:0xffc933}));
+  scene.add(sun);
+  function glowTex(){
+    var c=document.createElement('canvas');c.width=c.height=256;var x=c.getContext('2d');
+    var g=x.createRadialGradient(128,128,10,128,128,128);
+    g.addColorStop(0,'rgba(255,220,120,1)');g.addColorStop(.35,'rgba(255,160,40,.45)');g.addColorStop(1,'rgba(255,120,0,0)');
+    x.fillStyle=g;x.fillRect(0,0,256,256);return new THREE.CanvasTexture(c);
+  }
+  var glow=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex(),transparent:true,blending:THREE.AdditiveBlending,depthWrite:false}));
+  glow.scale.set(6.5,6.5,1); scene.add(glow);
+  var light=new THREE.PointLight(0xffffff,2.2,0,0); scene.add(light);
+  scene.add(new THREE.AmbientLight(0x2a3350,0.55));
 
-        card.innerHTML = `
-          <div>${rank}</div>
-          <div>${suit.symbol}</div>
-        `;
+  // orbit ring
+  var R=3.7, pts=[];
+  for(var k=0;k<=128;k++){var t=k/128*6.2832;pts.push(new THREE.Vector3(Math.cos(t)*R,0,Math.sin(t)*R));}
+  scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:0x6f86ff,transparent:true,opacity:.5})));
 
-        card.addEventListener("click", () => {
-          card.classList.toggle("white");
-        });
+  // earth texture
+  function earthTex(){
+    var c=document.createElement('canvas');c.width=512;c.height=256;var x=c.getContext('2d');
+    x.fillStyle='#1d5fd1';x.fillRect(0,0,512,256);
+    var seed=7;function rnd(){seed=(seed*16807)%2147483647;return seed/2147483647;}
+    x.fillStyle='#3fa34d';
+    for(var i=0;i<46;i++){
+      var cx=rnd()*512,cy=40+rnd()*176,rr=10+rnd()*26;
+      x.beginPath();
+      for(var j=0;j<8;j++){var an=j/8*6.283,q=rr*(0.6+rnd()*0.7);x.lineTo(cx+Math.cos(an)*q*1.5,cy+Math.sin(an)*q);}
+      x.closePath();x.fill();
+    }
+    x.fillStyle='#f4f8ff';x.fillRect(0,0,512,22);x.fillRect(0,236,512,20);
+    return new THREE.CanvasTexture(c);
+  }
+  var earthPivot=new THREE.Group(); scene.add(earthPivot);
+  var tilt=new THREE.Group(); tilt.rotation.z=-23.5*Math.PI/180; earthPivot.add(tilt);
+  var earth=new THREE.Mesh(new THREE.SphereGeometry(0.8,48,48),new THREE.MeshStandardMaterial({map:earthTex(),roughness:.9}));
+  tilt.add(earth);
+  var axis=new THREE.Mesh(new THREE.CylinderGeometry(0.025,0.025,3.1,8),new THREE.MeshBasicMaterial({color:0xff3d71}));
+  tilt.add(axis);
+  var nTip=new THREE.Mesh(new THREE.ConeGeometry(0.1,0.25,12),new THREE.MeshBasicMaterial({color:0xff3d71}));
+  nTip.position.y=1.65; tilt.add(nTip);
+  // vertical reference line (no tilt)
+  var ref=new THREE.Mesh(new THREE.CylinderGeometry(0.012,0.012,2.6,6),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.5}));
+  earthPivot.add(ref);
 
-        cards.appendChild(card);
-      });
-    });
-  </script>
+  // timeline
+  var segs=[
+    {a:0,  b:4,  top:'Лето — потому что Солнце ближе? 🤔', badge:'', cap:''},
+    {a:2.5,b:4,  top:'НЕТ! ❌', badge:'', cap:''},
+    {a:4,  b:9,  top:'Всё из-за наклона Земли', badge:'23,5°', cap:'Ось Земли наклонена и всегда смотрит в одну сторону', color:'#ff3d71'},
+    {a:9,  b:11, top:'', badge:'☀️ ЛЕТО', cap:'Север наклонён к Солнцу — лучи падают прямо, жарко', color:'#ffb300'},
+    {a:11, b:15, top:'', badge:'🍂 ОСЕНЬ', cap:'Наклон «боком» — день и ночь почти равны', color:'#ff7a2f'},
+    {a:15, b:19, top:'', badge:'❄️ ЗИМА', cap:'Север наклонён от Солнца — лучи косые, холодно', color:'#7fd3ff'},
+    {a:19, b:23, top:'', badge:'🌱 ВЕСНА', cap:'Снова «боком» — становится теплее', color:'#6be585'},
+    {a:23, b:25, top:'', badge:'☀️ ЛЕТО', cap:'И круг замкнулся — ровно за 1 год', color:'#ffb300'},
+    {a:25, b:30, top:'Факт: в январе Земля БЛИЖЕ всего к Солнцу!', badge:'❄️', cap:'А у нас зима. Значит, дело не в расстоянии 😉', color:'#7fd3ff'},
+    {a:30, b:34, top:'Подпишись 🚀', badge:'', cap:'Расскажу ещё про космос — не пропусти!'}
+  ];
+  var speech=[
+    {t:0.1,s:'Лето — потому что Солнце ближе к Земле? Нет!'},
+    {t:4.2,s:'Всё из-за наклона Земли — двадцать три с половиной градуса.'},
+    {t:9.2,s:'Летом наш полушарие наклонено к Солнцу, лучи падают прямо — жарко.'},
+    {t:15.2,s:'Зимой наклон в другую сторону, лучи косые — холодно.'},
+    {t:19.4,s:'Весна и осень — посередине.'},
+    {t:25.2,s:'А в январе Земля как раз ближе всего к Солнцу! Подпишись, будет ещё космос.'}
+  ];
 
+  var started=false,t0=0,spoken=0,voice=null;
+  function pickVoice(){
+    if(!window.speechSynthesis)return;
+    var v=speechSynthesis.getVoices();
+    for(var i=0;i<v.length;i++){if(/^ru/i.test(v[i].lang)){voice=v[i];break;}}
+  }
+  if(window.speechSynthesis){pickVoice();speechSynthesis.onvoiceschanged=pickVoice;}
+  function say(s){
+    try{
+      if(!window.speechSynthesis)return;
+      speechSynthesis.cancel();
+      var u=new SpeechSynthesisUtterance(s);u.lang='ru-RU';if(voice)u.voice=voice;u.rate=1.08;
+      speechSynthesis.speak(u);
+    }catch(e){}
+  }
+
+  function easeTheta(t){
+    if(t<9)return Math.PI;
+    if(t>=25)return Math.PI*3;
+    return Math.PI+(t-9)/16*Math.PI*2;
+  }
+
+  function setText(t){
+    var top='',bd='',cp='',col='#fff';
+    for(var i=0;i<segs.length;i++){
+      var s=segs[i];
+      if(t>=s.a&&t<s.b){ if(s.top!==undefined&&s.top!=='')top=s.top; bd=s.badge; cp=s.cap; if(s.color)col=s.color; }
+    }
+    if(topEl.textContent!==top)topEl.textContent=top;
+    topEl.style.opacity=top?1:0;
+    if(badge.textContent!==bd)badge.textContent=bd;
+    badge.style.opacity=bd?1:0; badge.style.color=col;
+    if(cap.textContent!==cp)cap.textContent=cp;
+    cap.style.opacity=cp?1:0;
+  }
+
+  function frame(now){
+    requestAnimationFrame(frame);
+    var t=started?Math.min((now-t0)/1000,DUR):0;
+    var th=easeTheta(started?t:9);
+    if(!started){th=Math.PI+now/4000;}
+    earthPivot.position.set(Math.cos(th)*R,0,Math.sin(th)*R);
+    earth.rotation.y=now/450;
+    sun.rotation.y=now/3000;
+    var sc=1+Math.sin(now/500)*0.03; glow.scale.set(6.5*sc,6.5*sc,1);
+    // gentle camera sway
+    camera.position.x=Math.sin(now/3500)*1.2;
+    camera.lookAt(0,0,0);
+    renderer.render(scene,camera);
+    if(started){
+      setText(t);
+      bar.style.width=(t/DUR*100)+'%';
+      while(spoken<speech.length&&t>=speech[spoken].t){say(speech[spoken].s);spoken++;}
+      if(t>=DUR){started=false;document.getElementById('start').style.display='flex';document.getElementById('go').textContent='↻ Ещё раз';}
+    }
+  }
+  requestAnimationFrame(frame);
+
+  document.getElementById('go').addEventListener('click',function(){
+    document.getElementById('start').style.display='none';
+    spoken=0;t0=performance.now();started=true;
+  });
+})();
+</script>
 </body>
 </html>
