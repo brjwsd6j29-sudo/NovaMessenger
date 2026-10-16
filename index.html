@@ -1,79 +1,331 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="kk">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тестовая страница HTML</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #333;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .card {
-            background: white;
-            padding: 40px;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            text-align: center;
-            max-width: 400px;
-            width: 100%;
-        }
-        h1 {
-            color: #4a5568;
-            margin-bottom: 10px;
-        }
-        p {
-            color: #718096;
-            margin-bottom: 20px;
-        }
-        button {
-            background-color: #667eea;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            font-size: 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
-        }
-        button:hover {
-            background-color: #5a67d8;
-        }
-        button:active {
-            transform: scale(0.95);
-        }
-        #counter {
-            font-weight: bold;
-            color: #764ba2;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Мектеп мүлкіне ұқыпты қарау</title>
+<style>
+  :root{
+    --bg:#0f172a; --card:#ffffff; --ink:#1e293b; --muted:#64748b;
+    --brand:#4f46e5; --brand2:#06b6d4; --ok:#16a34a; --bad:#dc2626; --warm:#f59e0b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;color:var(--ink);background:#f1f5f9;line-height:1.55}
+
+  /* HERO */
+  .hero{background:linear-gradient(135deg,#4f46e5 0%,#06b6d4 100%);color:#fff;text-align:center;padding:64px 20px 90px;position:relative;overflow:hidden}
+  .hero::before,.hero::after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.1)}
+  .hero::before{width:320px;height:320px;top:-120px;left:-80px}
+  .hero::after{width:240px;height:240px;bottom:-100px;right:-60px}
+  .badge{display:inline-block;background:rgba(255,255,255,.2);padding:6px 16px;border-radius:99px;font-size:14px;margin-bottom:18px}
+  .hero h1{font-size:clamp(28px,5vw,48px);line-height:1.2;max-width:820px;margin:0 auto 14px}
+  .hero p{font-size:clamp(16px,2.4vw,20px);max-width:640px;margin:0 auto 30px;opacity:.95}
+  .float{font-size:64px;display:inline-block;animation:float 3s ease-in-out infinite}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+  .btn{border:none;cursor:pointer;font-size:19px;font-weight:700;padding:16px 34px;border-radius:99px;background:#fff;color:var(--brand);box-shadow:0 8px 24px rgba(0,0,0,.2);transition:.2s}
+  .btn:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 12px 30px rgba(0,0,0,.28)}
+  .btn .pl{display:inline-block;margin-right:8px}
+  .btn.pulse{animation:pulse 2s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,255,255,.7)}70%{box-shadow:0 0 0 22px rgba(255,255,255,0)}100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}}
+
+  /* CONTENT */
+  main{max-width:1000px;margin:-50px auto 0;padding:0 18px 60px;position:relative}
+  .intro{background:var(--card);border-radius:22px;padding:26px;box-shadow:0 10px 30px rgba(15,23,42,.1);text-align:center}
+  .intro h2{color:var(--brand);margin-bottom:6px}
+  h3.sec{margin:38px 0 16px;font-size:24px;text-align:center}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+  .card{background:var(--card);border-radius:18px;padding:22px;box-shadow:0 6px 18px rgba(15,23,42,.08);transition:.25s}
+  .card:hover{transform:translateY(-5px)}
+  .card .ic{font-size:40px}
+  .card h4{margin:6px 0 10px;font-size:19px}
+  .row{display:flex;gap:8px;font-size:15px;margin:6px 0;align-items:flex-start}
+  .row.ok::before{content:"✅"}
+  .row.no::before{content:"❌"}
+  .law{background:#fff7ed;border-left:6px solid var(--warm);border-radius:14px;padding:20px;margin-top:26px}
+  .law ul{margin:8px 0 0 20px}
+  .slogan{margin-top:30px;text-align:center;font-size:clamp(18px,3vw,26px);font-weight:800;background:linear-gradient(90deg,var(--brand),var(--brand2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .center{text-align:center;margin-top:30px}
+  .btn.dark{background:var(--brand);color:#fff}
+
+  /* QUIZ */
+  .quiz{background:var(--card);border-radius:18px;padding:22px;box-shadow:0 6px 18px rgba(15,23,42,.08)}
+  .q{font-weight:700;margin-bottom:12px}
+  .opts{display:grid;gap:10px}
+  .opt{padding:12px 16px;border-radius:12px;border:2px solid #e2e8f0;background:#fff;cursor:pointer;font-size:16px;text-align:left;transition:.15s}
+  .opt:hover{border-color:var(--brand)}
+  .opt.right{background:#dcfce7;border-color:var(--ok)}
+  .opt.wrong{background:#fee2e2;border-color:var(--bad)}
+  .qmsg{margin-top:12px;font-weight:700;min-height:24px}
+  .qnav{display:flex;justify-content:space-between;align-items:center;margin-top:12px;color:var(--muted)}
+  .qnav button{border:none;background:var(--brand);color:#fff;padding:9px 20px;border-radius:99px;cursor:pointer;font-size:15px}
+
+  footer{text-align:center;color:var(--muted);padding:24px;font-size:14px}
+
+  /* VIDEO MODAL */
+  .modal{position:fixed;inset:0;background:rgba(2,6,23,.88);display:none;align-items:center;justify-content:center;z-index:50;padding:12px}
+  .modal.open{display:flex}
+  .player{width:min(960px,100%);background:#000;border-radius:18px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+  .screen{position:relative;aspect-ratio:16/9;overflow:hidden;color:#fff}
+  .scene{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4% 6% 10%;text-align:center;animation:fadeIn .6s both}
+  @keyframes fadeIn{from{opacity:0;transform:scale(1.04)}to{opacity:1;transform:none}}
+  .scene h2{font-size:clamp(20px,4.2vw,44px);line-height:1.2;text-shadow:0 3px 12px rgba(0,0,0,.35);animation:rise .7s .1s both}
+  .scene .big{font-size:clamp(54px,12vw,130px);line-height:1;margin:1.5% 0;animation:pop .8s .2s both, float 3s 1s ease-in-out infinite}
+  .scene .sub{font-size:clamp(13px,2.2vw,22px);max-width:760px;opacity:.97;animation:rise .7s .5s both}
+  @keyframes rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+  @keyframes pop{0%{opacity:0;transform:scale(.2) rotate(-20deg)}70%{transform:scale(1.15) rotate(5deg)}100%{opacity:1;transform:none}}
+  .pairs{display:flex;gap:3%;margin-top:2%;flex-wrap:wrap;justify-content:center}
+  .pair{background:rgba(255,255,255,.18);backdrop-filter:blur(4px);border-radius:14px;padding:1.2% 2.2%;font-size:clamp(12px,2vw,20px);display:flex;gap:8px;align-items:center;animation:rise .6s both}
+  .pair:nth-child(1){animation-delay:.7s}.pair:nth-child(2){animation-delay:1.4s}.pair:nth-child(3){animation-delay:2.1s}
+  .pair.good{border:2px solid #86efac}.pair.bad{border:2px solid #fca5a5}
+  .confetti{position:absolute;top:-20px;font-size:26px;animation:fall linear forwards;pointer-events:none}
+  @keyframes fall{to{transform:translateY(120vh) rotate(540deg);opacity:.9}}
+  .bg1{background:linear-gradient(135deg,#4f46e5,#06b6d4)}
+  .bg2{background:linear-gradient(135deg,#f59e0b,#ef4444)}
+  .bg3{background:linear-gradient(135deg,#0ea5e9,#6366f1)}
+  .bg4{background:linear-gradient(135deg,#10b981,#0ea5e9)}
+  .bg5{background:linear-gradient(135deg,#a855f7,#ec4899)}
+  .bg6{background:linear-gradient(135deg,#f97316,#eab308)}
+  .bg7{background:linear-gradient(135deg,#334155,#0f172a)}
+  .bg8{background:linear-gradient(135deg,#16a34a,#4f46e5)}
+  .subs{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(transparent,rgba(0,0,0,.65));padding:30px 16px 12px;text-align:center;font-size:clamp(12px,1.9vw,18px)}
+  .bar{height:6px;background:#334155;cursor:pointer}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand2),#a78bfa)}
+  .ctrl{display:flex;align-items:center;gap:8px;padding:10px 14px;background:#0f172a;color:#fff;flex-wrap:wrap}
+  .ctrl button{background:#1e293b;border:none;color:#fff;font-size:18px;width:42px;height:42px;border-radius:50%;cursor:pointer}
+  .ctrl button:hover{background:#334155}
+  .ctrl .t{flex:1;font-size:14px;color:#cbd5e1;text-align:center}
+  .ctrl .close{background:#dc2626}
+</style>
 </head>
 <body>
 
-    <div class="card">
-        <h1>Привет! 👋</h1>
-        <p>Это тестовая HTML-страница со встроенными стилями и скриптом.</p>
-        <button id="clickBtn">Нажми на меня</button>
-        <p style="margin-top: 20px;">Количество кликов: <span id="counter">0</span></p>
+<header class="hero">
+  <span class="badge">🏫 Түсіндіру жұмысы • Орта буын оқушыларына</span>
+  <div class="float">🏫</div>
+  <h1>Мектеп мүлкіне ұқыпты қарау – ортақ жауапкершілік</h1>
+  <p>Мектеп – ортақ үйіміз, мүлкі – ортақ байлығымыз! 2 минутта қызықты видеодан бәрін біліп ал.</p>
+  <button class="btn pulse" id="openVideo"><span class="pl">▶</span>Видеоны көру</button>
+</header>
+
+<main>
+  <section class="intro">
+    <h2>Қымбатты оқушы!</h2>
+    <p>Сен енді бастауыш сынып емессің, мектептегі саналы буынның бірісің. Парта, кітап, құрылғы – бәрі сенің сапалы білім алуың үшін жасалған. Мектеп мүлкін сақтау – мәдениеттілігіңнің белгісі.</p>
+  </section>
+
+  <h3 class="sec">🎒 Не істеуге болады, не болмайды?</h3>
+  <div class="grid">
+    <div class="card"><div class="ic">🪑</div><h4>Парта мен орындық</h4>
+      <div class="row ok">Жұмыс орнын таза ұста</div>
+      <div class="row no">Партаға жазба, сурет салма, өткір затпен тілме</div>
+      <div class="row no">Орындықпен теңселіп отырма – жарақат алуың мүмкін</div></div>
+    <div class="card"><div class="ic">🚪</div><h4>Қабырға мен есік</h4>
+      <div class="row ok">Есікті ақырын жап</div>
+      <div class="row no">Қабырғаны аяқпен тіреме, лас қолмен ұстама</div></div>
+    <div class="card"><div class="ic">💻</div><h4>Техника</h4>
+      <div class="row ok">Тек мұғалімнің рұқсатымен қос</div>
+      <div class="row no">Компьютер мен интерактивті тақтаны өз бетімен қолданба</div></div>
+    <div class="card"><div class="ic">📚</div><h4>Кітапхана</h4>
+      <div class="row ok">Бетбелгі (закладка) қолдан</div>
+      <div class="row no">Кітапты жыртпа, беттерін бүктеме</div></div>
+    <div class="card"><div class="ic">🍽️</div><h4>Асхана</h4>
+      <div class="row ok">Тамақты төкпей іш, жиһазды ұқыпты ұста</div></div>
+    <div class="card"><div class="ic">🏀</div><h4>Спорт зал</h4>
+      <div class="row ok">Доптар мен құралдарды мақсатына сай қолдан</div>
+      <div class="row ok">Ойыннан кейін өз орнына жинап кет</div></div>
+  </div>
+
+  <div class="law">
+    <b>⚖️ Есіңде сақта!</b>
+    <ul>
+      <li>Мектептегі әрбір зат мемлекет қаржысына, яғни сенің ата-анаң төлеген салыққа алынған.</li>
+      <li>Мүлікті әдейі немесе ұқыпсыздықтан бүлдірсең, ҚР заңнамасына сәйкес шығынды ата-анаң қалпына келтіруі тиіс.</li>
+    </ul>
+  </div>
+
+  <h3 class="sec">🧠 Білімді тексер!</h3>
+  <div class="quiz" id="quiz"></div>
+
+  <p class="slogan">«Бүгін мектеп мүлкін сақтаған бала – ертең ел байлығын қорғайтын нағыз азамат!»</p>
+  <div class="center"><button class="btn dark" id="openVideo2"><span class="pl">▶</span>Видеоны көру</button></div>
+</main>
+
+<footer>Мектеп – ортақ үйіміз 🏫</footer>
+
+<!-- VIDEO -->
+<div class="modal" id="modal" role="dialog" aria-label="Видео">
+  <div class="player">
+    <div class="screen" id="screen"></div>
+    <div class="bar" id="bar"><i id="barFill"></i></div>
+    <div class="ctrl">
+      <button id="prev" title="Алдыңғы">⏮</button>
+      <button id="play" title="Кідірту / ойнату">⏸</button>
+      <button id="next" title="Келесі">⏭</button>
+      <div class="t" id="time">1 / 8</div>
+      <button id="sound" title="Дыбыс" style="display:none">🔊</button>
+      <button id="restart" title="Басынан">🔁</button>
+      <button class="close" id="close" title="Жабу">✕</button>
     </div>
+  </div>
+</div>
 
-    <script>
-        const btn = document.getElementById('clickBtn');
-        const counterSpan = document.getElementById('counter');
-        let count = 0;
+<script>
+/* ---------- ВИДЕО СЦЕНАЛАРЫ ---------- */
+const SCENES = [
+  { bg:'bg1', emoji:'🏫', title:'Мектеп – ортақ үйіміз!',
+    sub:'Мектеп мүлкі – ортақ байлығымыз. Бірге сақтайық!',
+    voice:'Мектеп, ортақ үйіміз. Мектеп мүлкі, ортақ байлығымыз!', dur:6000, party:true },
+  { bg:'bg2', emoji:'🪑', title:'Парта мен орындық – сенің жұмыс орның',
+    sub:'Ол сенің сапалы білім алуың үшін жасалған.',
+    pairs:[['bad','✏️ Партаға жазба, сурет салма'],['bad','🔪 Өткір затпен тілме'],['good','🙂 Орындықта тік отыр']],
+    voice:'Парта мен орындық, сенің жұмыс орның. Партаға жазба, өткір затпен тілме, орындықпен теңселіп отырма.', dur:9000 },
+  { bg:'bg3', emoji:'🚪', title:'Қабырға мен есікті аяла',
+    sub:'Мектебіміз таза әрі әдемі болсын!',
+    pairs:[['bad','🦶 Қабырғаны аяқпен тіреме'],['bad','💥 Есікті тарс жаппа'],['good','🤲 Есікті ақырын жап']],
+    voice:'Қабырғаны аяқпен тіреме, лас қолмен ұстама. Есікті қатты тарс еткізіп жаппа.', dur:9000 },
+  { bg:'bg4', emoji:'💻', title:'Техниканы қорға',
+    sub:'Компьютер мен интерактивті тақтаны тек мұғалімнің рұқсатымен қос.',
+    pairs:[['bad','🙅 Рұқсатсыз қосуға болмайды'],['good','👩‍🏫 Мұғалімнен рұқсат сұра']],
+    voice:'Информатика кабинетіндегі компьютерлерді және интерактивті тақтаны тек мұғалімнің рұқсатымен қос.', dur:8000 },
+  { bg:'bg5', emoji:'📚', title:'Кітапхана – білім қазынасы',
+    sub:'Сенен кейін бұл кітапты басқа оқушылар да оқиды!',
+    pairs:[['bad','📄 Кітапты жыртпа, бетін бүктеме'],['good','🔖 Бетбелгі қолдан']],
+    voice:'Кітапты жыртпа, беттерін бүктеме. Белгі салу үшін бетбелгі қолдан. Сенен кейін бұл кітапты басқалар да оқиды.', dur:9000 },
+  { bg:'bg6', emoji:'🍽️', title:'Асхана мен спорт зал',
+    sub:'Тамақты төкпей іш, доптар мен құралдарды өз орнына жинап кет.',
+    pairs:[['good','🍎 Асхана жиһазын ұқыпты ұста'],['good','🏀 Құралдарды орнына қой']],
+    voice:'Асханада тамақты төкпей іш. Спорт залында құралдарды мақсатына сай қолдан және орнына жинап кет.', dur:8000 },
+  { bg:'bg7', emoji:'⚖️', title:'Есіңде сақта!',
+    sub:'Әрбір зат – ата-анаңның төлеген салығына алынған. Мүлікті бүлдірсең, шығынды ҚР заңнамасына сәйкес ата-анаң өтейді.',
+    voice:'Мектептегі әрбір зат мемлекет қаржысына, яғни сенің ата-анаң төлеген салыққа алынған. Мүлікті бүлдірсең, шығынды ата-анаң өтеуге міндетті.', dur:10000 },
+  { bg:'bg8', emoji:'🌟', title:'Бүгін мектеп мүлкін сақтаған бала – ертең ел байлығын қорғайтын нағыз азамат!',
+    sub:'Мектеп мүлкін қорға – сен нағыз азаматсың! 👏',
+    voice:'Бүгін мектеп мүлкін сақтаған бала, ертең ел байлығын қорғайтын нағыз азамат!', dur:8000, party:true }
+];
 
-        btn.addEventListener('click', () => {
-            count++;
-            counterSpan.textContent = count;
-        });
-    </script>
+const $ = id => document.getElementById(id);
+const modal=$('modal'), screen_=$('screen'), barFill=$('barFill');
+let idx=0, elapsed=0, last=0, playing=false, raf=null, soundOn=true, kkVoice=null;
 
+/* дыбыс (егер құрылғыда қазақ дауысы болса) */
+function findVoice(){
+  if(!('speechSynthesis' in window)) return;
+  kkVoice = speechSynthesis.getVoices().find(v=>/^kk/i.test(v.lang)) || null;
+  $('sound').style.display = kkVoice ? '' : 'none';
+}
+if('speechSynthesis' in window){ findVoice(); speechSynthesis.onvoiceschanged = findVoice; }
+function speak(t){
+  if(!kkVoice || !soundOn) return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(t); u.voice=kkVoice; u.lang=kkVoice.lang; u.rate=.95;
+  speechSynthesis.speak(u);
+}
+
+function confetti(){
+  const set=['🎉','⭐','✨','🎈','🌟','📚'];
+  for(let i=0;i<26;i++){
+    const c=document.createElement('span'); c.className='confetti';
+    c.textContent=set[i%set.length];
+    c.style.left=Math.random()*100+'%';
+    c.style.animationDuration=(2.5+Math.random()*2.5)+'s';
+    c.style.animationDelay=(Math.random()*1.2)+'s';
+    screen_.appendChild(c);
+    setTimeout(()=>c.remove(),7000);
+  }
+}
+
+function render(){
+  const s=SCENES[idx];
+  const pairs = (s.pairs||[]).map(p=>`<div class="pair ${p[0]}">${p[0]==='good'?'✅':'❌'} ${p[1]}</div>`).join('');
+  screen_.innerHTML = `
+    <div class="scene ${s.bg}">
+      <h2>${s.title}</h2>
+      <div class="big">${s.emoji}</div>
+      <p class="sub">${s.sub}</p>
+      ${pairs?`<div class="pairs">${pairs}</div>`:''}
+    </div>
+    <div class="subs">${s.sub}</div>`;
+  $('time').textContent = `${idx+1} / ${SCENES.length}`;
+  if(s.party) confetti();
+  speak(s.voice);
+}
+
+function total(){ return SCENES.reduce((a,s)=>a+s.dur,0); }
+function before(i){ return SCENES.slice(0,i).reduce((a,s)=>a+s.dur,0); }
+
+function tick(now){
+  if(!playing) return;
+  elapsed += now-last; last=now;
+  const s=SCENES[idx];
+  if(elapsed>=s.dur){
+    if(idx<SCENES.length-1){ idx++; elapsed=0; render(); }
+    else { playing=false; $('play').textContent='🔁'; barFill.style.width='100%'; return; }
+  }
+  barFill.style.width = ((before(idx)+elapsed)/total()*100)+'%';
+  raf=requestAnimationFrame(tick);
+}
+function play(){
+  if(idx===SCENES.length-1 && elapsed>=SCENES[idx].dur){ idx=0; elapsed=0; render(); }
+  playing=true; $('play').textContent='⏸'; last=performance.now();
+  cancelAnimationFrame(raf); raf=requestAnimationFrame(tick);
+}
+function pause(){ playing=false; $('play').textContent='▶'; cancelAnimationFrame(raf); if('speechSynthesis' in window) speechSynthesis.pause(); }
+function go(i){ idx=Math.max(0,Math.min(SCENES.length-1,i)); elapsed=0; render(); barFill.style.width=(before(idx)/total()*100)+'%'; if(!playing) {} }
+
+function openV(){ modal.classList.add('open'); idx=0; elapsed=0; render(); play(); }
+function closeV(){ modal.classList.remove('open'); playing=false; cancelAnimationFrame(raf); if('speechSynthesis' in window) speechSynthesis.cancel(); screen_.innerHTML=''; }
+
+$('openVideo').onclick=openV; $('openVideo2').onclick=openV; $('close').onclick=closeV;
+$('play').onclick=()=>{ if(playing) pause(); else { if('speechSynthesis' in window) speechSynthesis.resume(); play(); } };
+$('next').onclick=()=>{ go(idx+1); if(!playing) play(); };
+$('prev').onclick=()=>{ go(idx-1); if(!playing) play(); };
+$('restart').onclick=()=>{ go(0); play(); };
+$('sound').onclick=()=>{ soundOn=!soundOn; $('sound').textContent=soundOn?'🔊':'🔇'; if(!soundOn) speechSynthesis.cancel(); else speak(SCENES[idx].voice); };
+$('bar').onclick=e=>{
+  const r=$('bar').getBoundingClientRect(); const t=(e.clientX-r.left)/r.width*total();
+  let a=0; for(let i=0;i<SCENES.length;i++){ if(t<a+SCENES[i].dur){ go(i); elapsed=t-a; break; } a+=SCENES[i].dur; }
+  if(!playing) play();
+};
+modal.addEventListener('click',e=>{ if(e.target===modal) closeV(); });
+document.addEventListener('keydown',e=>{
+  if(!modal.classList.contains('open')) return;
+  if(e.key==='Escape') closeV();
+  if(e.key===' '){ e.preventDefault(); $('play').click(); }
+  if(e.key==='ArrowRight') $('next').click();
+  if(e.key==='ArrowLeft') $('prev').click();
+});
+
+/* ---------- МИНИ-ВИКТОРИНА ---------- */
+const QUIZ = [
+  { q:'Партаға сурет салуға бола ма?', o:['Иә, ешкім көрмесе','Жоқ, бұл мектеп мүлкін бүлдіреді','Тек қарындашпен болады'], a:1 },
+  { q:'Компьютерді қашан қосуға болады?', o:['Қалаған кезде','Үзілісте','Тек мұғалімнің рұқсатымен'], a:2 },
+  { q:'Кітаптың бетін белгілеу үшін не қолданамыз?', o:['Бетті бүктейміз','Бетбелгі (закладка)','Қаламмен сызамыз'], a:1 },
+  { q:'Мектеп мүлкін бүлдірсе, шығынды кім өтейді?', o:['Мектеп өзі','Ата-анасы','Ешкім'], a:1 }
+];
+let qi=0, score=0, answered=false;
+function renderQ(){
+  const box=$('quiz');
+  if(qi>=QUIZ.length){
+    box.innerHTML=`<div class="q" style="text-align:center;font-size:22px">🎉 Нәтиже: ${score} / ${QUIZ.length}</div>
+    <p style="text-align:center">${score===QUIZ.length?'Тамаша! Сен мектеп мүлкінің нағыз қорғаушысысың! 🏆':'Жақсы! Видеоны қайта көріп, толықтыра аласың 😉'}</p>
+    <div class="center"><button class="btn dark" onclick="qi=0;score=0;renderQ()">Қайта өту</button></div>`;
+    return;
+  }
+  const Q=QUIZ[qi]; answered=false;
+  box.innerHTML=`<div class="q">${qi+1}. ${Q.q}</div><div class="opts">${Q.o.map((t,i)=>`<button class="opt" data-i="${i}">${t}</button>`).join('')}</div>
+  <div class="qmsg" id="qmsg"></div><div class="qnav"><span>Ұпай: ${score}</span><button id="qnext" style="visibility:hidden">Келесі →</button></div>`;
+  box.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+    if(answered) return; answered=true;
+    const i=+b.dataset.i;
+    box.querySelectorAll('.opt')[Q.a].classList.add('right');
+    if(i===Q.a){ score++; $('qmsg').textContent='✅ Дұрыс! Жарайсың!'; }
+    else { b.classList.add('wrong'); $('qmsg').textContent='❌ Қате. Дұрыс жауап жасыл түспен көрсетілген.'; }
+    $('qnext').style.visibility='visible';
+    $('qnext').onclick=()=>{ qi++; renderQ(); };
+  });
+}
+renderQ();
+</script>
 </body>
 </html>
