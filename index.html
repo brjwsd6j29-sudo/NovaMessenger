@@ -69,6 +69,7 @@ footer{text-align:center;color:var(--muted);padding:24px;font-size:14px}
 .ctrl .t.rec{color:#fca5a5;font-weight:700}
 .ctrl .close{background:#dc2626}
 .vstat{background:#0b1220;color:#94a3b8;font-size:13px;padding:8px 14px;text-align:center;line-height:1.4}
+#sound,#saveVoice{display:none}
 </style>
 </head>
 <body>
@@ -77,7 +78,7 @@ footer{text-align:center;color:var(--muted);padding:24px;font-size:14px}
   <span class="badge">🏫 Түсіндіру жұмысы • Орта буын оқушыларына</span><br>
   <div class="float">🏫</div>
   <h1>Мектеп мүлкіне ұқыпты қарау – ортақ жауапкершілік</h1>
-  <p>Мектеп – ортақ үйіміз, мүлкі – ортақ байлығымыз! Екі жарым минуттық дауыстап айтылатын видеодан бәрін біліп ал.</p>
+  <p>Мектеп – ортақ үйіміз, мүлкі – ортақ байлығымыз! Екі жарым минуттық видеодан бәрін біліп ал.</p>
   <button class="btn pulse" id="openVideo"><span class="pl">▶</span>Видеоны көру</button>
 </header>
 
@@ -137,7 +138,7 @@ footer{text-align:center;color:var(--muted);padding:24px;font-size:14px}
       <div class="t" id="time">1 / 8</div>
       <button id="sound" title="Дауысты қосу / өшіру">🔊</button>
       <button id="restart" title="Басынан">🔁</button>
-      <button id="saveSilent" class="wide save" title="Видеоны дыбыссыз файл ретінде жүктеу">💾 Видеоны жүктеу</button>
+      <button id="saveSilent" class="wide save" title="Видеоны дыбыссыз файл ретінде жүктеу">💾 Видеоны жүктеу (2:27)</button>
       <button id="saveVoice" class="wide save" title="Видеоны дауыспен жазып жүктеу">🎙 Дауыспен жүктеу</button>
       <button class="close" id="close" title="Жабу">✕</button>
     </div>
@@ -198,6 +199,7 @@ function pickVoice(){
   updateStatus();
 }
 function updateStatus(){
+  $('vstat').textContent='🎬 Дыбыссыз видео · дәл 2:27 · озвучканы өз монтажыңда қосасың'; return;
   const el = $('vstat');
   if(!hasSpeech || voiceKind==='none') el.textContent = '🔇 Бұл құрылғыда дауыс табылмады. Қазақша дауыс үшін Microsoft Edge (Aigul / Daulet) немесе Android-тағы Chrome қолданыңыз.';
   else if(voiceKind==='ru') el.textContent = '⚠ Қазақ дауысы жоқ, орысша дауыс қолданылып жатыр (акценті болады). Жақсы нәтиже үшін Microsoft Edge ашыңыз – онда қазақша «Aigul» және «Daulet» дауыстары бар.';
@@ -220,6 +222,7 @@ function makeConfetti(){
 
 /* сөйлемдерге бөліп, кезекпен оқу (ұзын мәтін үзілмеуі үшін) */
 function speakScene(){
+  S.speechDone = true; return;
   const tok = ++S.tok;
   if(hasSpeech) speechSynthesis.cancel();
   if(!hasSpeech || !voice || !useVoice){ S.speechDone = true; return; }
@@ -271,6 +274,14 @@ function draw(){
   ctx.beginPath(); ctx.arc(W-90+Math.sin(t/1900)*20, H-70+Math.cos(t/1700)*18, 150, 0, 7); ctx.fill();
   ctx.beginPath(); ctx.arc(W*.62+Math.sin(t/2300)*40, 70, 70, 0, 7); ctx.fill();
 
+  ctx.save(); ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.globalAlpha=.22;
+  for(let i=0;i<16;i++){
+    const sz=36+(i%4)*14, sp=.035+(i%5)*.012, ph=i*2300;
+    const yy=H+70-(((t+ph+S.idx*777)*sp)%(H+140));
+    const xx=60+((i*173+S.idx*61)%(W-120))+Math.sin((t+ph)/900)*24;
+    ctx.font=`${sz}px ${EMO},${FONT}`; ctx.fillText(s.icons[i%s.icons.length],xx,yy);
+  }
+  ctx.restore();
   ctx.textAlign = 'center'; ctx.textBaseline = 'top'; ctx.fillStyle = '#fff';
 
   /* макет */
@@ -304,6 +315,7 @@ function draw(){
   /* негізгі эмодзи */
   const pe = clamp((t-200)/800);
   const sc = easeBack(pe), dy = pe>=1 ? Math.sin(t/480)*9 : 0;
+  ctx.save(); ctx.globalAlpha=.18*clamp(pe)*(.6+.4*Math.sin(t/400)); ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(W/2,y+eH/2,95+Math.sin(t/400)*10,0,7); ctx.fill(); ctx.restore();
   ctx.save(); ctx.globalAlpha = clamp(pe*3);
   ctx.translate(W/2, y + eH/2 + dy); ctx.scale(sc,sc); ctx.rotate((1-pe)*-0.35);
   ctx.textBaseline = 'middle'; ctx.font = `120px ${EMO},${FONT}`; ctx.fillStyle='#fff';
@@ -334,12 +346,14 @@ function draw(){
       const rowW = row.reduce((a,p)=>a+p.w,0) + (row.length-1)*16;
       let x = (W-rowW)/2;
       row.forEach(p => {
-        const pp = easeOut(clamp((t-(t0+step*k))/500)); k++;
-        ctx.save(); ctx.globalAlpha = pp; ctx.translate(0,(1-pp)*18);
+        const el = t-(t0+step*k); const pp = easeOut(clamp(el/500)); k++;
+        const shake = (p.kind==='bad' && el>300 && el<900) ? Math.sin(el/35)*9*(1-(el-300)/600) : 0;
+        ctx.save(); ctx.globalAlpha = pp; ctx.translate(shake,(1-pp)*18);
         rrect(x, y, p.w, 56, 28); ctx.fillStyle='rgba(255,255,255,.2)'; ctx.fill();
         ctx.lineWidth=3; ctx.strokeStyle = p.kind==='good' ? '#86efac' : '#fca5a5'; ctx.stroke();
         ctx.fillStyle='#fff'; ctx.font=F('600',26); ctx.textBaseline='middle'; ctx.shadowBlur=0;
         ctx.fillText(p.text, x+p.w/2, y+30);
+        if(p.kind==='good' && el>200 && el<1200){ const q=(el-200)/1000; ctx.globalAlpha=1-q; ctx.font=`26px ${EMO},${FONT}`; for(let a=0;a<6;a++){ const ang=a*1.047+q; ctx.fillText('✨', x+p.w/2+Math.cos(ang)*(p.w*.25+q*p.w*.35), y+30+Math.sin(ang)*(30+q*40)); } }
         ctx.restore();
         x += p.w + 16;
       });
@@ -348,6 +362,7 @@ function draw(){
     ctx.textBaseline='top';
   }
 
+  if(s.party){ for(let k=0;k<3;k++){ const p=((t/1800)+k/3)%1; ctx.strokeStyle='rgba(255,255,255,'+(.5*(1-p))+')'; ctx.lineWidth=6; ctx.beginPath(); ctx.arc(W/2,H*.4,80+p*420,0,7); ctx.stroke(); } }
   /* конфетти */
   confetti.forEach(c => {
     const cy = -40 + (t - c.d) * c.sp;
@@ -361,6 +376,8 @@ function draw(){
   ctx.save(); ctx.globalAlpha=.7; ctx.textBaseline='bottom'; ctx.font=F('500',20);
   ctx.fillText('🏫 Мектеп – ортақ үйіміз', W/2, H-14);
   ctx.restore();
+  const fo = Math.max(1-clamp(t/450), clamp((t-(s.dur-450))/450));
+  if(fo>0){ ctx.fillStyle='rgba(0,0,0,'+(fo*.85)+')'; ctx.fillRect(0,0,W,H); }
 }
 
 /* ===== ОЙНАТУ ЦИКЛІ ===== */
@@ -369,11 +386,11 @@ function loop(ts){
   const dt = Math.min(ts - S.last, 100); S.last = ts; S.t += dt;
   const s = SCENES[S.idx];
   draw();
-  if(S.t >= s.dur && (S.speechDone || S.t >= s.dur + 20000)){
-    if(S.idx < SCENES.length-1){ startScene(S.idx+1); }
+  if(S.t >= s.dur){
+    if(S.idx < SCENES.length-1){ startScene(S.idx+1, S.t - s.dur); }
     else {
       if(!S.holdStart) S.holdStart = ts;
-      if(ts - S.holdStart > 1500){ finish(); return; }
+      finish(); return;
     }
   }
   barFill.style.width = ((before(S.idx) + Math.min(S.t, SCENES[S.idx].dur)) / total() * 100) + '%';
