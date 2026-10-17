@@ -661,4 +661,205 @@ h2{font-size:104px;line-height:1.05;position:absolute;left:100px;top:170px}
     bRec.disabled=true;
     if(isMobile&&!hasDisplayMedia){
       vstat.textContent='Бұл телефонның браузері экранды жазуға рұқсат бермейді. Телефонның өзіндік «Экранды жазу» (Screen Recorder) функциясын қолданыңыз — ол әдетте MP4 форматында сақтайды. Немесе компьютерде ашып жазыңыз.';
+    } else if(!hasMediaRec){
+      vstat.textContent='Бұл браузер MediaRecorder қолдамайды. Chrome, Edge немесе Safari (14.1+) браузерінде ашыңыз.';
+    } else {
+      vstat.textContent='Бұл браузерде экранды жазу қолдамайды. Chrome немесе Edge браузерінде файлды ашыңыз.';
     }
+  }
+
+  /* MP4 кодектерін бірінші орынға қою — заманауи телефондарда тікелей MP4 жазады */
+  function pickMime(){
+    var c=[
+      'video/mp4;codecs=avc1.42E01E',
+      'video/mp4;codecs=avc1',
+      'video/mp4',
+      'video/webm;codecs=vp9',
+      'video/webm;codecs=vp8',
+      'video/webm'
+    ];
+    for(var i=0;i<c.length;i++){
+      try{ if(MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(c[i])) return c[i]; }catch(e){}
+    }
+    return '';
+  }
+
+  function startRec(){
+    vstat.textContent='Браузер сұраған терезеде осы қойындыны таңдап, «Бөлісу» (Share) басыңыз...';
+    var opts={video:{frameRate:30},audio:false,preferCurrentTab:true,selfBrowserSurface:'include',surfaceSwitching:'exclude'};
+    navigator.mediaDevices.getDisplayMedia(opts).then(function(stream){
+      rec.stream=stream;rec.chunks=[];rec.stopping=false;
+      var mime=pickMime();
+      var mr;
+      try{ mr=new MediaRecorder(stream,mime?{mimeType:mime,videoBitsPerSecond:10000000}:{videoBitsPerSecond:10000000}); }
+      catch(e){ mr=new MediaRecorder(stream); }
+      rec.mr=mr;
+      mr.ondataavailable=function(e){ if(e.data&&e.data.size) rec.chunks.push(e.data); };
+      mr.onstop=saveRec;
+      stream.getVideoTracks()[0].addEventListener('ended',function(){ if(rec.on&&!rec.stopping) stopRec(); });
+      startBox.hidden=true;
+      document.documentElement.classList.add('rec');
+      try{ var p=frame.requestFullscreen(); if(p&&p.catch) p.catch(function(){}); }catch(e){}
+      rec.on=true;
+      setTimeout(function(){
+        mr.start(1000);
+        begin();
+      },2000);
+    }).catch(function(){
+      vstat.textContent='Жазуға рұқсат берілмеді. Қайта басып, қойындыны таңдап, «Бөлісу» басыңыз.';
+    });
+  }
+  function stopRec(){
+    if(!rec.on||rec.stopping) return;
+    rec.stopping=true;
+    try{ if(rec.mr&&rec.mr.state!=='inactive') rec.mr.stop(); else saveRec(); }catch(e){ saveRec(); }
+  }
+
+  /* --- Download көмекшісі --- */
+  function downloadBlob(blob, filename){
+    var a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download=filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},4000);
+  }
+
+  /* --- Скрипт жүктеу көмекшісі (FFmpeg үшін) --- */
+  function loadScript(src){
+    return new Promise(function(resolve,reject){
+      var existing=document.querySelector('script[data-src="'+src+'"]');
+      if(existing){
+        if(existing.dataset.loaded==='true') resolve();
+        else{
+          existing.addEventListener('load',function(){resolve();});
+          existing.addEventListener('error',function(e){reject(e);});
+        }
+        return;
+      }
+      var s=document.createElement('script');
+      s.src=src;
+      s.dataset.src=src;
+      s.onload=function(){s.dataset.loaded='true';resolve();};
+      s.onerror=function(e){reject(e);};
+      document.head.appendChild(s);
+    });
+  }
+
+  /* --- WebM → MP4 конвертация (FFmpeg.wasm арқылы) --- */
+  function convertToMp4(webmBlob){
+    return loadScript('https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js').then(function(){
+      var FFmpeg=window.FFmpeg;
+      if(!FFmpeg||!FFmpeg.createFFmpeg) throw new Error('FFmpeg жүктелмеді');
+      var ffmpeg=FFmpeg.createFFmpeg({log:false, corePath:'https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js'});
+      return ffmpeg.load().then(function(){
+        return FFmpeg.fetchFile(webmBlob).then(function(data){
+          ffmpeg.FS('writeFile','input.webm',data);
+          return ffmpeg.run(
+            '-i','input.webm',
+            '-c:v','libx264',
+            '-preset','ultrafast',
+            '-crf','28',
+            '-movflags','+faststart',
+            'output.mp4'
+          );
+        }).then(function(){
+          var out=ffmpeg.FS('readFile','output.mp4');
+          if(!out||out.length===0) throw new Error('Шыққан файл бос');
+          return new Blob([out.buffer],{type:'video/mp4'});
+        });
+      });
+    });
+  }
+
+  /* --- Жазбаны аяқтап, жүктеу --- */
+  function saveRec(){
+    try{ if(rec.stream) rec.stream.getTracks().forEach(function(tr){tr.stop()}); }catch(e){}
+    var type=(rec.mr&&rec.mr.mimeType)||'video/webm';
+    var ok=rec.chunks.length>0;
+    var isMp4=/mp4/i.test(type);
+    var blob = ok ? new Blob(rec.chunks,{type:type}) : null;
+
+    rec.on=false;rec.mr=null;rec.stream=null;
+    document.documentElement.classList.remove('rec');
+    try{ if(document.fullscreenElement) document.exitFullscreen(); }catch(e){}
+    playing=false;started=false;
+    if(cur>=0){ scenes[cur].classList.remove('on','reveal'); cur=-1; }
+    ended=false;
+
+    if(!ok){
+      title.textContent='Жазба шықпады';
+      vstat.textContent='Жазба алынбады. Қайта көріңіз.';
+      startBox.hidden=false;
+      return;
+    }
+
+    /* Егер MP4 болса — тікелей жүктеу */
+    if(isMp4){
+      downloadBlob(blob,'senim-shegi.mp4');
+      title.textContent='Видео дайын!';
+      vstat.textContent='MP4 файл жүктелді (Жүктемелер / Downloads). Қайта жазу үшін төмендегі түймені басыңыз.';
+      startBox.hidden=false;
+      return;
+    }
+
+    /* Егер WebM болса — FFmpeg арқылы MP4-ке айналдыру */
+    title.textContent='MP4 форматына айналдырудамыз...';
+    vstat.textContent='Күте тұрыңыз, бұл 1–2 минут алуы мүмкін. Интернет қосылуы керек (FFmpeg.wasm жүктеледі).';
+    startBox.hidden=false;
+
+    convertToMp4(blob).then(function(mp4Blob){
+      downloadBlob(mp4Blob,'senim-shegi.mp4');
+      title.textContent='Видео дайын!';
+      vstat.textContent='MP4 файл жүктелді (Жүктемелер / Downloads). Қайта жазу үшін төмендегі түймені басыңыз.';
+    }).catch(function(err){
+      console.error('MP4 conversion failed:',err);
+      downloadBlob(blob,'senim-shegi.webm');
+      title.textContent='Видео дайын (webm)';
+      vstat.textContent='MP4-ке айналдыру мүмкін болмады (желі мәселесі). WebM файл жүктелді — ол да көпшілік ойнатқыштарда ашылады.';
+    });
+  }
+
+  bRec.addEventListener('click',startRec);
+  bPlayS.addEventListener('click',begin);
+
+  $('#bPlay').addEventListener('click',toggle);
+  $('#bNext').addEventListener('click',function(){go(cur+1,true)});
+  $('#bPrev').addEventListener('click',function(){go(cur-1,true)});
+  var fsBtn=$('#bFs');
+  if(!document.fullscreenEnabled) fsBtn.hidden=true;
+  fsBtn.addEventListener('click',function(){
+    try{
+      if(document.fullscreenElement) document.exitFullscreen();
+      else{var p=frame.requestFullscreen();if(p&&p.catch)p.catch(function(){});}
+    }catch(e){}
+  });
+  document.addEventListener('keydown',function(e){
+    var k=e.key;
+    if(k==='Escape'&&rec.on){stopRec();return;}
+    if(k==='f'||k==='F'){fsBtn.click();return;}
+    if(!started||rec.on) return;
+    if(k===' '||k==='k'||k==='K'){if(e.target.tagName!=='BUTTON'){e.preventDefault();toggle();}}
+    else if(k==='ArrowRight') go(cur+1,true);
+    else if(k==='ArrowLeft') go(cur-1,true);
+    else if(k==='Home') go(0,true);
+  });
+
+  var ht;
+  function showHud(){frame.classList.add('hud-on');clearTimeout(ht);ht=setTimeout(function(){frame.classList.remove('hud-on')},3500);}
+  ['mousemove','touchstart','pointerdown'].forEach(function(ev){frame.addEventListener(ev,showHud,{passive:true})});
+  document.addEventListener('keydown',showHud);
+
+  window.addEventListener('resize',fit);
+  document.addEventListener('fullscreenchange',fit);
+  if(window.ResizeObserver) new ResizeObserver(fit).observe(frame);
+  fit();
+  stage.classList.add('paused');
+  apply(0);
+  last=performance.now();
+  requestAnimationFrame(tick);
+})();
+</script>
+
+</body>
+</html>
