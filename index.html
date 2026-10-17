@@ -649,111 +649,16 @@ h2{font-size:104px;line-height:1.05;position:absolute;left:100px;top:170px}
     syncBtn();
   }
 
-  /* ---- Видеоны жазу (бет-экран жазбасы → .webm файл) ---- */
-  var canRec=!!(navigator.mediaDevices&&navigator.mediaDevices.getDisplayMedia&&window.MediaRecorder);
+  /* =========================================================
+     ВИДЕО ЖАЗУ — MP4 форматында жүктеу
+     ========================================================= */
+  var hasDisplayMedia=!!(navigator.mediaDevices&&navigator.mediaDevices.getDisplayMedia);
+  var hasMediaRec=!!window.MediaRecorder;
+  var canRec=hasDisplayMedia&&hasMediaRec;
+  var isMobile=/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
   if(!canRec){
     bRec.disabled=true;
-    vstat.textContent='Бұл браузерде жазу қолдамайды. Chrome немесе Edge браузерінде файлды тікелей ашыңыз. Немесе «Жай ойнату» басып, компьютердің экранды жазу бағдарламасын (OBS, Win+G) қолданыңыз.';
-  }
-  function pickMime(){
-    var c=['video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm','video/mp4'];
-    for(var i=0;i<c.length;i++){ if(MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(c[i])) return c[i]; }
-    return '';
-  }
-  function startRec(){
-    vstat.textContent='Браузер сұраған терезеде осы қойындыны таңдап, «Бөлісу» (Share) басыңыз...';
-    var opts={video:{frameRate:30},audio:false,preferCurrentTab:true,selfBrowserSurface:'include',surfaceSwitching:'exclude'};
-    navigator.mediaDevices.getDisplayMedia(opts).then(function(stream){
-      rec.stream=stream;rec.chunks=[];rec.stopping=false;
-      var mime=pickMime();
-      var mr;
-      try{ mr=new MediaRecorder(stream,mime?{mimeType:mime,videoBitsPerSecond:10000000}:{videoBitsPerSecond:10000000}); }
-      catch(e){ mr=new MediaRecorder(stream); }
-      rec.mr=mr;
-      mr.ondataavailable=function(e){ if(e.data&&e.data.size) rec.chunks.push(e.data); };
-      mr.onstop=saveRec;
-      stream.getVideoTracks()[0].addEventListener('ended',function(){ if(rec.on&&!rec.stopping) stopRec(); });
-      startBox.hidden=true;
-      document.documentElement.classList.add('rec');
-      try{ var p=frame.requestFullscreen(); if(p&&p.catch) p.catch(function(){}); }catch(e){}
-      rec.on=true;
-      setTimeout(function(){
-        mr.start(1000);
-        begin();
-      },2000);
-    }).catch(function(){
-      vstat.textContent='Жазуға рұқсат берілмеді. Қайта басып, қойындыны таңдап, «Бөлісу» басыңыз.';
-    });
-  }
-  function stopRec(){
-    if(!rec.on||rec.stopping) return;
-    rec.stopping=true;
-    try{ if(rec.mr&&rec.mr.state!=='inactive') rec.mr.stop(); else saveRec(); }catch(e){ saveRec(); }
-  }
-  function saveRec(){
-    try{ if(rec.stream) rec.stream.getTracks().forEach(function(tr){tr.stop()}); }catch(e){}
-    var type=(rec.mr&&rec.mr.mimeType)||'video/webm';
-    var ext=/mp4/.test(type)?'mp4':'webm';
-    var ok=rec.chunks.length>0;
-    if(ok){
-      var blob=new Blob(rec.chunks,{type:type});
-      var a=document.createElement('a');
-      a.href=URL.createObjectURL(blob);
-      a.download='senim-shegi.'+ext;
-      document.body.appendChild(a);a.click();
-      setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},4000);
+    if(isMobile&&!hasDisplayMedia){
+      vstat.textContent='Бұл телефонның браузері экранды жазуға рұқсат бермейді. Телефонның өзіндік «Экранды жазу» (Screen Recorder) функциясын қолданыңыз — ол әдетте MP4 форматында сақтайды. Немесе компьютерде ашып жазыңыз.';
     }
-    rec.on=false;rec.mr=null;rec.stream=null;
-    document.documentElement.classList.remove('rec');
-    try{ if(document.fullscreenElement) document.exitFullscreen(); }catch(e){}
-    playing=false;started=false;
-    title.textContent=ok?'Видео дайын!':'Жазба шықпады';
-    vstat.textContent=ok?'Файл «senim-shegi.'+ext+'» жүктелді (Жүктемелер / Downloads папкасы). Қайта жазу үшін төмендегі түймені басыңыз.':'Жазба алынбады. Қайта көріңіз.';
-    startBox.hidden=false;
-    if(cur>=0){ scenes[cur].classList.remove('on','reveal'); cur=-1; }
-    ended=false;
-  }
-
-  bRec.addEventListener('click',startRec);
-  bPlayS.addEventListener('click',begin);
-
-  $('#bPlay').addEventListener('click',toggle);
-  $('#bNext').addEventListener('click',function(){go(cur+1,true)});
-  $('#bPrev').addEventListener('click',function(){go(cur-1,true)});
-  var fsBtn=$('#bFs');
-  if(!document.fullscreenEnabled) fsBtn.hidden=true;
-  fsBtn.addEventListener('click',function(){
-    try{
-      if(document.fullscreenElement) document.exitFullscreen();
-      else{var p=frame.requestFullscreen();if(p&&p.catch)p.catch(function(){});}
-    }catch(e){}
-  });
-  document.addEventListener('keydown',function(e){
-    var k=e.key;
-    if(k==='Escape'&&rec.on){stopRec();return;}
-    if(k==='f'||k==='F'){fsBtn.click();return;}
-    if(!started||rec.on) return;
-    if(k===' '||k==='k'||k==='K'){if(e.target.tagName!=='BUTTON'){e.preventDefault();toggle();}}
-    else if(k==='ArrowRight') go(cur+1,true);
-    else if(k==='ArrowLeft') go(cur-1,true);
-    else if(k==='Home') go(0,true);
-  });
-
-  var ht;
-  function showHud(){frame.classList.add('hud-on');clearTimeout(ht);ht=setTimeout(function(){frame.classList.remove('hud-on')},3500);}
-  ['mousemove','touchstart','pointerdown'].forEach(function(ev){frame.addEventListener(ev,showHud,{passive:true})});
-  document.addEventListener('keydown',showHud);
-
-  window.addEventListener('resize',fit);
-  document.addEventListener('fullscreenchange',fit);
-  if(window.ResizeObserver) new ResizeObserver(fit).observe(frame);
-  fit();
-  stage.classList.add('paused');
-  apply(0);
-  last=performance.now();
-  requestAnimationFrame(tick);
-})();
-</script>
-
-</body>
-</html>
