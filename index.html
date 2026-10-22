@@ -3,206 +3,778 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Портфолио | azvaren</title>
+  <title>azvaren | Telegram-боты и сайты</title>
+  <meta name="description" content="azvaren — разработка Telegram-ботов, сайтов и автоматизации для бизнеса.">
   <style>
+    :root {
+      --bg: #09090d;
+      --bg-2: #101018;
+      --card: rgba(24, 24, 34, 0.7);
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #ecebf5;
+      --muted: #9a9ab3;
+      --accent: #7c5cff;
+      --accent-2: #22d3ee;
+      --accent-3: #f472b6;
+      --radius: 20px;
+      --ease: cubic-bezier(.2, .8, .2, 1);
+    }
+
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
+    html { scroll-behavior: smooth; }
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: #0f0f14;
-      color: #e8e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
       line-height: 1.6;
+      overflow-x: hidden;
     }
 
-    header {
-      text-align: center;
-      padding: 80px 20px 60px;
-      background: linear-gradient(135deg, #1e1b4b, #0f0f14);
+    /* ---------- Фон с плавающими светящимися пятнами ---------- */
+    .bg-glow {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      opacity: .55;
+      animation: float 18s ease-in-out infinite;
+    }
+    .blob.b1 { width: 480px; height: 480px; background: var(--accent); top: -120px; left: -100px; }
+    .blob.b2 { width: 420px; height: 420px; background: var(--accent-2); top: 30%; right: -140px; animation-delay: -6s; }
+    .blob.b3 { width: 380px; height: 380px; background: var(--accent-3); bottom: -120px; left: 30%; animation-delay: -12s; }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33%      { transform: translate(40px, -30px) scale(1.08); }
+      66%      { transform: translate(-30px, 40px) scale(.94); }
     }
 
-    header h1 {
-      font-size: 2.5rem;
-      margin-bottom: 12px;
+    /* ---------- Курсорное свечение ---------- */
+    .cursor-glow {
+      position: fixed;
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(124, 92, 255, .18), transparent 65%);
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 0;
+      transition: opacity .3s;
     }
 
-    header p {
-      color: #a5a5bd;
-      font-size: 1.1rem;
-      max-width: 500px;
-      margin: 0 auto 30px;
-    }
-
-    .btn {
-      display: inline-block;
-      padding: 12px 28px;
-      background: #6366f1;
-      color: #fff;
-      text-decoration: none;
-      border-radius: 10px;
-      font-weight: 600;
-      transition: background 0.2s, transform 0.2s;
-    }
-
-    .btn:hover {
-      background: #4f46e5;
-      transform: translateY(-2px);
-    }
-
-    main {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 60px 20px;
-    }
-
-    h2 {
-      font-size: 1.8rem;
-      margin-bottom: 30px;
-      text-align: center;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 24px;
-    }
-
-    .card {
-      background: #18181f;
-      border: 1px solid #2a2a36;
-      border-radius: 16px;
-      padding: 28px;
-      transition: border-color 0.2s, transform 0.2s;
-    }
-
-    .card:hover {
-      border-color: #6366f1;
-      transform: translateY(-4px);
-    }
-
-    .card .icon {
-      font-size: 2.2rem;
-      margin-bottom: 14px;
-    }
-
-    .card h3 {
-      font-size: 1.2rem;
-      margin-bottom: 10px;
-    }
-
-    .card p {
-      color: #a5a5bd;
-      font-size: 0.95rem;
-      margin-bottom: 16px;
-    }
-
-    .tags span {
-      display: inline-block;
-      background: #2a2a36;
-      color: #c7c7e0;
-      font-size: 0.8rem;
-      padding: 4px 10px;
-      border-radius: 6px;
-      margin: 0 6px 6px 0;
-    }
-
-    .skills {
-      text-align: center;
-    }
-
-    .skills .list {
+    /* ---------- Навигация ---------- */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
       display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 6%;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      background: rgba(9, 9, 13, .4);
+      border-bottom: 1px solid transparent;
+      transition: background .3s, border-color .3s, transform .4s var(--ease);
+    }
+    nav.scrolled {
+      background: rgba(9, 9, 13, .85);
+      border-color: var(--border);
+    }
+    .logo {
+      font-weight: 800;
+      font-size: 1.2rem;
+      text-decoration: none;
+      color: var(--text);
+      letter-spacing: -.02em;
+    }
+    .logo span {
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .nav-links {
+      display: flex;
+      gap: 28px;
+    }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .95rem;
+      position: relative;
+      transition: color .2s;
+    }
+    .nav-links a::after {
+      content: "";
+      position: absolute;
+      left: 0; bottom: -4px;
+      width: 0; height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      transition: width .3s var(--ease);
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a:hover::after { width: 100%; }
+
+    /* ---------- Кнопки ---------- */
+    .btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: 14px;
+      font-weight: 600;
+      font-size: 1rem;
+      text-decoration: none;
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent), #5b3cf0);
+      box-shadow: 0 10px 30px -10px rgba(124, 92, 255, .8);
+      transition: transform .3s var(--ease), box-shadow .3s var(--ease);
+      overflow: hidden;
+    }
+    .btn::before {
+      content: "";
+      position: absolute;
+      top: 0; left: -75%;
+      width: 50%; height: 100%;
+      background: linear-gradient(120deg, transparent, rgba(255,255,255,.35), transparent);
+      transform: skewX(-20deg);
+      transition: left .6s var(--ease);
+    }
+    .btn:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 16px 40px -10px rgba(124, 92, 255, 1); }
+    .btn:hover::before { left: 125%; }
+    .btn.ghost {
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid var(--border);
+      box-shadow: none;
+    }
+    .btn.ghost:hover { background: rgba(255, 255, 255, .08); box-shadow: none; }
+
+    /* ---------- Общие блоки ---------- */
+    section {
+      position: relative;
+      padding: 110px 6%;
+    }
+    .section-head {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+    .eyebrow {
+      display: inline-block;
+      font-size: .8rem;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--accent-2);
+      margin-bottom: 14px;
+      padding: 6px 14px;
+      border: 1px solid rgba(34, 211, 238, .3);
+      border-radius: 999px;
+    }
+    h2 {
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      letter-spacing: -.03em;
+      line-height: 1.15;
+    }
+    .section-head p {
+      color: var(--muted);
+      max-width: 560px;
+      margin: 16px auto 0;
+    }
+
+    /* ---------- Hero ---------- */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding-top: 120px;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 16px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid var(--border);
+      font-size: .9rem;
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
+    .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 12px #22c55e;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: .4; transform: scale(.8); }
+    }
+    .hero h1 {
+      font-size: clamp(2.8rem, 8vw, 5.5rem);
+      font-weight: 800;
+      letter-spacing: -.04em;
+      line-height: 1.05;
+      margin-bottom: 22px;
+    }
+    .gradient-text {
+      background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--accent-3), var(--accent));
+      background-size: 300% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: shine 6s linear infinite;
+    }
+    @keyframes shine {
+      to { background-position: 300% 0; }
+    }
+    .hero p.lead {
+      font-size: clamp(1.05rem, 2vw, 1.25rem);
+      color: var(--muted);
+      max-width: 620px;
+      margin: 0 auto 40px;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 16px;
       flex-wrap: wrap;
       justify-content: center;
+    }
+    .stats {
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 70px;
+    }
+    .stat {
+      text-align: center;
+    }
+    .stat strong {
+      display: block;
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -.02em;
+    }
+    .stat span {
+      color: var(--muted);
+      font-size: .9rem;
+    }
+    .scroll-hint {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 26px;
+      height: 42px;
+      border: 2px solid var(--muted);
+      border-radius: 14px;
+      opacity: .6;
+    }
+    .scroll-hint::after {
+      content: "";
+      position: absolute;
+      top: 8px; left: 50%;
+      width: 4px; height: 8px;
+      margin-left: -2px;
+      background: var(--text);
+      border-radius: 2px;
+      animation: scroll 1.8s infinite;
+    }
+    @keyframes scroll {
+      0% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(14px); }
+    }
+
+    /* ---------- Карточки ---------- */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+      gap: 24px;
+    }
+    .card {
+      position: relative;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      overflow: hidden;
+      transform-style: preserve-3d;
+      transition: transform .35s var(--ease), border-color .3s;
+    }
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(400px circle at var(--mx, 50%) var(--my, 50%), rgba(124, 92, 255, .18), transparent 40%);
+      opacity: 0;
+      transition: opacity .3s;
+      pointer-events: none;
+    }
+    .card:hover::before { opacity: 1; }
+    .card:hover { border-color: rgba(124, 92, 255, .5); }
+    .card-icon {
+      width: 56px; height: 56px;
+      display: grid;
+      place-items: center;
+      font-size: 1.7rem;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(124, 92, 255, .25), rgba(34, 211, 238, .15));
+      border: 1px solid var(--border);
+      margin-bottom: 22px;
+      transition: transform .4s var(--ease);
+    }
+    .card:hover .card-icon { transform: scale(1.1) rotate(-6deg); }
+    .card h3 {
+      font-size: 1.25rem;
+      margin-bottom: 10px;
+    }
+    .card p {
+      color: var(--muted);
+      font-size: .95rem;
+      margin-bottom: 20px;
+    }
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .tags span {
+      font-size: .78rem;
+      padding: 5px 11px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .05);
+      border: 1px solid var(--border);
+      color: #c9c8e0;
+    }
+
+    /* ---------- Услуги (боты) ---------- */
+    .bots .grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+    .bot-example {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 18px;
+      padding: 14px;
+      background: rgba(0, 0, 0, .3);
+      border-radius: 14px;
+      font-size: .85rem;
+      color: #c9c8e0;
+    }
+    .bubble {
+      max-width: 85%;
+      padding: 8px 12px;
+      border-radius: 12px;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity .5s var(--ease), transform .5s var(--ease);
+    }
+    .bubble.in { background: rgba(255, 255, 255, .06); }
+    .bubble.out { align-self: flex-end; background: rgba(124, 92, 255, .35); }
+    .card.visible .bubble { opacity: 1; transform: none; }
+    .card.visible .bubble:nth-child(2) { transition-delay: .3s; }
+    .card.visible .bubble:nth-child(3) { transition-delay: .6s; }
+
+    /* ---------- Проекты ---------- */
+    .projects { background: linear-gradient(180deg, transparent, rgba(124, 92, 255, .05), transparent); }
+    .project .thumb {
+      height: 140px;
+      border-radius: 14px;
+      margin-bottom: 22px;
+      display: grid;
+      place-items: center;
+      font-size: 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .project .thumb::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,.15) 50%, transparent 70%);
+      transform: translateX(-100%);
+      transition: transform .8s var(--ease);
+    }
+    .project:hover .thumb::after { transform: translateX(100%); }
+    .thumb.t1 { background: linear-gradient(135deg, #7c5cff, #22d3ee); }
+    .thumb.t2 { background: linear-gradient(135deg, #f472b6, #7c5cff); }
+    .thumb.t3 { background: linear-gradient(135deg, #22d3ee, #22c55e); }
+    .project-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--accent-2);
+      text-decoration: none;
+      font-weight: 600;
+      transition: gap .3s var(--ease), color .2s;
+    }
+    .project-link:hover { gap: 14px; color: #fff; }
+
+    /* ---------- Обо мне ---------- */
+    .about-box {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 50px;
+      align-items: center;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .about-box p {
+      color: var(--muted);
+      margin-bottom: 16px;
+      font-size: 1.05rem;
+    }
+    .about-box h2 { text-align: left; margin-bottom: 22px; }
+    .skill-list {
+      display: flex;
+      flex-wrap: wrap;
       gap: 12px;
     }
-
-    .skills .list span {
-      background: #18181f;
-      border: 1px solid #2a2a36;
-      padding: 10px 20px;
+    .skill-list span {
+      padding: 12px 20px;
       border-radius: 999px;
-      font-size: 0.95rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      font-size: .95rem;
+      transition: transform .3s var(--ease), border-color .3s;
+    }
+    .skill-list span:hover {
+      transform: translateY(-3px);
+      border-color: var(--accent-2);
     }
 
+    /* ---------- Контакты ---------- */
     .contact {
       text-align: center;
-      padding: 60px 20px 80px;
-      background: #13131a;
     }
-
-    .contact p {
-      color: #a5a5bd;
-      margin-bottom: 24px;
+    .contact-card {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 60px 40px;
+      border-radius: 28px;
+      background: linear-gradient(135deg, rgba(124, 92, 255, .2), rgba(34, 211, 238, .1));
+      border: 1px solid rgba(124, 92, 255, .3);
+      backdrop-filter: blur(10px);
+    }
+    .contact-card p {
+      color: var(--muted);
+      margin: 16px 0 34px;
+      font-size: 1.05rem;
     }
 
     footer {
       text-align: center;
-      padding: 24px;
+      padding: 30px;
       color: #6b6b80;
-      font-size: 0.85rem;
-      border-top: 1px solid #2a2a36;
+      font-size: .85rem;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ---------- Анимации появления ---------- */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity .9s var(--ease), transform .9s var(--ease);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+    .reveal-delay-1 { transition-delay: .1s; }
+    .reveal-delay-2 { transition-delay: .2s; }
+    .reveal-delay-3 { transition-delay: .3s; }
+
+    /* ---------- Адаптив ---------- */
+    @media (max-width: 760px) {
+      .nav-links { display: none; }
+      .about-box { grid-template-columns: 1fr; gap: 30px; }
+      .about-box h2 { text-align: center; }
+      .about-box p { text-align: center; }
+      .skill-list { justify-content: center; }
+      .contact-card { padding: 40px 24px; }
+      .stats { gap: 24px; }
+    }
+
+    /* ---------- Для тех, кто отключил анимации ---------- */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+        scroll-behavior: auto !important;
+      }
+      .reveal, .bubble { opacity: 1; transform: none; }
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <h1>Привет, я azvaren 👋</h1>
-    <p>Разрабатываю Telegram-боты, сайты и автоматизацию для бизнеса. Работаю быстро и без лишней сложности.</p>
-    <a class="btn" href="https://t.me/azvaren" target="_blank" rel="noopener">Написать в Telegram</a>
-  </header>
+  <div class="bg-glow">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="blob b3"></div>
+  </div>
+  <div class="cursor-glow" id="cursorGlow"></div>
 
-  <main>
-    <h2>Мои работы</h2>
-    <div class="grid">
-
-      <div class="card">
-        <div class="icon">🤖</div>
-        <h3>Бот для записи клиентов</h3>
-        <p>Бот для салона или мастера: выбор услуги, даты и времени, напоминания клиентам и уведомления владельцу.</p>
-        <div class="tags"><span>Python</span><span>aiogram</span><span>Telegram API</span></div>
-      </div>
-
-      <div class="card">
-        <div class="icon">🌐</div>
-        <h3>Сайт-визитка</h3>
-        <p>Адаптивный одностраничный сайт для малого бизнеса с формой заявки и быстрой загрузкой.</p>
-        <div class="tags"><span>HTML</span><span>CSS</span><span>JavaScript</span></div>
-      </div>
-
-      <div class="card">
-        <div class="icon">⚙️</div>
-        <h3>Автоматизация заявок</h3>
-        <p>Заявки из бота автоматически сохраняются в таблицу, а владелец получает уведомление в Telegram.</p>
-        <div class="tags"><span>Python</span><span>Google Sheets</span><span>API</span></div>
-      </div>
-
+  <nav id="navbar">
+    <a href="#top" class="logo">az<span>varen</span></a>
+    <div class="nav-links">
+      <a href="#bots">Боты</a>
+      <a href="#projects">Проекты</a>
+      <a href="#about">Обо мне</a>
+      <a href="#contact">Контакт</a>
     </div>
-  </main>
+  </nav>
 
-  <section class="skills">
-    <main>
-      <h2>Что умею</h2>
-      <div class="list">
-        <span>Telegram-боты</span>
-        <span>Лендинги</span>
-        <span>Автоматизация</span>
-        <span>Парсинг данных</span>
-        <span>Работа с ИИ-API</span>
-        <span>Вайбкодинг</span>
-      </div>
-    </main>
+  <!-- ===== HERO ===== -->
+  <section class="hero" id="top">
+    <div class="hero-badge reveal">
+      <span class="dot"></span>
+      Принимаю новые заказы
+    </div>
+
+    <h1 class="reveal reveal-delay-1">
+      Привет, я <span class="gradient-text">azvaren</span>
+    </h1>
+
+    <p class="lead reveal reveal-delay-2">
+      Создаю Telegram-ботов, сайты и автоматизацию, которые работают за вас:
+      принимают заявки, записывают клиентов, продают и вовлекают аудиторию.
+      Быстро, понятно и без лишней сложности.
+    </p>
+
+    <div class="hero-actions reveal reveal-delay-3">
+      <a class="btn" href="https://t.me/azvaren" target="_blank" rel="noopener">
+        ✈️ Написать в Telegram
+      </a>
+      <a class="btn ghost" href="#projects">Смотреть работы</a>
+    </div>
+
+    <div class="stats reveal reveal-delay-3">
+      <div class="stat"><strong data-count="10">0</strong><span>проектов</span></div>
+      <div class="stat"><strong data-count="3">0</strong><span>живых бота</span></div>
+      <div class="stat"><strong data-count="1">0</strong><span>день на первую версию</span></div>
+    </div>
+
+    <div class="scroll-hint"></div>
   </section>
 
-  <section class="contact">
-    <h2>Есть идея? Напишите мне</h2>
-    <p>Обсудим задачу, сроки и стоимость. Ответ обычно в течение дня.</p>
-    <a class="btn" href="https://t.me/azvaren" target="_blank" rel="noopener">Открыть Telegram @azvaren</a>
+  <!-- ===== БОТЫ ===== -->
+  <section class="bots" id="bots">
+    <div class="section-head reveal">
+      <span class="eyebrow">Что я делаю</span>
+      <h2>Боты, которые приносят пользу</h2>
+      <p>Выберите тип бота или расскажите свою идею, а я предложу решение под вашу задачу.</p>
+    </div>
+
+    <div class="grid">
+      <div class="card reveal">
+        <div class="card-icon">🛍️</div>
+        <h3>Магазин-бот</h3>
+        <p>Каталог товаров, корзина, оформление заказа и оплата прямо в Telegram.</p>
+        <div class="bot-example">
+          <div class="bubble in">Что есть из кофе?</div>
+          <div class="bubble out">Эспрессо, капучино, раф 🙌</div>
+          <div class="bubble in">Оформить на 2 штуки</div>
+        </div>
+      </div>
+
+      <div class="card reveal reveal-delay-1">
+        <div class="card-icon">🎮</div>
+        <h3>Игровой бот</h3>
+        <p>Мини-игры, очки, рейтинг и механики, которые удерживают игроков и повышают вовлечённость.</p>
+        <div class="bot-example">
+          <div class="bubble in">Угадай число от 1 до 10</div>
+          <div class="bubble out">Ответ: 7 🎯</div>
+          <div class="bubble in">Ты выиграл +50 очков!</div>
+        </div>
+      </div>
+
+      <div class="card reveal reveal-delay-2">
+        <div class="card-icon">📅</div>
+        <h3>Бот записи</h3>
+        <p>Выбор услуги, даты и времени, напоминания клиентам и уведомления владельцу.</p>
+        <div class="bot-example">
+          <div class="bubble in">Записаться на стрижку</div>
+          <div class="bubble out">Завтра в 15:00 ✅</div>
+          <div class="bubble in">Напомню за час до визита</div>
+        </div>
+      </div>
+
+      <div class="card reveal reveal-delay-3">
+        <div class="card-icon">📝</div>
+        <h3>Бот заявок и опросов</h3>
+        <p>Собирает заявки и ответы клиентов, сохраняет их в таблицу и сразу присылает уведомление.</p>
+        <div class="bot-example">
+          <div class="bubble in">Оставьте заявку</div>
+          <div class="bubble out">Имя, телефон, задача</div>
+          <div class="bubble in">Спасибо! Ответим в течение дня</div>
+        </div>
+      </div>
+
+      <div class="card reveal reveal-delay-1">
+        <div class="card-icon">🏆</div>
+        <h3>Конкурсы и розыгрыши</h3>
+        <p>Автоматический розыгрыш призов, проверка подписки и честный выбор победителя.</p>
+        <div class="bot-example">
+          <div class="bubble in">Участвуйте в розыгрыше!</div>
+          <div class="bubble out">Я участвую 🎉</div>
+          <div class="bubble in">Вы в списке. Итоги в пятницу</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ПРОЕКТЫ ===== -->
+  <section class="projects" id="projects">
+    <div class="section-head reveal">
+      <span class="eyebrow">Портфолио</span>
+      <h2>Мои работы</h2>
+      <p>Рабочие боты, которые можно открыть и попробовать прямо сейчас.</p>
+    </div>
+
+    <div class="grid">
+      <a class="card project reveal" href="https://t.me/RombGame_Bot" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">
+        <div class="thumb t1">🎮</div>
+        <h3>Игровой проект</h3>
+        <p>Игровой бот с механиками, очками и вовлечением пользователей.</p>
+        <div class="tags" style="margin-bottom:20px;"><span>Python</span><span>aiogram</span><span>Игра</span></div>
+        <span class="project-link">Открыть бота →</span>
+      </a>
+
+      <a class="card project reveal reveal-delay-1" href="https://t.me/PosterKzRobot" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">
+        <div class="thumb t2">🖼️</div>
+        <h3>Бот для постов</h3>
+        <p>Создание и публикация постов для каналов и групп в пару кликов.</p>
+        <div class="tags" style="margin-bottom:20px;"><span>Python</span><span>Telegram API</span><span>Автопостинг</span></div>
+        <span class="project-link">Открыть бота →</span>
+      </a>
+
+      <a class="card project reveal reveal-delay-2" href="https://t.me/RombBatle_Bot" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">
+        <div class="thumb t3">🏆</div>
+        <h3>Конкурс-бот</h3>
+        <p>Проведение конкурсов и розыгрышей с автоматическим выбором победителей.</p>
+        <div class="tags" style="margin-bottom:20px;"><span>Python</span><span>Розыгрыши</span><span>Вовлечение</span></div>
+        <span class="project-link">Открыть бота →</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ===== ОБО МНЕ ===== -->
+  <section id="about">
+    <div class="about-box reveal">
+      <div>
+        <span class="eyebrow">Обо мне</span>
+        <h2>Вайбкодер, который делает идеи реальными</h2>
+        <p>Я превращаю задачи бизнеса в работающие инструменты. Помогаю с ИИ, быстро прототипирую и довожу проект до запуска.</p>
+        <p>Работаю честно: фиксированная цена, понятные сроки и поддержка после запуска.</p>
+      </div>
+      <div class="skill-list">
+        <span>🤖 Telegram-боты</span>
+        <span>🌐 Лендинги</span>
+        <span>⚙️ Автоматизация</span>
+        <span>🧠 ИИ-интеграции</span>
+        <span>📊 Парсинг данных</span>
+        <span>⚡ Вайбкодинг</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== КОНТАКТЫ ===== -->
+  <section class="contact" id="contact">
+    <div class="contact-card reveal">
+      <span class="eyebrow">Контакты</span>
+      <h2>Есть идея? Давайте сделаем</h2>
+      <p>Напишите, что хотите автоматизировать, и я отвечу в течение дня с вариантом решения и ценой.</p>
+      <a class="btn" href="https://t.me/azvaren" target="_blank" rel="noopener">✈️ Написать @azvaren</a>
+    </div>
   </section>
 
   <footer>
     © 2026 azvaren. Все права защищены.
   </footer>
 
+  <script>
+    // Появление элементов при прокрутке
+    const revealEls = document.querySelectorAll('.reveal');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    revealEls.forEach((el) => io.observe(el));
+
+    // Подсветка навигации при прокрутке
+    const nav = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 40);
+    }, { passive: true });
+
+    // Счётчики в статистике
+    const counters = document.querySelectorAll('[data-count]');
+    const countIO = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const el = entry.target;
+        const target = +el.dataset.count;
+        const duration = 1400;
+        const start = performance.now();
+        const step = (now) => {
+          const p = Math.min((now - start) / duration, 1);
+          const eased = 1 - Math.pow(1 - p, 3);
+          el.textContent = Math.round(eased * target) + (target >= 10 ? '+' : '');
+          if (p < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+        countIO.unobserve(el);
+      });
+    }, { threshold: 0.5 });
+    counters.forEach((c) => countIO.observe(c));
+
+    // Курсорное свечение
+    const glow = document.getElementById('cursorGlow');
+    let gx = window.innerWidth / 2, gy = window.innerHeight / 2;
+    let cx = gx, cy = gy;
+    window.addEventListener('mousemove', (e) => { gx = e.clientX; gy = e.clientY; });
+    (function animateGlow() {
+      cx += (gx - cx) * 0.12;
+      cy += (gy - cy) * 0.12;
+      glow.style.left = cx + 'px';
+      glow.style.top = cy + 'px';
+      requestAnimationFrame(animateGlow);
+    })();
+
+    // Наклон карточек и подсветка за курсором
+    document.querySelectorAll('.card').forEach((card) => {
+      card.addEventListener('mousemove', (e) => {
+        const r = card.getBoundingClientRect();
+        const x = e.clientX - r.left;
+        const y = e.clientY - r.top;
+        card.style.setProperty('--mx', x + 'px');
+        card.style.setProperty('--my', y + 'px');
+        const rx = ((y / r.height) - 0.5) * -6;
+        const ry = ((x / r.width) - 0.5) * 6;
+        card.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-4px)`;
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = '';
+      });
+    });
+  </script>
 </body>
 </html>
